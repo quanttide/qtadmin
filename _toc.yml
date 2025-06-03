@@ -6,3 +6,4 @@ parts:
   - file: stories/transactions/README.md
     sections:
     - file: stories/transactions/relating_transactions_and_customers.md
+  - file: stories/tokens/README.md
