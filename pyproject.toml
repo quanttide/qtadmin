@@ -16,6 +16,8 @@ classifiers = [
 requires-python = '>=3.10'
 dependencies = [
     "dynaconf>=3.2.5",
+    "fastapi>=0.115.12",
+    "uvicorn>=0.34.3",
 ]
 # dynamic = ["version"]
 
@@ -35,3 +37,8 @@ dev = [
 includes = [
     "qtadmin_provider",
 ]
+
+[tool.pdm.scripts]
+dev = "pdm run uvicorn qtadmin_provider.main:app --reload --host 0.0.0.0 --port 8001"
+test.cmd = "pytest"
+test.help = "Run tests with pytest"
