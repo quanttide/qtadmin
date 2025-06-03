@@ -148,3 +148,6 @@ cython_debug/
 
 # secret configuration
 .secrets.*
+
+# data file
+data/
