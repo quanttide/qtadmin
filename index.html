@@ -60,7 +60,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'index';</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="示例章" href="1_example_chapter/README.html" />
+    <link rel="next" title="交易" href="stories/transactions/README.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -174,25 +174,12 @@
                 </a>
             </li>
         </ul>
-        <p aria-level="2" class="caption" role="heading"><span class="caption-text">示例部分</span></p>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">用户故事</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1 has-children"><a class="reference internal" href="1_example_chapter/README.html">示例章</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="1_example_chapter/1_example_section/README.html">示例节1</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3"><a class="reference internal" href="1_example_chapter/1_example_section/1_example_article.html">测试文章</a></li>
-<li class="toctree-l3"><a class="reference internal" href="1_example_chapter/1_example_section/1_example_article2.html">测试文章2</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="stories/transactions/README.html">交易</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="stories/transactions/relating_transactions_and_customers.html">交易关联客户</a></li>
 </ul>
 </details></li>
-<li class="toctree-l2"><a class="reference internal" href="1_example_chapter/2_example_article3.html">测试文章3</a></li>
-</ul>
-</details></li>
-</ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">示例部分2</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1 has-children"><a class="reference internal" href="2_example_chapter2/README.html">示例章2</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="2_example_chapter2/1_example_section2/README.html">示例节2</a></li>
-</ul>
-</details></li>
-<li class="toctree-l1"><a class="reference internal" href="3_example_chapter3/README.html">示例章2</a></li>
 </ul>
 
     </div>
@@ -318,7 +305,9 @@ document.write(`
   </button>
 `);
 </script>
-
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
 </div></div>
       
     </div>
@@ -334,6 +323,16 @@ document.write(`
     <div id="print-main-content">
         <div id="jb-print-toc">
             
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">用户</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">场景</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">需求</a></li>
+</ul>
+            </nav>
         </div>
     </div>
 </div>
@@ -345,8 +344,18 @@ document.write(`
                   
   <section class="tex2jax_ignore mathjax_ignore" id="id1">
 <h1>简介<a class="headerlink" href="#id1" title="Link to this heading">#</a></h1>
-<div class="toctree-wrapper compound">
-</div>
+<section id="id2">
+<h2>用户<a class="headerlink" href="#id2" title="Link to this heading">#</a></h2>
+<p>量潮支持内部及利益相关方的一站式平台。</p>
+</section>
+<section id="id3">
+<h2>场景<a class="headerlink" href="#id3" title="Link to this heading">#</a></h2>
+<p>需要依赖大量信息的密集协同，现有的企业微信工作流无法有效支持。</p>
+<p>我的主要意图是希望可以打通分散在不同领域总表的业务信息。比如，关联客户和交易。</p>
+</section>
+<section id="id4">
+<h2>需求<a class="headerlink" href="#id4" title="Link to this heading">#</a></h2>
+</section>
 <div class="toctree-wrapper compound">
 </div>
 </section>
@@ -382,11 +391,11 @@ document.write(`
                   
 <div class="prev-next-area">
     <a class="right-next"
-       href="1_example_chapter/README.html"
+       href="stories/transactions/README.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">示例章</p>
+        <p class="prev-next-title">交易</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -396,6 +405,23 @@ document.write(`
             </div>
             
             
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">用户</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">场景</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">需求</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>
