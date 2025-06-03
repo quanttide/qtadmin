@@ -4,11 +4,11 @@ build-backend = "pdm.backend"
 
 [project]
 # name it as your package name
-name = "quanttide-example-of-python-project"
+name = "qtadmin-provider"
 # semetric versions
-version = "0.1.0-alpha.1"
+version = "0.0.1"
 # describe the package within one sentence
-description = "QuantTide Example of Python Project"
+description = "量潮管理后台服务端"
 authors = [{name = "QuantTide Inc.", email = "opensource@quanttide.com"}]
 classifiers = [
     "Programming Language :: Python :: 3",
@@ -33,5 +33,5 @@ dev = [
 
 [tool.pdm.build]
 includes = [
-    "project_name",
+    "qtadmin_provider",
 ]
