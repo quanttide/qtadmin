@@ -1,9 +1,18 @@
 format: jb-book
 root: index.md
 parts:
-- caption: 用户故事
-  chapters: 
-  - file: stories/transactions/README.md
+- caption: 产品需求
+  chapters:
+  - file: personas/README.md
+  - file: scenarios/README.md
     sections:
-    - file: stories/transactions/relating_transactions_and_customers.md
-  - file: stories/tokens/README.md
+    - file: scenarios/businesses/README.md
+      sections:
+      - file: scenarios/businesses/project.md
+  - file: stories/README.md
+    sections:
+    - file: stories/transactions/README.md
+      sections:
+      - file: stories/transactions/relating_transactions_and_customers.md
+    - file: stories/tokens/README.md
+  - file: events/README.md
