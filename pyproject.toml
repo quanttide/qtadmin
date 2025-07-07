@@ -1,44 +1,30 @@
+[project]
+name = "salary-management"
+version = "0.1.0"
+description = "薪资管理系统API"
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [
+    {name = "Your Name", email = "your.email@example.com"}
+]
+license = {text = "MIT"}
+
+dependencies = [
+    "fastapi>=0.109.0",
+    "sqlmodel>=0.0.16",
+    "uvicorn[standard]>=0.29.0",  # 注意 extras 放在方括号内
+    "python-dotenv>=1.0.0",
+    "pydantic>=2.7.0"
+]
+
 [build-system]
 requires = ["pdm-backend"]
 build-backend = "pdm.backend"
-
-[project]
-# name it as your package name
-name = "qtadmin-provider"
-# semetric versions
-version = "0.0.1"
-# describe the package within one sentence
-description = "量潮管理后台服务端"
-authors = [{name = "QuantTide Inc.", email = "opensource@quanttide.com"}]
-classifiers = [
-    "Programming Language :: Python :: 3",
-]
-requires-python = '>=3.10'
-dependencies = [
-    "dynaconf>=3.2.5",
-    "fastapi>=0.115.12",
-    "uvicorn>=0.34.3",
-]
-# dynamic = ["version"]
-
-[project.readme]
-file = "README.md"
-content-type = "text/markdown"
-
-[tool.pdm]
-distribution = false
-
-[tool.pdm.dev-dependencies]
+[dependency-groups]
 dev = [
-    "pytest>=8.2.2",
+    "pytest>=8.4.1",
+    "httpx>=0.28.1",
+    "pytest-asyncio>=1.0.0",
+    "pytest-cov>=6.2.1",
+    "sqlmodel[dev]>=0.0.16",
 ]
-
-[tool.pdm.build]
-includes = [
-    "qtadmin_provider",
-]
-
-[tool.pdm.scripts]
-dev = "pdm run uvicorn qtadmin_provider.main:app --reload --host 0.0.0.0 --port 8001"
-test.cmd = "pytest"
-test.help = "Run tests with pytest"
