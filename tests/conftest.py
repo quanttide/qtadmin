@@ -2,7 +2,7 @@ import pytest
 from sqlmodel import SQLModel, create_engine, Session
 from fastapi.testclient import TestClient
 from fastapi import FastAPI
-from app.main import app as fastapi_app
+from app.__main__ import app as fastapi_app
 from app.database import get_session
 import app.models  # noqa: F401
 

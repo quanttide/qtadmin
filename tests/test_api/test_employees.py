@@ -4,7 +4,7 @@ from fastapi.testclient import TestClient
 from sqlmodel import SQLModel, create_engine, Session
 from sqlalchemy import text
 
-from app.main import app
+from app.__main__ import app
 from app.database import get_session
 from app.models.employee import Employee
 from app.models.salary import SalaryCalculation
