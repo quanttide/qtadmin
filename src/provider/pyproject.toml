@@ -1,11 +1,11 @@
 [project]
-name = "salary-management"
-version = "0.1.0"
-description = "薪资管理系统API"
+name = "qtadmin-provider"
+version = "0.0.1"
+description = "量潮管理后台"
 readme = "README.md"
 requires-python = ">=3.10"
 authors = [
-    {name = "Your Name", email = "your.email@example.com"}
+    {name = "QuantTide", email = "opensource@quanttide.com"}
 ]
 license = {text = "MIT"}
 
