@@ -1,0 +1,30 @@
+[project]
+name = "salary-management"
+version = "0.1.0"
+description = "薪资管理系统API"
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [
+    {name = "Your Name", email = "your.email@example.com"}
+]
+license = {text = "MIT"}
+
+dependencies = [
+    "fastapi>=0.109.0",
+    "sqlmodel>=0.0.16",
+    "uvicorn[standard]>=0.29.0",  # 注意 extras 放在方括号内
+    "python-dotenv>=1.0.0",
+    "pydantic>=2.7.0"
+]
+
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
+[dependency-groups]
+dev = [
+    "pytest>=8.4.1",
+    "httpx>=0.28.1",
+    "pytest-asyncio>=1.0.0",
+    "pytest-cov>=6.2.1",
+    "sqlmodel[dev]>=0.0.16",
+]
