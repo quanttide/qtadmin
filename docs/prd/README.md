@@ -1,16 +1,26 @@
 # 产品需求文档
 
-本目录用于定义 qtadmin 的可交付需求。  
-在当前阶段，PRD 的主目标是支撑项目从“计算系统”迁移到“QuantTide 第二大脑平台”。
+## 用途
 
-## 与其他文档层关系
+本目录用于管理 qtadmin 的产品需求，当前聚焦 QuantTide 第二大脑方向。
 
-- `docs/default`：收集想法与草案
-- `docs/meta`：总结阶段判断与方向
-- `docs/prd`：形成可执行需求与交付边界
+## 工作流
 
-## 当前 PRD 优先级
+`docs/default -> docs/prd -> docs/meta`
 
-1. 先定义第二大脑最小可用闭环（MVP）
-2. 再把已有薪资等能力重构为可复用领域模块
-3. 最后补齐跨模块协作和事件驱动机制
+- `default`：收集想法
+- `prd`：重组为可执行需求
+- `meta`：项目级总结与阶段判断
+
+## 目录约定
+
+- `README.md`：流程与维护规则
+- `index.md`：当前 PRD 内容总览
+- `archive/`：历史版本或已降级内容
+
+## 维护规则
+
+1. 新增需求先落在 `second_brain_mvp.md` 或 `second_brain_module_requirements.md`
+2. 可交付故事统一放到 `stories/`
+3. 不再作为当前范围的内容移动到 `archive/`
+4. 每次结构调整同步更新 `_toc.yml` 与 `index.md`

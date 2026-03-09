@@ -4,16 +4,11 @@ parts:
 - caption: 产品需求
   chapters:
   - file: second_brain_mvp.md
+  - file: second_brain_module_requirements.md
   - file: personas/README.md
   - file: scenarios/README.md
-    sections:
-    - file: scenarios/businesses/README.md
-      sections:
-      - file: scenarios/businesses/project.md
   - file: stories/README.md
-    sections:
-    - file: stories/transactions/README.md
-      sections:
-      - file: stories/transactions/relating_transactions_and_customers.md
-    - file: stories/tokens/README.md
   - file: events/README.md
+- caption: 历史归档
+  chapters:
+  - file: archive/README.md
