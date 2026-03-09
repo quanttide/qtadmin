@@ -1,8 +1,24 @@
-# 场景幕布
+# 核心场景
 
-1. Define your user and what he/she wants
-2. Create scenarios or places your user will be at certain times
-3. What activities does your user perform at these scenarios?
-4. Try to come up with ideas and solutions to problems your users might face!
-5. What hardware and software does he already have and use at these scenarios?
-6. How can you make use of all these factors and create an app or product that your user really needs and that takes the previous into account?
+## 场景 1：知识工作闭环
+
+- 输入：用户提交问题/资料/任务
+- 处理：系统分类、标注、关联对象
+- 输出：形成结论和行动项
+- 回流：输出沉淀到知识库
+
+## 场景 2：跨对象决策追踪
+
+- 从决策追踪到任务、项目、文档、责任人
+- 支持查看上下游依赖与历史变更
+
+## 场景 3：人机协作与审计
+
+- 智能体执行辅助操作
+- 人类审批关键动作
+- 审计可追溯谁在何时做了什么
+
+## 场景 4：旧模块接入
+
+- 薪资等历史能力作为领域模块继续运行
+- 关键记录可关联知识对象
