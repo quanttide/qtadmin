@@ -169,6 +169,6 @@ src/provider/app/
 ## 8. 协作规则
 
 1. `default` 中反复出现的稳定主题，必须提炼到 `meta`
-2. `meta` 的阶段判断变化，必须更新 `prd`
+2. 文档流转遵循：`default -> other docs -> meta`
 3. `prd` 的范围变化，必须更新 `dev` 开发计划
 4. 实现偏离 `prd` 时，优先补文档再继续开发

@@ -2,7 +2,24 @@
 
 ## Project Overview
 
-This is a Python FastAPI project (qtadmin-provider) - a management backend system. The main codebase lives in `src/provider/`.
+qtadmin is evolving from a payroll-focused backend into QuantTide's second-brain platform.
+
+Current implementation is still centered on a Python FastAPI backend (`src/provider/`) with a Flutter client
+(`src/studio/`).
+
+## Documentation Workflow (Important)
+
+Follow this docs flow strictly:
+
+`docs/default -> other docs -> docs/meta`
+
+Rules:
+- `README.md` files are for **workflow/process** information.
+- `index.md` files are for **content/summary** information.
+- `docs/default` is the idea incubation layer.
+- `other docs` (primarily `docs/prd`, `docs/dev`, and related domain docs) refine ideas into requirements and execution plans.
+- `docs/meta` is the final project-level reflection layer.
+- If a workflow rule changes, update the relevant `README.md` first.
 
 ## Build/Lint/Test Commands
 
