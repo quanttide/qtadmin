@@ -1,12 +1,22 @@
 # 元工作文档
 
-docs/default：收集流
-1. 收集：和AI聊天，让AI写笔记记录。docs/default/default 是默认模式的默认模式。
-2. 整理：在 default内部整理
-3. 提取：
-4. 表达：离开 default 区域。
-这个区域空白的时候就可以进行一次发布了，说明一段时间的想法暂时处理完了，可以停顿一下进行下一次。
+## 角色定义
 
-docs/meta：元认知流
-1. 收集：docs/default/meta 移动到 docs/meta/default，从收集进入元认知流。也可以 docs/default 生成 docs/meta/docs/default。
- 
+- `README.md`：工作流说明（怎么流转）
+- `index.md`：内容总结（总结了什么）
+
+## 文档工作流
+
+统一流程：`docs/default -> other docs -> docs/meta`
+
+说明：
+
+1. `docs/default` 负责收集与试探新想法
+2. `other docs`（如 `docs/prd`、`docs/dev`）负责把想法转成需求与执行方案
+3. `docs/meta` 负责最终总结、反思和阶段判断
+
+## 维护要求
+
+1. `meta/README.md` 只写流程，不写具体内容细节
+2. `meta/index.md` 只写项目级内容，不写操作步骤
+3. 每次流程调整优先更新本 README
