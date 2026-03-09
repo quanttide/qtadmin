@@ -3,6 +3,7 @@ root: index.md
 parts:
 - caption: 产品需求
   chapters:
+  - file: second_brain_mvp.md
   - file: personas/README.md
   - file: scenarios/README.md
     sections:
