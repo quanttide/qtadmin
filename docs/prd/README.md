@@ -16,11 +16,10 @@
 
 - `README.md`：流程与维护规则
 - `index.md`：当前 PRD 内容总览
-- `archive/`：历史版本或已降级内容
+- `_toc.yml`：文档导航（root 为 `index.md`）
 
 ## 维护规则
 
-1. 新增需求先落在 `second_brain_mvp.md` 或 `second_brain_module_requirements.md`
-2. 可交付故事统一放到 `stories/`
-3. 不再作为当前范围的内容移动到 `archive/`
-4. 每次结构调整同步更新 `_toc.yml` 与 `index.md`
+1. `index.md` 必须作为 PRD 内容入口，并在 `_toc.yml` 中作为 root
+2. 新增需求优先合并到 `index.md` 的对应章节
+3. 每次结构调整同步更新 `_toc.yml` 与 `index.md`
