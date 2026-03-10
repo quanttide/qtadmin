@@ -30,7 +30,8 @@ qtadmin 的 PRD 主线是构建 QuantTide 第二大脑平台。
 2. Knowledge（对象与关系）
 3. IAM + Audit（安全与追溯）
 4. Agent（多智能体协作）
-5. Asset / CLI / Config（工具与基础设施）
+5. Meta（平台元认知）
+6. Asset / CLI / Config（工具与基础设施）
 
 ## 5. 里程碑
 
@@ -141,3 +142,9 @@ qtadmin 的 PRD 主线是构建 QuantTide 第二大脑平台。
 ### 11.3 Work 模式
 
 详见 [work.md](./work.md)
+
+---
+
+## 12. Meta 模块：平台元认知
+
+详见 [meta.md](./meta.md)
