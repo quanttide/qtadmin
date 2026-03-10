@@ -230,3 +230,14 @@ src/provider/
 ### Dependencies
 - Primary: FastAPI, SQLModel, Uvicorn, Pydantic, python-dotenv
 - Dev: pytest, httpx, pytest-asyncio, pytest-cov
+
+## Utilities
+
+### Taking Screenshots
+Use Python with Pillow:
+```python
+from PIL import ImageGrab
+img = ImageGrab.grab()
+img.save('docs/user/screenshot.png')
+```
+Requires `pip install Pillow`.
