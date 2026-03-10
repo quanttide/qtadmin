@@ -49,12 +49,13 @@
 
 ### 4.2 模块优先级（按 PRD）
 
-1. **Work**（统一入口）- Default + Work 双模式
-2. **Knowledge**（对象与关系）
-3. **IAM + Audit**（安全与追溯）
-4. **Agent**（多智能体协作）
-5. **Meta**（平台元认知）
-6. **Asset / CLI / Config**（工具与基础设施）
+1. **Default**（轻量入口）- 无需 formal 流程的基础能力
+2. **Work**（正式工作）- 君臣共治机制
+3. **Knowledge**（对象与关系）
+4. **IAM + Audit**（安全与追溯）
+5. **Agent**（多智能体协作）
+6. **Meta**（平台元认知）
+7. **Asset / CLI / Config**（工具与基础设施）
 
 ### 4.3 领域层
 
