@@ -1,0 +1,14 @@
+[project]
+name = "qtadmin"
+version = "0.0.1"
+description = "QuantTide 第二大脑平台"
+requires-python = ">=3.10"
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.4.1",
+]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
