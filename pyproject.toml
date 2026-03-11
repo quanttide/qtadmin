@@ -1,7 +1,7 @@
 [project]
 name = "qtadmin"
 version = "0.0.1"
-description = "QuantTide 第二大脑平台"
+description = "QuantTide Admin"
 requires-python = ">=3.10"
 
 [project.optional-dependencies]
