@@ -123,7 +123,7 @@ class TestCheckCommonIssues:
     def test_high_retry_issue(self, mock_run_cmd, mock_get_interface):
         mock_get_interface.return_value = "wlp0s20f3"
         mock_run_cmd.return_value = (
-            "wlp0s20f3  IEEE 802.11  Tx excessive retries:15",
+            "wlp0s20f3  IEEE 802.11  Retry short limit:15",
             "",
             0
         )
