@@ -123,7 +123,7 @@ class Downloader:
                 if self._verify_download():
                     elapsed = time.time() - self.start_time
                     speed = downloaded / elapsed if elapsed > 0 else 0
-                    logger.info(f"下载完成: {self._format_size(downloaded)}, 耗时: {elapsed:.1f}s, 速度: {self._format_size(speed)}/s")
+                    logger.info(f"下载完成: {self._format_size(int(downloaded))}, 耗时: {elapsed:.1f}s, 速度: {self._format_size(int(speed))}/s")
                     return True
 
             except requests.exceptions.HTTPError as e:
@@ -152,6 +152,9 @@ class Downloader:
 
     def _log_progress(self, downloaded: int):
         """记录下载进度"""
+        elapsed = time.time() - self.start_time
+        speed = downloaded / elapsed if elapsed > 0 else 0
+
         if self.total_bytes > 0:
             percent = (downloaded / self.total_bytes) * 100
             bar_len = 30
@@ -159,6 +162,8 @@ class Downloader:
             bar = "=" * filled + "-" * (bar_len - filled)
             eta = self._estimate_eta(downloaded)
             logger.info(f"进度: [{bar}] {percent:.1f}% ({self._format_size(downloaded)}/{self._format_size(self.total_bytes)}) ETA: {eta}")
+        else:
+            logger.info(f"已下载: {self._format_size(int(downloaded))}, 速度: {self._format_size(int(speed))}/s")
 
     def _estimate_eta(self, downloaded: int) -> str:
         """估算剩余时间"""
@@ -168,7 +173,7 @@ class Downloader:
         speed = downloaded / elapsed if elapsed > 0 else 0
         if speed == 0 or self.total_bytes == 0:
             return "N/A"
-        remaining = self.total_bytes - downloaded
+        remaining = int(self.total_bytes) - downloaded
         seconds = remaining / speed
         if seconds < 60:
             return f"{int(seconds)}s"
@@ -176,7 +181,7 @@ class Downloader:
             return f"{int(seconds / 60)}m"
         return f"{int(seconds / 3600)}h"
 
-    def _format_size(self, size: int) -> str:
+    def _format_size(self, size: float) -> str:
         """格式化文件大小"""
         for unit in ["B", "KB", "MB", "GB"]:
             if size < 1024:
