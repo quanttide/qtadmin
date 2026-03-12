@@ -5,7 +5,8 @@ Journal is a event log. It is collected at any time, so it is dirty.
 We want to find event memory as knowledge card from the journal,
 so that we can cleary understand what happened in the past.
 
-source from `quanttide-journal-of-founder` > `default/raw`
+the knowledge base root path is in the `.env`
+source from repo `quanttide-journal-of-founder` > `default/raw`
 spec at `quanttide-specification-of-founder` > `/work/delivery/journal.md`
 
 notice that the same day event and diary should be in one file.
@@ -20,4 +21,4 @@ use deepseek as default model.
 batch all at one time.
 if run, retry 3 times.
 
-workflow in `quanttide-handbook-of-founder` > `/code/workflow/design.md`
+workflow in `quanttide-handbook-of-founder` > `code/workflow/design.md`
