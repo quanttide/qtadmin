@@ -8,6 +8,10 @@ so that we can cleary understand what happened in the past.
 source from `data/asset/quanttide-journal-of-founder`
 output to `data/work/event`
 
+the raw like 
+```
+```
+
 define `Event` model:
 - id
 - type
@@ -15,5 +19,11 @@ define `Event` model:
 - description
 - raw
 it is not the final version.
+
+
+the event like
+```
+
+```
 
 write a example python module first.
