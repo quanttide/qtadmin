@@ -5,8 +5,8 @@ Journal is a event log. It is collected at any time, so it is dirty.
 We want to find event memory as knowledge card from the journal,
 so that we can cleary understand what happened in the past.
 
-source from `data/asset/quanttide-journal-of-founder`
-output to `data/work/event`
+source from `data/asset/quanttide-journal-of-founder/raw`
+output to `data/asset/quanttide-journal-of-founder/event` and `data/asset/quanttide-journal-of-founder/diary`
 
 the raw like 
 ```
