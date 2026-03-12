@@ -6,7 +6,7 @@ We want to find event memory as knowledge card from the journal,
 so that we can cleary understand what happened in the past.
 
 source from `data/asset/quanttide-journal-of-founder/raw`
-spec at `docs/spec/work/journal_diary_founder.md`
+spec at `data/asset/quanttide-specification-of-founder/work/delivery/journal.md`
 
 notice that the same day event and diary should be in one file.
 event saved by jsonl instead of json format.

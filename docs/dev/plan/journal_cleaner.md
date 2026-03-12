@@ -94,29 +94,85 @@ class Event(BaseModel):
 
 ## Prompts
 
+### 九宫格框架定义
+
+在提取事件前，需要明确区分三类知识：
+
+| 类别 | 问题 | 类型 | 示例 |
+|------|------|------|------|
+| **事件类** | "我们要做什么" | 行动类 | 决策、行动、计划、反思 |
+| **语义类** | "我们知道什么" | 方法/规范 | Profile、Specification、Handbook |
+| **自我类** | "我们是谁" | 身份/认同 | Essay、Bylaws、Report |
+
+事件类按时间维度分类：
+- **History** (过去): 已完成的行动里程碑
+- **Journal** (现在): 正在进行的行动记录
+- **Roadmap** (未来): 将要履行的行动承诺
+
 ### Event Extraction Prompt
+
 ```
-从以下工作日志中提取关键事件。
+## 角色
+你是一位知识管理助手，擅长从创始人日记中提取结构化的行动记忆。
 
-要求：
-1. 每行一个JSON对象，返回多行JSONL格式
-2. 每个事件必须包含 id（UUID）、title、description
-3. 不要有其他内容，不要有markdown代码块
+## 任务
+从以下原始日记中提取"事件记忆"——即与"我们要做什么"相关的行动类知识.i.e. 决策、行动、计划、反思 
 
-日志内容：
+## Event 模型（JSONL 输出）
+```json
+{
+  "id": "uuid",
+  "title": "简短事件标题",
+  "description": "事件描述",
+  "time_dimension": "past|present|future",
+  "event_type": "decision|action|plan|reflection"
+}
+```
+
+## 输出要求
+1. 仅提取事件类内容，忽略语义类和自我类
+2. 每个事件必须有 time_dimension 和 event_type
+3. 用 JSONL 格式输出，每行一个 JSON 对象
+4. 不要有其他内容，不要有 markdown 代码块
+
+日记内容：
 {content}
 ```
 
 ### Diary Cleaning Prompt
-```
-使用这些事件生成一个新的工作日志。
 
-要求：
-1. 使用MYST Markdown格式
-2. 包含YAML frontmatter（date, title）
-3. 使用层级标题组织内容
-4. 保持原始语义
-5. 结尾添加分隔线
+```
+## 角色
+你是一位文字润色助手，擅长将原始思考转化为清晰的工作日记。
+
+## 任务
+基于以下事件记忆，生成一份结构化的 Journal（工作日志）。
+
+## 输出结构（MYST 格式）
+```markdown
+---
+date: {日期}
+title: {标题}
+---
+
+# {主标题}
+
+## {主题1}
+{行动内容1}
+
+## {主题2}
+{行动内容2}
+
+—
+
+{结束语}
+```
+
+## 质量标准
+1. 保留原始想法的核心信息
+2. 用清晰、自然的中文表达
+3. 保持"思维流"但去除冗余
+4. 按主题组织，逻辑连贯
 
 事件内容：
 {content}
