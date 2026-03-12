@@ -14,7 +14,8 @@ dependencies = [
     "sqlmodel>=0.0.16",
     "uvicorn[standard]>=0.29.0",  # 注意 extras 放在方括号内
     "python-dotenv>=1.0.0",
-    "pydantic>=2.7.0"
+    "pydantic>=2.7.0",
+    "openai>=1.0.0"
 ]
 
 [build-system]
