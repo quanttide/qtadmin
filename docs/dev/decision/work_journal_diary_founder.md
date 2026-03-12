@@ -5,14 +5,14 @@ Journal is a event log. It is collected at any time, so it is dirty.
 We want to find event memory as knowledge card from the journal,
 so that we can cleary understand what happened in the past.
 
-source from `data/asset/quanttide-journal-of-founder/raw`
-spec at `data/asset/quanttide-specification-of-founder/work/delivery/journal.md`
+source from `data/work/quanttide-journal-of-founder/raw`
+spec at `data/work/quanttide-specification-of-founder/work/delivery/journal.md`
 
 notice that the same day event and diary should be in one file.
 event saved by jsonl instead of json format.
 diary saved with MYST markdown.
 
-output to `data/asset/quanttide-journal-of-founder/memory/event` and `data/asset/quanttide-journal-of-founder/journal/diary`
+output to `data/work/quanttide-journal-of-founder/memory/event` and `data/work/quanttide-journal-of-founder/journal/diary`
 
 `.env` has aliyun dashboard api-key
 use deepseek as default model.
@@ -20,7 +20,4 @@ use deepseek as default model.
 batch all at one time.
 if run, retry 3 times.
 
-write plan in 
-`docs/dev/plan`with same file name.
-write a example python module first.
-`examples/work/journal.py`
+workflow in `data/work/quanttide-handbook-of-founder/code/workflow/design.md`
