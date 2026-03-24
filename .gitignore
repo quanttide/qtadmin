@@ -26,7 +26,6 @@ ENV/
 # Data
 data/
 .env
-.env.*
 
 # IDE
 .idea/
