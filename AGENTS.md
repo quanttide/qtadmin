@@ -231,6 +231,50 @@ src/provider/
 - Primary: FastAPI, SQLModel, Uvicorn, Pydantic, python-dotenv
 - Dev: pytest, httpx, pytest-asyncio, pytest-cov
 
+## 发布规范
+
+### 项目结构
+
+qtadmin 为 monorepo，包含三个独立项目：
+
+| 项目 | 路径 | 入口文件 |
+|------|------|---------|
+| provider | `src/provider/` | `pyproject.toml` |
+| studio | `src/studio/` | `pubspec.yaml` |
+| cli | `src/cli/` | `pyproject.toml` |
+
+### 版本标签规范
+
+使用 `项目名/版本号` 格式，符合社区 monorepo 习惯：
+
+```bash
+# provider 发布
+git tag provider/v0.0.1
+git push origin provider/v0.0.1
+
+# cli 发布
+git tag cli/v0.0.1
+git push origin cli/v0.0.1
+
+# studio 发布
+git tag studio/v0.0.1
+git push origin studio/v0.0.1
+```
+
+### 发布流程
+
+1. **更新 CHANGELOG.md** - 在对应项目目录下添加新版本和变更内容
+2. **提交 CHANGELOG.md**
+3. **创建标签** - `git tag <project>/v<version>`
+4. **推送标签** - `git push origin <project>/v<version>`
+
+### 版本规范
+
+遵循语义化版本（SemVer）：
+- alpha: `v0.0.1-alpha.1`
+- beta: `v0.0.1-beta.1`
+- release: `v0.0.1`
+
 ## Utilities
 
 ### Taking Screenshots
