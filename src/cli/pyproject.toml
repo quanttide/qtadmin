@@ -1,0 +1,28 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "qtadmin-cli"
+version = "0.0.1"
+description = "Quanttide Admin CLI"
+requires-python = ">=3.10"
+dependencies = [
+    "typer>=0.12.0",
+    "pyyaml>=6.0.1",
+]
+
+[project.scripts]
+qtadmin = "qtadmin_cli.cli:main"
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+packages = ["qtadmin_cli"]
+
+[tool.hatch.metadata]
+allow-direct-references = true
