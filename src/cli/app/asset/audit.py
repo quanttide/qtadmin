@@ -244,13 +244,19 @@ class GitRepoAuditor:
         has_index = ("索引" in content or "Index" in content or
                     "README" in content or "CONTRIBUTING" in content)
 
-        passed = is_concise and (has_table or has_index)
+        # 检查是否包含自我更新说明（如何更新 AGENTS.md 自身）
+        has_self_update = ("更新" in content and "AGENTS" in content) or \
+                         ("维护" in content and "AGENTS" in content) or \
+                         ("self-update" in content.lower()) or \
+                         ("how to update" in content.lower())
+
+        passed = is_concise and (has_table or has_index) and has_self_update
         self._add_result(AuditResult(
             name="AGENTS.md 内容规范",
             passed=passed,
-            message=f"简洁 ({line_count}行)，包含使用场景和快速索引" if passed
+            message=f"简洁 ({line_count}行)，包含使用场景、快速索引和自我更新说明" if passed
                     else f"需要优化 (共{line_count}行)",
-            suggestion="保持简洁 (~50 行)，添加使用场景表格和快速索引" if not passed else None
+            suggestion="保持简洁 (~50 行)，添加使用场景表格、快速索引，以及「如何更新 AGENTS.md」的说明" if not passed else None
         ))
 
     def _check_changelog_format(self):
