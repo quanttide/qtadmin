@@ -8,7 +8,7 @@ from app.asset import refresh as asset_refresh
 from app.asset import backup as asset_backup
 from app.asset import audit as asset_audit
 
-__version__ = "0.0.1-alpha.5"
+__version__ = "0.0.1-alpha.6"
 
 app = typer.Typer(no_args_is_help=True, invoke_without_command=True)
 
