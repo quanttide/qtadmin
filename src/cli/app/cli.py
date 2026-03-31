@@ -7,7 +7,7 @@ import typer
 from app.asset import refresh as asset_refresh
 from app.asset import backup as asset_backup
 
-__version__ = "0.0.1"
+__version__ = "0.0.2-alpha.1"
 
 app = typer.Typer(no_args_is_help=True, invoke_without_command=True)
 
