@@ -1,5 +1,5 @@
 """
-Meta refresh command
+Asset refresh command
 """
 
 import subprocess
@@ -59,9 +59,9 @@ def refresh(
     同步子模块并提交推送主仓库。
 
     用法:
-        qtadmin meta refresh              # 同步所有子模块
-        qtadmin meta refresh journal     # 只同步 docs/journal
-        qtadmin meta refresh --dry-run   # 预览所有
+        qtadmin asset refresh              # 同步所有子模块
+        qtadmin asset refresh journal     # 只同步 docs/journal
+        qtadmin asset refresh --dry-run   # 预览所有
     """
     result = _do_refresh(Path("."), dry_run=dry_run, submodule=submodule)
 

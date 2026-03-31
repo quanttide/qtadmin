@@ -4,13 +4,18 @@ Qtadmin CLI
 
 import typer
 
-from qtadmin_cli.meta import refresh as meta_refresh
+from app.asset import refresh as asset_refresh
+from app.asset import backup as asset_backup
 
 __version__ = "0.0.1"
 
 app = typer.Typer(no_args_is_help=True, invoke_without_command=True)
 
-app.add_typer(meta_refresh.app, name="meta")
+asset_app = typer.Typer(help="数字资产职能")
+asset_app.command()(asset_refresh.refresh)
+asset_app.command()(asset_backup.backup)
+
+app.add_typer(asset_app, name="asset")
 
 
 @app.callback(invoke_without_command=True)
