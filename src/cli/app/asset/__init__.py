@@ -1,1 +1,1 @@
-# Meta commands package
+# Asset commands package
