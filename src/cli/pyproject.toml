@@ -24,5 +24,8 @@ dev = [
 package-dir = {"" = "."}
 packages = ["app"]
 
+[tool.hatch.build.targets.wheel]
+packages = ["app"]
+
 [tool.hatch.metadata]
 allow-direct-references = true
