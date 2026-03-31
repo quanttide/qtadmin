@@ -414,7 +414,7 @@ class GitRepoAuditor:
             ))
 
 
-def audit_repo(
+def audit(
     repo_path: str = typer.Argument(".", help="要审计的 Git 仓库路径"),
     verbose: bool = typer.Option(False, "--verbose", "-v", help="显示所有通过的项目")
 ) -> bool:

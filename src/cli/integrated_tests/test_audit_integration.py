@@ -15,7 +15,7 @@ from app.asset.audit import (
     AuditResult,
     AuditReport,
     GitRepoAuditor,
-    audit_repo,
+    audit,
 )
 
 
@@ -391,7 +391,7 @@ __pycache__/
 class TestAuditReportIntegration:
     """AuditReport 集成测试"""
 
-    def test_audit_report_print_full_workflow(self, temp_git_repo_with_files, capsys):
+    def test_auditrt_print_full_workflow(self, temp_git_repo_with_files, capsys):
         """测试完整的审计报告打印流程"""
         repo = temp_git_repo_with_files
 
@@ -409,7 +409,7 @@ class TestAuditReportIntegration:
         assert "审计结果：" in captured.out
         assert result is True  # 应该通过
 
-    def test_audit_report_failure_output(self, temp_git_repo, capsys):
+    def test_auditrt_failure_output(self, temp_git_repo, capsys):
         """测试失败审计报告的输出"""
         repo = temp_git_repo
 
@@ -429,33 +429,33 @@ class TestAuditReportIntegration:
 
 
 class TestAuditRepoFunction:
-    """audit_repo 函数集成测试"""
+    """audit 函数集成测试"""
 
-    def test_audit_repo_success(self, temp_git_repo_with_files):
+    def test_audit_success(self, temp_git_repo_with_files):
         """测试成功审计"""
         repo = temp_git_repo_with_files
 
         # 应该不抛出异常
-        result = audit_repo(str(repo), verbose=False)
+        result = audit(str(repo), verbose=False)
 
         # 验证返回 True
         assert result is True
 
-    def test_audit_repo_failure(self, temp_git_repo):
+    def test_audit_failure(self, temp_git_repo):
         """测试失败审计"""
         repo = temp_git_repo
 
         # 由于缺少文件，应该抛出 Exit 异常
         from click.exceptions import Exit
         with pytest.raises(Exit):
-            audit_repo(str(repo), verbose=False)
+            audit(str(repo), verbose=False)
 
-    def test_audit_repo_verbose_output(self, temp_git_repo_with_files, capsys):
+    def test_audit_verbose_output(self, temp_git_repo_with_files, capsys):
         """测试详细输出"""
         repo = temp_git_repo_with_files
 
         # 应该成功
-        audit_repo(str(repo), verbose=True)
+        audit(str(repo), verbose=True)
 
         captured = capsys.readouterr()
 

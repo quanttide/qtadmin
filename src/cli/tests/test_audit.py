@@ -14,7 +14,7 @@ from app.asset.audit import (
     AuditResult,
     AuditReport,
     GitRepoAuditor,
-    audit_repo,
+    audit,
 )
 
 
@@ -46,7 +46,7 @@ class TestAuditResult:
 class TestAuditReport:
     """测试 AuditReport 数据类"""
 
-    def test_audit_report_default(self):
+    def test_auditrt_default(self):
         """测试默认值"""
         report = AuditReport(repo_path="/tmp/repo")
         assert report.repo_path == "/tmp/repo"
@@ -55,7 +55,7 @@ class TestAuditReport:
         assert report.failed_count == 0
         assert report.pass_rate == 0.0
 
-    def test_audit_report_with_results(self):
+    def test_auditrt_with_results(self):
         """测试带结果的审计报告"""
         report = AuditReport(repo_path="/tmp/repo")
         report.results = [
@@ -68,13 +68,13 @@ class TestAuditReport:
         assert report.failed_count == 1
         assert report.pass_rate == pytest.approx(66.666, rel=0.1)
 
-    def test_audit_report_empty_results(self):
+    def test_auditrt_empty_results(self):
         """测试空结果的通过率"""
         report = AuditReport(repo_path="/tmp/repo")
         assert report.pass_rate == 0.0
 
     @patch("app.asset.audit.print")
-    def test_audit_report_print_success(self, mock_print):
+    def test_auditrt_print_success(self, mock_print):
         """测试打印成功的审计报告"""
         report = AuditReport(repo_path="/tmp/repo")
         report.results = [
@@ -85,7 +85,7 @@ class TestAuditReport:
         mock_print.assert_called()
 
     @patch("app.asset.audit.print")
-    def test_audit_report_print_failure(self, mock_print):
+    def test_auditrt_print_failure(self, mock_print):
         """测试打印失败的审计报告"""
         report = AuditReport(repo_path="/tmp/repo")
         report.results = [
@@ -96,7 +96,7 @@ class TestAuditReport:
         mock_print.assert_called()
 
     @patch("app.asset.audit.print")
-    def test_audit_report_print_verbose(self, mock_print):
+    def test_auditrt_print_verbose(self, mock_print):
         """测试打印详细审计报告"""
         report = AuditReport(repo_path="/tmp/repo")
         report.results = [
@@ -607,10 +607,10 @@ class TestGitRepoAuditorRecentCommits:
 
 
 class TestAuditRepo:
-    """测试 audit_repo 函数"""
+    """测试 audit 函数"""
 
     @patch("app.asset.audit.GitRepoAuditor")
-    def test_audit_repo_success(self, mock_auditor_class):
+    def test_audit_success(self, mock_auditor_class):
         """测试成功审计"""
         mock_report = MagicMock()
         mock_report.print_report.return_value = True
@@ -618,7 +618,7 @@ class TestAuditRepo:
         mock_auditor.audit.return_value = mock_report
         mock_auditor_class.return_value = mock_auditor
 
-        result = audit_repo("/tmp/repo", verbose=False)
+        result = audit("/tmp/repo", verbose=False)
 
         mock_auditor_class.assert_called_once_with("/tmp/repo")
         mock_auditor.audit.assert_called_once()
@@ -626,7 +626,7 @@ class TestAuditRepo:
         assert result is True
 
     @patch("app.asset.audit.GitRepoAuditor")
-    def test_audit_repo_failure(self, mock_auditor_class):
+    def test_audit_failure(self, mock_auditor_class):
         """测试审计失败"""
         try:
             from click.exceptions import Exit as ClickExit
@@ -641,4 +641,4 @@ class TestAuditRepo:
 
         # 失败时抛出 Exit 异常
         with pytest.raises(ClickExit):
-            audit_repo("/tmp/repo", verbose=False)
+            audit("/tmp/repo", verbose=False)
