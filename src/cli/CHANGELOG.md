@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## [0.0.1-alpha.3] - 2026-04-01
+
+### Fixed
+- 修复 CLI 入口点配置
+- 添加 `typer` 和 `pyyaml` 依赖项到主 pyproject.toml
+
 ## [0.0.1-alpha.2] - 2026-04-01
 
 ### Added
