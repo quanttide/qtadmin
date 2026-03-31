@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/).
 
+## [0.0.1-alpha.6] - 2026-04-01
+
+### Added
+
+- `asset audit` 命令增加 AGENTS.md「自我更新说明」检查
+
 ## [0.0.1-alpha.5] - 2026-04-01
 
 ### Changed
