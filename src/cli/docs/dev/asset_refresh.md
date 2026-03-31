@@ -1,4 +1,4 @@
-# qtadmin meta refresh
+# qtadmin asset refresh
 
 同步子模块并提交推送主仓库。
 
@@ -6,14 +6,14 @@
 
 ```bash
 # 同步所有子模块
-qtadmin meta refresh
+qtadmin asset refresh
 
 # 只同步指定子模块
-qtadmin meta refresh journal
-qtadmin meta refresh qtadmin
+qtadmin asset refresh journal
+qtadmin asset refresh qtadmin
 
 # 预览模式，不执行实际变更
-qtadmin meta refresh --dry-run
+qtadmin asset refresh --dry-run
 ```
 
 ## 流程
@@ -49,7 +49,7 @@ qtadmin meta refresh --dry-run
 
 ## 实现
 
-源码位置：`src/qtadmin_cli/cli.py`
+源码位置：`src/app/asset/cli.py`
 
 ## 与 thera 的关系
 

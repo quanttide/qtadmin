@@ -1,5 +1,5 @@
 """
-qtadmin meta refresh 命令测试
+qtadmin asset refresh 命令测试
 """
 
 import pytest
@@ -9,7 +9,7 @@ import sys
 import os
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
-from qtadmin_cli.meta.refresh import (
+from app.asset.refresh import (
     RefreshResult,
     _do_refresh,
     SUBMODULE_PATHS,
@@ -17,13 +17,13 @@ from qtadmin_cli.meta.refresh import (
 
 
 class TestGetDirtySubmodules:
-    @patch("qtadmin_cli.meta.refresh.subprocess.run")
+    @patch("app.asset.refresh.subprocess.run")
     def test_clean_submodules(self, mock_run):
         mock_run.return_value = MagicMock(stdout="", returncode=0)
         result = _get_dirty_submodules(Path("/tmp"))
         assert result == []
 
-    @patch("qtadmin_cli.meta.refresh.subprocess.run")
+    @patch("app.asset.refresh.subprocess.run")
     @patch("pathlib.Path.exists")
     def test_dirty_submodules(self, mock_exists, mock_run):
         mock_exists.return_value = True
@@ -33,7 +33,7 @@ class TestGetDirtySubmodules:
 
 
 class TestGetSubmodulesBehindRemote:
-    @patch("qtadmin_cli.meta.refresh.subprocess.run")
+    @patch("app.asset.refresh.subprocess.run")
     @patch("pathlib.Path.exists")
     def test_up_to_date_submodule(self, mock_exists, mock_run):
         mock_exists.return_value = True
@@ -50,7 +50,7 @@ class TestGetSubmodulesBehindRemote:
         result = _get_submodules_behind_remote(Path("/tmp"), submodule="docs/journal")
         assert len(result) == 0
 
-    @patch("qtadmin_cli.meta.refresh.subprocess.run")
+    @patch("app.asset.refresh.subprocess.run")
     @patch("pathlib.Path.exists")
     def test_behind_submodule(self, mock_exists, mock_run):
         mock_exists.return_value = True
@@ -70,13 +70,13 @@ class TestGetSubmodulesBehindRemote:
 
 
 class TestGetStatus:
-    @patch("qtadmin_cli.meta.refresh.subprocess.run")
+    @patch("app.asset.refresh.subprocess.run")
     def test_clean_status(self, mock_run):
         mock_run.return_value = MagicMock(stdout="", returncode=0)
         result = _get_status(Path("/tmp"))
         assert result is False
 
-    @patch("qtadmin_cli.meta.refresh.subprocess.run")
+    @patch("app.asset.refresh.subprocess.run")
     def test_dirty_status(self, mock_run):
         mock_run.return_value = MagicMock(stdout="M file.txt", returncode=0)
         result = _get_status(Path("/tmp"))
@@ -84,17 +84,17 @@ class TestGetStatus:
 
 
 class TestDoRefresh:
-    @patch("qtadmin_cli.meta.refresh._get_dirty_submodules")
+    @patch("app.asset.refresh._get_dirty_submodules")
     def test_refresh_with_dirty_submodule(self, mock_dirty):
         mock_dirty.return_value = ["docs/journal"]
         result = _do_refresh(Path("/tmp"))
         assert result.success is False
         assert "未提交的变更" in result.message
 
-    @patch("qtadmin_cli.meta.refresh._get_dirty_submodules")
-    @patch("qtadmin_cli.meta.refresh._fetch_submodules")
-    @patch("qtadmin_cli.meta.refresh._get_submodules_behind_remote")
-    @patch("qtadmin_cli.meta.refresh._get_status")
+    @patch("app.asset.refresh._get_dirty_submodules")
+    @patch("app.asset.refresh._fetch_submodules")
+    @patch("app.asset.refresh._get_submodules_behind_remote")
+    @patch("app.asset.refresh._get_status")
     def test_refresh_dry_run(self, mock_status, mock_behind, mock_fetch, mock_dirty):
         mock_dirty.return_value = []
 
@@ -138,7 +138,7 @@ class TestSubmodulePaths:
 
 def _get_dirty_submodules(repo_root: Path):
     """测试辅助函数"""
-    from qtadmin_cli.meta.refresh import SUBMODULE_PATHS
+    from app.asset.refresh import SUBMODULE_PATHS
     import subprocess
     from subprocess import TimeoutExpired
 
@@ -166,7 +166,7 @@ def _get_submodules_behind_remote(repo_root: Path, submodule: str = None):
     from dataclasses import dataclass
     import subprocess
     from subprocess import TimeoutExpired
-    from qtadmin_cli.meta.refresh import SUBMODULE_PATHS
+    from app.asset.refresh import SUBMODULE_PATHS
 
     @dataclass
     class SubmoduleInfo:

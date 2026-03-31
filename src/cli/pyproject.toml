@@ -13,7 +13,7 @@ dependencies = [
 ]
 
 [project.scripts]
-qtadmin = "qtadmin_cli.cli:main"
+qtadmin = "app.cli:main"
 
 [project.optional-dependencies]
 dev = [
@@ -22,7 +22,7 @@ dev = [
 
 [tool.setuptools]
 package-dir = {"" = "src"}
-packages = ["qtadmin_cli"]
+packages = ["app"]
 
 [tool.hatch.metadata]
 allow-direct-references = true
