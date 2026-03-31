@@ -1,6 +1,6 @@
 [project]
 name = "qtadmin"
-version = "0.0.2-alpha.1"
+version = "0.0.1-alpha.3"
 description = "QuantTide Admin"
 requires-python = ">=3.10"
 dependencies = [
