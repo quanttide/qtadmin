@@ -8,7 +8,7 @@ from pathlib import Path
 import sys
 import os
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 from app.asset.refresh import (
     RefreshResult,
     _do_refresh,
