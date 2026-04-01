@@ -1,119 +1,77 @@
 # Asset Audit 问题排查
 
-## 2026-04-01 审计结果
+## 问题描述
 
-运行 `qtadmin asset audit` 在 quanttide-tech 仓库的审计结果：
+审计工具 `qtadmin asset audit` 本身存在的问题。
 
-```
-============================================================
-Git 仓库资产审计报告
-============================================================
-仓库路径：/home/iguo/repos/quanttide-tech
-审计结果：7/10 通过 (70.0%)
-------------------------------------------------------------
+## 已发现问题
 
-❌ 未通过项目:
+### 1. 提交规范检测模式不完整
 
-  [必需文件：CONTRIBUTING.md]
-  缺少 CONTRIBUTING.md
+**位置**: `audit.py:389-401`
 
-  [必需文件：.gitignore]
-  缺少 .gitignore
-
-  [AGENTS.md 内容规范]
-  需要优化 (共19行)
-
-  [提交规范符合度]
-  0/10 符合 Conventional Commits (0%)
-
-============================================================
-⚠️  审计未通过，请根据建议修复问题
+```python
+conventional_pattern = re.compile(
+    r'^[a-z]+\([a-z-]+\)?:|^feat:|^fix:|^docs:|^test:|^refactor:|^chore:|^style:|^perf:'
+)
 ```
 
-## 问题分析
+**问题**: 
+- 正则表达式混乱：`^[a-z]+\([a-z-]+\)?:` 和 `^feat:` 同时存在
+- 匹配效率低，容易遗漏格式如 `docs(handbook):` 的提交
 
-### 1. 缺少 CONTRIBUTING.md
+### 2. 默认仓库路径处理
 
-**原因**: 项目早期未创建贡献指南文档。
+**位置**: `audit.py:424`
 
-**影响**: 贡献者不知道如何参与项目開發。
-
-### 2. 缺少 .gitignore
-
-**原因**: 项目未配置 Git 忽略规则。
-
-**影响**: 可能提交不必要的文件（如 .pyc, .venv/, .env）。
-
-### 3. AGENTS.md 内容不规范
-
-**当前内容**（共 19 行）:
-- 只有工作原则
-- 缺少使用场景表格
-- 缺少快速索引
-- 缺少「如何更新 AGENTS.md」说明
-
-### 4. 提交规范符合度 0%
-
-检查最近 10 条提交：
-- 无符合 Conventional Commits 格式的提交
-
-## 解决方案
-
-### 1. 创建 CONTRIBUTING.md
-
-已在主仓库创建 `CONTRIBUTING.md`，包含：
-- 项目结构（子模块列表）
-- 提交规范
-- 子模块操作指南
-- 工作流程
-
-### 2. 创建 .gitignore
-
-已在主仓库创建 `.gitignore`，包含：
-- Python 忽略规则
-- IDE 忽略规则
-- OS 忽略规则
-- 日志和临时文件
-
-### 3. 优化 AGENTS.md
-
-已扩展 AGENTS.md：
-- 添加快速索引表格
-- 添加使用场景说明
-- 添加「如何更新 AGENTS.md」说明
-- 目标：约 50 行
-
-### 4. 提交规范
-
-后续提交使用 Conventional Commits：
-```bash
-cz commit  # 使用 commitizen
+```python
+def audit(repo_path: str = typer.Argument(".", help="要审计的 Git 仓库路径"))
 ```
 
-或手动遵循格式：
+**问题**: 
+- 默认值 `.` 不支持参数时使用当前工作目录
+- 用户运行 `qtadmin asset audit`（无参数）会使用默认值而非当前目录
+
+### 3. 子模块检查超时处理
+
+**位置**: `audit.py:362-368`
+
+```python
+except (subprocess.TimeoutExpired, Exception) e:
+    self._add_result(AuditResult(
+        name="子模块状态",
+        passed=has_submodule,
+        message=f"子模块配置存在，状态检查跳过 ({e})",
+        suggestion=None
+    ))
 ```
-<type>: <description>
+
+**问题**:
+- 超时时返回 `passed=True`，掩盖了实际问题
+- 应该返回 `passed=False` 或警告状态
+
+### 4. AGENTS.md 行数阈值过宽
+
+**位置**: `audit.py:238`
+
+```python
+is_concise = line_count <= 100  # 宽松一点，不超过 100 行
 ```
 
-示例：
-- `docs: add CONTRIBUTING.md`
-- `chore: update submodule`
-- `fix: resolve issue`
+**建议**:
+- 阈值应为 50 行，而非 100 行
+- 注释已说明"宽松一点"，但不符合原始需求
 
-## 验证
+### 5. 缺少对审计结果的自动修复功能
 
-Auditor 代码本身存在的问题：
-
-| 检查项 | 代码实现 | 问题 |
-|--------|---------|------|
-| 提交规范检测 | 硬编码 `conventional_pattern` | 仅匹配有限类型 |
-| AGENTS.md 行数 | 阈值 100 行 | 建议应更严格（50 行） |
-| 子模块检查 | 依赖 git submodule status | 超时会跳过检查 |
+**问题**:
+- 只提供建议，无法自动修复
+- 用户需要手动创建缺失的文件
 
 ## 待办
 
-- [x] 创建 CONTRIBUTING.md
-- [x] 创建 .gitignore
-- [x] 优化 AGENTS.md
-- [ ] 审计工具本身需要优化
-- [ ] 添加 CI 自动审计
+- [ ] 修复正则表达式，统一匹配逻辑
+- [ ] 修改默认路径为实际当前工作目录
+- [ ] 超时时返回失败状态或警告
+- [ ] 调整 AGENTS.md 行数阈值至 50 行
+- [ ] 添加 `--fix` 选项自动修复常见问题
