@@ -1,80 +1,14 @@
-# Asset Audit 运维文档
+# Asset Audit 问题排查
 
-## 命令
+## 2026-04-01 审计结果
 
-```bash
-# 审计当前目录
-qtadmin asset audit
-
-# 审计指定仓库
-qtadmin asset audit /path/to/repo
-
-# 显示详细信息（包含通过的项目）
-qtadmin asset audit -v
-```
-
-## 检查项目
-
-### 1. 必需文件检查
-
-| 文件 | 说明 |
-|------|------|
-| README.md | 项目概述、目录结构 |
-| CONTRIBUTING.md | 贡献指南、工作流、环境变量 |
-| AGENTS.md | Agent 导航 |
-| CHANGELOG.md | 版本历史 |
-| .gitignore | Git 忽略规则 |
-
-### 2. 可选目录检查
-
-| 目录 | 说明 |
-|------|------|
-| meta/ | 元数据目录 |
-
-### 3. 内容规范检查
-
-#### README.md
-- 项目简介
-- 目录结构
-- 快速开始指南
-
-#### CONTRIBUTING.md
-- 项目结构
-- 开发环境
-- 提交规范
-- 发布流程
-
-#### AGENTS.md
-- 行数 ≤ 100 行（建议 ~50 行）
-- 包含使用场景表格
-- 包含快速索引
-- 包含「如何更新 AGENTS.md」说明
-
-#### CHANGELOG.md
-- # Changelog 标题
-- 语义化版本号 (vX.Y.Z)
-- 分类标题 (### Added/Changed/Fixed/Removed)
-
-#### .gitignore
-- 至少包含 2 个常见规则
-- 推荐：.venv, __pycache__/*.pyc, .env 等
-
-### 4. 子模块检查
-- 检查 .gitmodules 配置
-- 检查是否有未推送的子模块提交
-
-### 5. 提交规范检查
-- 最近 10 条提交信息
-- 符合 Conventional Commits 格式（至少 50%）
-- 格式：`<type>: <description>`
-
-## 输出示例
+运行 `qtadmin asset audit` 在 quanttide-tech 仓库的审计结果：
 
 ```
 ============================================================
 Git 仓库资产审计报告
 ============================================================
-仓库路径：/path/to/repo
+仓库路径：/home/iguo/repos/quanttide-tech
 审计结果：7/10 通过 (70.0%)
 ------------------------------------------------------------
 
@@ -82,81 +16,104 @@ Git 仓库资产审计报告
 
   [必需文件：CONTRIBUTING.md]
   缺少 CONTRIBUTING.md
-  💡 建议：创建 CONTRIBUTING.md 文件
 
   [必需文件：.gitignore]
   缺少 .gitignore
-  💡 建议：创建 .gitignore 文件
 
   [AGENTS.md 内容规范]
   需要优化 (共19行)
-  💡 建议：保持简洁 (~50 行)，添加使用场景表格、快速索引，以及「如何更新 AGENTS.md」的说明
 
   [提交规范符合度]
   0/10 符合 Conventional Commits (0%)
-  💡 建议：使用 `cz commit` 创建规范提交，或手动遵循 <type>: <description> 格式
 
 ============================================================
 ⚠️  审计未通过，请根据建议修复问题
 ```
 
-## 修复建议
+## 问题分析
 
-### 创建 CONTRIBUTING.md
+### 1. 缺少 CONTRIBUTING.md
 
-```markdown
-# CONTRIBUTING
+**原因**: 项目早期未创建贡献指南文档。
 
-## 项目结构
+**影响**: 贡献者不知道如何参与项目開發。
 
-## 开发环境
+### 2. 缺少 .gitignore
 
-## 提交规范
+**原因**: 项目未配置 Git 忽略规则。
 
-## 发布流程
+**影响**: 可能提交不必要的文件（如 .pyc, .venv/, .env）。
+
+### 3. AGENTS.md 内容不规范
+
+**当前内容**（共 19 行）:
+- 只有工作原则
+- 缺少使用场景表格
+- 缺少快速索引
+- 缺少「如何更新 AGENTS.md」说明
+
+### 4. 提交规范符合度 0%
+
+检查最近 10 条提交：
+- 无符合 Conventional Commits 格式的提交
+
+## 解决方案
+
+### 1. 创建 CONTRIBUTING.md
+
+已在主仓库创建 `CONTRIBUTING.md`，包含：
+- 项目结构（子模块列表）
+- 提交规范
+- 子模块操作指南
+- 工作流程
+
+### 2. 创建 .gitignore
+
+已在主仓库创建 `.gitignore`，包含：
+- Python 忽略规则
+- IDE 忽略规则
+- OS 忽略规则
+- 日志和临时文件
+
+### 3. 优化 AGENTS.md
+
+已扩展 AGENTS.md：
+- 添加快速索引表格
+- 添加使用场景说明
+- 添加「如何更新 AGENTS.md」说明
+- 目标：约 50 行
+
+### 4. 提交规范
+
+后续提交使用 Conventional Commits：
+```bash
+cz commit  # 使用 commitizen
 ```
 
-### 创建 .gitignore
-
-```gitignore
-# Python
-__pycache__/
-*.py[cod]
-.venv/
-.env
-
-# IDE
-.vscode/
-.idea/
-
-# OS
-.DS_Store
+或手动遵循格式：
+```
+<type>: <description>
 ```
 
-### 优化 AGENTS.md
+示例：
+- `docs: add CONTRIBUTING.md`
+- `chore: update submodule`
+- `fix: resolve issue`
 
-参考模板：
+## 验证
 
-```markdown
-# AGENTS.md - Agent 工作指南
+Auditor 代码本身存在的问题：
 
-## 快速索引
+| 检查项 | 代码实现 | 问题 |
+|--------|---------|------|
+| 提交规范检测 | 硬编码 `conventional_pattern` | 仅匹配有限类型 |
+| AGENTS.md 行数 | 阈值 100 行 | 建议应更严格（50 行） |
+| 子模块检查 | 依赖 git submodule status | 超时会跳过检查 |
 
-| 场景 | 命令/操作 |
-|------|----------|
-| ... | ... |
+## 待办
 
-## 使用场景
-
-### 1. 文档更新
-...
-
-## 工作原则
-
-1. **最小干预**: ...
-...
-
-## 如何更新 AGENTS.md
-
-...
-```
+- [x] 创建 CONTRIBUTING.md
+- [x] 创建 .gitignore
+- [x] 优化 AGENTS.md
+- [ ] 审计工具本身需要优化
+- [ ] 添加 CI 自动审计
