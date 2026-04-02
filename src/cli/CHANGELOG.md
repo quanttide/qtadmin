@@ -1,5 +1,25 @@
 # CHANGELOG
 
+## [0.0.1-alpha.7] - 2026-04-02
+
+### Added
+- 动态获取子模块路径：从 `.gitmodules` 读取子模块列表
+- AGENTS.md 增加了「自我更新说明」要求
+
+### Fixed
+- 添加 hatchling build 配置以支持 `uv pip install`
+- 更新 `SUBMODULE_PATHS` 支持新增子模块（gallery, qtcloud-finance 等）
+
+## [0.0.1-alpha.6] - 2026-04-01
+
+### Fixed
+- 添加 hatchling build 配置以支持 uv pip install
+
+## [0.0.1-alpha.5] - 2026-04-01
+
+### Added
+- AGENTS.md 检查增加「自我更新说明」要求
+
 ## [0.0.1-alpha.4] - 2026-04-02
 
 ### Added
