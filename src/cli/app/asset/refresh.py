@@ -23,32 +23,43 @@ class RefreshResult:
     dry_run: bool = False
 
 
-SUBMODULE_PATHS = [
-    "docs/archive",
-    "docs/bylaw",
-    "docs/essay",
-    "docs/gallery",
-    "docs/handbook",
-    "docs/history",
-    "docs/journal",
-    "docs/library",
-    "docs/paper",
-    "docs/profile",
-    "docs/report",
-    "docs/roadmap",
-    "docs/specification",
-    "docs/tutorial",
-    "docs/usercase",
-    "packages/data",
-    "packages/devops",
-    "src/qtadmin",
-    "src/qtcloud-data",
-    "src/qtcloud-finance",
-    "src/thera",
-]
-
-
 app = typer.Typer(help="同步子模块并提交推送主仓库")
+
+
+def _get_submodule_paths(repo_root: Path) -> list[str]:
+    """从 .gitmodules 动态获取子模块路径"""
+    result = subprocess.run(
+        [
+            "git",
+            "-C",
+            str(repo_root),
+            "config",
+            "--get-regexp",
+            "submodule\\..*\\.path",
+        ],
+        capture_output=True,
+        text=True,
+        timeout=10,
+    )
+    if result.returncode != 0:
+        return []
+    paths = []
+    for line in result.stdout.strip().split("\n"):
+        parts = line.split()
+        if len(parts) >= 2:
+            paths.append(parts[1])
+    return paths
+
+
+SUBMODULE_PATHS = None  # 动态获取
+
+
+def _get_submodule_paths_cached(repo_root: Path) -> list[str]:
+    """获取子模块路径（带缓存）"""
+    global SUBMODULE_PATHS
+    if SUBMODULE_PATHS is None:
+        SUBMODULE_PATHS = _get_submodule_paths(repo_root)
+    return SUBMODULE_PATHS
 
 
 @app.command()
@@ -155,7 +166,8 @@ def _do_refresh(
 def _get_dirty_submodules(repo_root: Path) -> list[str]:
     """检查子模块是否有未提交的变更"""
     dirty = []
-    for path in SUBMODULE_PATHS:
+    paths = _get_submodule_paths_cached(repo_root)
+    for path in paths:
         full_path = repo_root / path
         if not full_path.exists():
             continue
@@ -175,7 +187,7 @@ def _get_dirty_submodules(repo_root: Path) -> list[str]:
 
 def _fetch_submodules(repo_root: Path, submodule: Optional[str] = None) -> None:
     """Fetch 子模块的远程"""
-    paths = [submodule] if submodule else SUBMODULE_PATHS
+    paths = [submodule] if submodule else _get_submodule_paths_cached(repo_root)
     for path in paths:
         full_path = repo_root / path
         if not full_path.exists():
@@ -202,7 +214,7 @@ def _get_submodules_behind_remote(
         local_commit: str
         is_behind: bool
 
-    paths = [submodule] if submodule else SUBMODULE_PATHS
+    paths = [submodule] if submodule else _get_submodule_paths_cached(repo_root)
     behind = []
 
     for path in paths:
