@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## [0.0.1-alpha.4] - 2026-04-02
+
+### Added
+- 动态获取子模块路径：从 `.gitmodules` 读取子模块列表
+
+### Fixed
+- 更新 `SUBMODULE_PATHS` 支持新增子模块（gallery, qtcloud-finance 等）
+
 ## [0.0.1-alpha.3] - 2026-04-01
 
 ### Fixed
