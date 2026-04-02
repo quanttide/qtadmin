@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'screens/meta_screen.dart';
+
 void main() {
   runApp(const QtAdminStudio());
 }
@@ -19,6 +21,7 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
     _NavItem(icon: Icons.lightbulb_outline, label: 'Think'),
     _NavItem(icon: Icons.edit_outlined, label: 'Write'),
     _NavItem(icon: Icons.people_outline, label: 'Team'),
+    _NavItem(icon: Icons.auto_stories_outlined, label: 'Meta'),
     _NavItem(icon: Icons.settings_outlined, label: 'Settings'),
   ];
 
@@ -54,17 +57,26 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
             ),
             const VerticalDivider(thickness: 1, width: 1),
             Expanded(
-              child: Center(
-                child: Text(
-                  _navItems[_selectedIndex].label,
-                  style: Theme.of(context).textTheme.headlineMedium,
-                ),
-              ),
+              child: _buildPage(),
             ),
           ],
         ),
       ),
     );
+  }
+
+  Widget _buildPage() {
+    switch (_selectedIndex) {
+      case 4: // Meta
+        return const MetaScreen();
+      default:
+        return Center(
+          child: Text(
+            _navItems[_selectedIndex].label,
+            style: Theme.of(context).textTheme.headlineMedium,
+          ),
+        );
+    }
   }
 }
 
