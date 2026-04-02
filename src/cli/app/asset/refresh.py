@@ -27,6 +27,7 @@ SUBMODULE_PATHS = [
     "docs/archive",
     "docs/bylaw",
     "docs/essay",
+    "docs/gallery",
     "docs/handbook",
     "docs/history",
     "docs/journal",
@@ -41,6 +42,8 @@ SUBMODULE_PATHS = [
     "packages/data",
     "packages/devops",
     "src/qtadmin",
+    "src/qtcloud-data",
+    "src/qtcloud-finance",
     "src/thera",
 ]
 
