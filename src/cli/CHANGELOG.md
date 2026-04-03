@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## [0.0.1-beta.4] - 2026-04-04
+
+### Fixed
+- `asset refresh`: 修复无法识别云端更新的问题，改为比较父仓库记录的子模块 commit 与远程 HEAD
+- `asset refresh`: 同步逻辑改用 `git submodule update --remote`
+
 ## [0.0.1-beta.3] - 2026-04-04
 
 ### Fixed
