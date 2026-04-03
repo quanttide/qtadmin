@@ -1,5 +1,27 @@
 # CHANGELOG
 
+## [0.0.1-beta.2] - 2026-04-04
+
+### Fixed
+- `asset backup`: 递归扫描 journal 目录，支持任意嵌套层级
+- `asset backup`: 归档后保持原始嵌套目录结构
+- `asset audit`: 统一提交规范正则表达式
+- `asset audit`: 子模块超时返回失败状态
+- `asset audit`: AGENTS.md 行数阈值调整为 50 行
+
+### Added
+- `asset audit`: 版本发布规范一致性检查
+
+### Documentation
+- 添加 `docs/dev/asset_audit.md` 开发文档
+- 添加 `docs/dev/asset_backup.md` 开发文档
+- 更新 `docs/user/asset_backup.md` 用户文档
+- 更新 CONTRIBUTING.md 发布流程
+
+### Tests
+- 更新单元测试支持递归扫描和嵌套目录
+- 更新集成测试验证嵌套目录结构
+
 ## [0.0.1-beta.1] - 2026-04-03
 
 ### Changed
