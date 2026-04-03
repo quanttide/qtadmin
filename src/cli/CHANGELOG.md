@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## [0.0.1-beta.1] - 2026-04-03
+
+### Changed
+- 单一数据源：版本号仅在 pyproject.toml 维护，代码通过 importlib.metadata 动态获取
+
+### Documentation
+- 添加 CONTRIBUTING.md 版本发布规范
+
 ## [0.0.1-alpha.7] - 2026-04-02
 
 ### Added
