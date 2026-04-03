@@ -3,12 +3,12 @@ Qtadmin CLI
 """
 
 import typer
+from importlib.metadata import version
 
 from app.asset import refresh as asset_refresh
 from app.asset import backup as asset_backup
 from app.asset import audit as asset_audit
 
-__version__ = "0.0.1-alpha.6"
 
 app = typer.Typer(no_args_is_help=True, invoke_without_command=True)
 
@@ -22,13 +22,15 @@ app.add_typer(asset_app, name="asset")
 
 @app.callback(invoke_without_command=True)
 def callback(
-    version: bool = typer.Option(None, "--version", is_flag=True, help="显示版本号"),
+    show_version: bool = typer.Option(
+        None, "--version", is_flag=True, help="显示版本号"
+    ),
 ):
     """
     Quanttide Admin CLI
     """
-    if version:
-        typer.echo(f"qtadmin-cli {__version__}")
+    if show_version:
+        typer.echo(f"qtadmin-cli {version('qtadmin-cli')}")
         raise typer.Exit()
 
 
