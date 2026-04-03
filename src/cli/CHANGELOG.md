@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## [0.0.1-beta.5] - 2026-04-04
+
+### Removed
+- 移除 `asset refresh` 命令
+
 ## [0.0.1-beta.4] - 2026-04-04
 
 ### Fixed
