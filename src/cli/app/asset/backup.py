@@ -56,7 +56,7 @@ def parse_date_from_filename(filename: str) -> Optional[datetime]:
 
 def scan_journal_files(journal_dir: Path) -> list[tuple[Path, datetime, str]]:
     """
-    扫描 journal 目录下的所有日期文件
+    递归扫描 journal 目录下的所有日期文件
 
     返回：[(文件路径, 日期, 分类), ...]
     """
@@ -65,19 +65,21 @@ def scan_journal_files(journal_dir: Path) -> list[tuple[Path, datetime, str]]:
         typer.echo(f"错误：journal 目录不存在: {journal_dir}")
         raise typer.Exit(1)
 
-    for category_dir in journal_dir.iterdir():
-        if not category_dir.is_dir():
+    for file_path in journal_dir.rglob("*.md"):
+        if file_path.name.startswith("."):
             continue
-        if category_dir.name.startswith("."):
+        if not file_path.is_file():
             continue
 
-        category = category_dir.name
-        for file_path in category_dir.iterdir():
-            if not file_path.is_file():
-                continue
-            date = parse_date_from_filename(file_path.name)
-            if date:
-                files.append((file_path, date, category))
+        date = parse_date_from_filename(file_path.name)
+        if not date:
+            continue
+
+        # 分类：取第一层目录名
+        parts = file_path.relative_to(journal_dir).parts
+        category = parts[0] if len(parts) > 1 else "default"
+
+        files.append((file_path, date, category))
 
     return files
 
@@ -97,13 +99,20 @@ def filter_old_files(
 def move_files(
     files: list[tuple[Path, datetime, str]],
     archive_dir: Path,
+    journal_dir: Path,
     project_root: Path,
     dry_run: bool,
 ) -> list[tuple[Path, Path]]:
-    """移动文件到 archive 目录"""
+    """移动文件到 archive 目录，保持嵌套结构"""
     moved = []
     for source, date, category in files:
-        target_dir = archive_dir / category
+        # 保持嵌套目录结构
+        rel_parts = source.relative_to(journal_dir).parts[1:-1]  # 去掉分类名和文件名
+        target_dir = (
+            archive_dir / category / "/".join(rel_parts)
+            if rel_parts
+            else archive_dir / category
+        )
         target = target_dir / source.name
 
         if target.exists():
@@ -242,7 +251,7 @@ def backup(
 
     # 移动文件
     typer.echo("\n开始归档...")
-    moved = move_files(old_files, archive_dir, project_root, dry_run)
+    moved = move_files(old_files, archive_dir, journal_dir, project_root, dry_run)
 
     if dry_run:
         typer.echo(f"\n[DRY-RUN] 共 {len(moved)} 个文件将被归档。")
