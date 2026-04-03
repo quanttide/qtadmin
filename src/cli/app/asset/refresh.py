@@ -202,6 +202,43 @@ def _fetch_submodules(repo_root: Path, submodule: Optional[str] = None) -> None:
             pass
 
 
+def _get_remote_branch(repo_path: Path) -> Optional[str]:
+    """获取子模块当前分支对应的远程分支"""
+    try:
+        # 先尝试获取当前分支名
+        result = subprocess.run(
+            ["git", "-C", str(repo_path), "rev-parse", "--abbrev-ref", "HEAD"],
+            capture_output=True,
+            text=True,
+            timeout=10,
+        )
+        branch = result.stdout.strip()
+
+        # 如果是 detached HEAD，尝试获取 origin/HEAD
+        if branch == "HEAD":
+            result = subprocess.run(
+                [
+                    "git",
+                    "-C",
+                    str(repo_path),
+                    "rev-parse",
+                    "--abbrev-ref",
+                    "origin/HEAD",
+                ],
+                capture_output=True,
+                text=True,
+                timeout=10,
+            )
+            if result.returncode == 0:
+                return result.stdout.strip()
+            # 回退到 origin/main
+            return "origin/main"
+
+        return f"origin/{branch}"
+    except TimeoutExpired:
+        return None
+
+
 def _get_submodules_behind_remote(
     repo_root: Path, submodule: Optional[str] = None
 ) -> list:
@@ -230,8 +267,13 @@ def _get_submodules_behind_remote(
             )
             local_head = result.stdout.strip()
 
+            # 动态获取远程分支
+            remote_branch = _get_remote_branch(full_path)
+            if not remote_branch:
+                continue
+
             result = subprocess.run(
-                ["git", "-C", str(full_path), "rev-parse", "origin/main"],
+                ["git", "-C", str(full_path), "rev-parse", remote_branch],
                 capture_output=True,
                 text=True,
                 timeout=10,
@@ -255,12 +297,21 @@ def _get_submodules_behind_remote(
 
 def _sync_submodule(repo_root: Path, path: str) -> None:
     """同步单个子模块"""
+    full_path = repo_root / path
+    remote_branch = _get_remote_branch(full_path)
+    if not remote_branch:
+        remote_branch = "origin/main"
+
+    # 获取分支名（去掉 origin/ 前缀）
+    branch_name = remote_branch.replace("origin/", "")
+
+    # 尝试 checkout 到对应分支
     subprocess.run(
-        ["git", "-C", str(repo_root / path), "checkout", "main"],
+        ["git", "-C", str(full_path), "checkout", branch_name],
         capture_output=True,
     )
     subprocess.run(
-        ["git", "-C", str(repo_root / path), "pull", "origin", "main"],
+        ["git", "-C", str(full_path), "pull", "origin", branch_name],
         capture_output=True,
     )
 
