@@ -129,6 +129,7 @@ git submodule status
 
 ## 待办
 
+- [x] 修复提交逻辑反转（`if not status:` → `if status:`）
 - [ ] 修复 `_get_submodules_behind_remote` 支持动态分支检测
 - [ ] 从 `.gitmodules` 动态获取子模块路径
 - [ ] 增强 `_sync_submodule` 处理分离头指针

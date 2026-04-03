@@ -76,81 +76,114 @@ class TestScanJournalFiles:
     @patch("app.asset.backup.typer.echo")
     def test_journal_dir_not_exists(self, mock_echo):
         """测试 journal 目录不存在"""
-        with pytest.raises(Exception) as exc_info:  # typer.Exit(1) 会抛出 Exit 异常
+        with pytest.raises(Exception) as exc_info:
             scan_journal_files(Path("/nonexistent/path"))
         assert exc_info.value.exit_code == 1
 
     @patch("app.asset.backup.typer.echo")
     @patch("pathlib.Path.exists")
-    @patch("pathlib.Path.iterdir")
-    def test_scan_files(self, mock_iterdir, mock_exists, mock_echo):
-        """测试扫描文件"""
+    @patch("pathlib.Path.rglob")
+    def test_scan_files_flat(self, mock_rglob, mock_exists, mock_echo):
+        """测试扫描单层目录文件"""
         mock_exists.return_value = True
 
-        # 模拟分类目录
-        mock_category_dir = MagicMock()
-        mock_category_dir.is_dir.return_value = True
-        mock_category_dir.name = "work"
-
-        # 模拟文件
         mock_file1 = MagicMock()
         mock_file1.is_file.return_value = True
         mock_file1.name = "2024-01-15.md"
+        mock_file1.relative_to.return_value = Path("work/2024-01-15.md")
 
         mock_file2 = MagicMock()
         mock_file2.is_file.return_value = True
         mock_file2.name = "2024-01-16.md"
+        mock_file2.relative_to.return_value = Path("work/2024-01-16.md")
 
-        mock_file3 = MagicMock()
-        mock_file3.is_file.return_value = False  # 目录
-
-        mock_category_dir.iterdir.return_value = [mock_file1, mock_file2, mock_file3]
-        mock_iterdir.return_value = [mock_category_dir]
+        mock_rglob.return_value = [mock_file1, mock_file2]
 
         journal_dir = Path("/tmp/journal")
         files = scan_journal_files(journal_dir)
 
         assert len(files) == 2
-        assert files[0][2] == "work"  # category
+        assert files[0][2] == "work"
         assert files[0][1] == datetime(2024, 1, 15)
         assert files[1][1] == datetime(2024, 1, 16)
 
     @patch("app.asset.backup.typer.echo")
     @patch("pathlib.Path.exists")
-    @patch("pathlib.Path.iterdir")
-    def test_skip_hidden_dirs(self, mock_iterdir, mock_exists, mock_echo):
-        """测试跳过隐藏目录"""
+    @patch("pathlib.Path.rglob")
+    def test_scan_files_nested(self, mock_rglob, mock_exists, mock_echo):
+        """测试扫描嵌套目录文件"""
         mock_exists.return_value = True
 
-        mock_hidden_dir = MagicMock()
-        mock_hidden_dir.is_dir.return_value = True
-        mock_hidden_dir.name = ".git"
+        mock_file1 = MagicMock()
+        mock_file1.is_file.return_value = True
+        mock_file1.name = "2024-01-15.md"
+        mock_file1.relative_to.return_value = Path("qtclass/train/2024-01-15.md")
 
-        mock_iterdir.return_value = [mock_hidden_dir]
+        mock_file2 = MagicMock()
+        mock_file2.is_file.return_value = True
+        mock_file2.name = "2024-01-16.md"
+        mock_file2.relative_to.return_value = Path("default/qtclass/2024-01-16.md")
+
+        mock_rglob.return_value = [mock_file1, mock_file2]
+
+        journal_dir = Path("/tmp/journal")
+        files = scan_journal_files(journal_dir)
+
+        assert len(files) == 2
+        assert files[0][2] == "qtclass"
+        assert files[1][2] == "default"
+
+    @patch("app.asset.backup.typer.echo")
+    @patch("pathlib.Path.exists")
+    @patch("pathlib.Path.rglob")
+    def test_skip_hidden_files(self, mock_rglob, mock_exists, mock_echo):
+        """测试跳过隐藏文件"""
+        mock_exists.return_value = True
+
+        mock_hidden = MagicMock()
+        mock_hidden.is_file.return_value = True
+        mock_hidden.name = ".hidden.md"
+        mock_hidden.relative_to.return_value = Path("work/.hidden.md")
+
+        mock_rglob.return_value = [mock_hidden]
 
         files = scan_journal_files(Path("/tmp/journal"))
         assert len(files) == 0
 
     @patch("app.asset.backup.typer.echo")
     @patch("pathlib.Path.exists")
-    @patch("pathlib.Path.iterdir")
-    def test_skip_non_date_files(self, mock_iterdir, mock_exists, mock_echo):
+    @patch("pathlib.Path.rglob")
+    def test_skip_non_date_files(self, mock_rglob, mock_exists, mock_echo):
         """测试跳过非日期文件"""
         mock_exists.return_value = True
 
-        mock_category_dir = MagicMock()
-        mock_category_dir.is_dir.return_value = True
-        mock_category_dir.name = "work"
-
         mock_file = MagicMock()
         mock_file.is_file.return_value = True
-        mock_file.name = "readme.md"  # 非日期文件名
+        mock_file.name = "readme.md"
+        mock_file.relative_to.return_value = Path("work/readme.md")
 
-        mock_category_dir.iterdir.return_value = [mock_file]
-        mock_iterdir.return_value = [mock_category_dir]
+        mock_rglob.return_value = [mock_file]
 
         files = scan_journal_files(Path("/tmp/journal"))
         assert len(files) == 0
+
+    @patch("app.asset.backup.typer.echo")
+    @patch("pathlib.Path.exists")
+    @patch("pathlib.Path.rglob")
+    def test_default_category_for_root_files(self, mock_rglob, mock_exists, mock_echo):
+        """测试根目录文件使用 default 分类"""
+        mock_exists.return_value = True
+
+        mock_file = MagicMock()
+        mock_file.is_file.return_value = True
+        mock_file.name = "2024-01-15.md"
+        mock_file.relative_to.return_value = Path("2024-01-15.md")
+
+        mock_rglob.return_value = [mock_file]
+
+        files = scan_journal_files(Path("/tmp/journal"))
+        assert len(files) == 1
+        assert files[0][2] == "default"
 
 
 class TestFilterOldFiles:
@@ -207,17 +240,20 @@ class TestMoveFiles:
     def test_move_files_success(self, mock_exists, mock_mkdir, mock_move, mock_echo):
         """测试成功移动文件"""
         project_root = Path("/tmp/project")
+        journal_dir = project_root / "docs" / "journal"
         archive_dir = project_root / "docs" / "archive" / "journal"
-        
-        # 使用 project_root 下的路径，避免 relative_to 错误
+
         files = [
-            (project_root / "docs" / "journal" / "work" / "2024-01-15.md", datetime(2024, 1, 15), "work"),
+            (
+                project_root / "docs" / "journal" / "work" / "2024-01-15.md",
+                datetime(2024, 1, 15),
+                "work",
+            ),
         ]
 
-        # 目标文件不存在
         mock_exists.return_value = False
 
-        moved = move_files(files, archive_dir, project_root, dry_run=False)
+        moved = move_files(files, archive_dir, journal_dir, project_root, dry_run=False)
 
         assert len(moved) == 1
         mock_mkdir.assert_called()
@@ -227,18 +263,58 @@ class TestMoveFiles:
     @patch("shutil.move")
     @patch("pathlib.Path.mkdir")
     @patch("pathlib.Path.exists")
-    def test_move_files_skip_existing(self, mock_exists, mock_mkdir, mock_move, mock_echo):
+    def test_move_files_nested(self, mock_exists, mock_mkdir, mock_move, mock_echo):
+        """测试移动嵌套目录文件"""
+        project_root = Path("/tmp/project")
+        journal_dir = project_root / "docs" / "journal"
+        archive_dir = project_root / "docs" / "archive" / "journal"
+
+        files = [
+            (
+                project_root
+                / "docs"
+                / "journal"
+                / "qtclass"
+                / "train"
+                / "2024-01-15.md",
+                datetime(2024, 1, 15),
+                "qtclass",
+            ),
+        ]
+
+        mock_exists.return_value = False
+
+        moved = move_files(files, archive_dir, journal_dir, project_root, dry_run=False)
+
+        assert len(moved) == 1
+        # 验证目标路径包含嵌套目录
+        source, target = moved[0]
+        assert "train" in str(target)
+        assert "qtclass" in str(target)
+
+    @patch("app.asset.backup.typer.echo")
+    @patch("shutil.move")
+    @patch("pathlib.Path.mkdir")
+    @patch("pathlib.Path.exists")
+    def test_move_files_skip_existing(
+        self, mock_exists, mock_mkdir, mock_move, mock_echo
+    ):
         """测试跳过已存在的文件"""
         project_root = Path("/tmp/project")
+        journal_dir = project_root / "docs" / "journal"
         archive_dir = project_root / "docs" / "archive" / "journal"
-        
+
         mock_exists.return_value = True
 
         files = [
-            (project_root / "docs" / "journal" / "work" / "2024-01-15.md", datetime(2024, 1, 15), "work"),
+            (
+                project_root / "docs" / "journal" / "work" / "2024-01-15.md",
+                datetime(2024, 1, 15),
+                "work",
+            ),
         ]
 
-        moved = move_files(files, archive_dir, project_root, dry_run=False)
+        moved = move_files(files, archive_dir, journal_dir, project_root, dry_run=False)
 
         assert len(moved) == 0
         mock_move.assert_not_called()
@@ -250,15 +326,20 @@ class TestMoveFiles:
     def test_move_files_dry_run(self, mock_exists, mock_mkdir, mock_move, mock_echo):
         """测试预览模式"""
         project_root = Path("/tmp/project")
+        journal_dir = project_root / "docs" / "journal"
         archive_dir = project_root / "docs" / "archive" / "journal"
-        
+
         mock_exists.return_value = False
 
         files = [
-            (project_root / "docs" / "journal" / "work" / "2024-01-15.md", datetime(2024, 1, 15), "work"),
+            (
+                project_root / "docs" / "journal" / "work" / "2024-01-15.md",
+                datetime(2024, 1, 15),
+                "work",
+            ),
         ]
 
-        moved = move_files(files, archive_dir, project_root, dry_run=True)
+        moved = move_files(files, archive_dir, journal_dir, project_root, dry_run=True)
 
         assert len(moved) == 1
         mock_move.assert_not_called()
@@ -355,7 +436,9 @@ class TestCommitAndPush:
         mock_check_status.return_value = True
         mock_run_git.return_value = MagicMock(returncode=0)
 
-        result = commit_and_push(Path("/tmp/repo"), "test commit", Path("/tmp"), push=True)
+        result = commit_and_push(
+            Path("/tmp/repo"), "test commit", Path("/tmp"), push=True
+        )
 
         assert result is True
         assert mock_run_git.call_count == 3  # add, commit,push
@@ -382,7 +465,9 @@ class TestUpdateSubmoduleInMainRepo:
     @patch("app.asset.backup.run_git_command")
     @patch("app.asset.backup.check_git_status")
     @patch("app.asset.backup.typer.echo")
-    def test_update_submodule_no_changes(self, mock_echo, mock_check_status, mock_run_git):
+    def test_update_submodule_no_changes(
+        self, mock_echo, mock_check_status, mock_run_git
+    ):
         """测试子模块无变更"""
         mock_check_status.return_value = False
 
@@ -405,12 +490,16 @@ class TestUpdateSubmoduleInMainRepo:
     @patch("app.asset.backup.run_git_command")
     @patch("app.asset.backup.check_git_status")
     @patch("app.asset.backup.typer.echo")
-    def test_update_submodule_with_push(self, mock_echo, mock_check_status, mock_run_git):
+    def test_update_submodule_with_push(
+        self, mock_echo, mock_check_status, mock_run_git
+    ):
         """测试更新子模块并推送"""
         mock_check_status.return_value = True
         mock_run_git.return_value = MagicMock(returncode=0)
 
-        update_submodule_in_main_repo("journal", "update message", Path("/tmp"), push=True)
+        update_submodule_in_main_repo(
+            "journal", "update message", Path("/tmp"), push=True
+        )
 
         assert mock_run_git.call_count >= 3  # add, commit,push
 
@@ -458,12 +547,8 @@ class TestBackupResult:
 
     def test_backup_result_custom_values(self):
         """测试自定义值"""
-        result = BackupResult(
-            success=True, message="done", moved_count=5, dry_run=True
-        )
+        result = BackupResult(success=True, message="done", moved_count=5, dry_run=True)
         assert result.success is True
         assert result.message == "done"
         assert result.moved_count == 5
         assert result.dry_run is True
-
-

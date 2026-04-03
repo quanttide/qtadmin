@@ -122,7 +122,7 @@ def _do_refresh(
 
     status = _get_status(repo_root)
 
-    if not status:
+    if status:
         if dry_run:
             return RefreshResult(
                 success=True,

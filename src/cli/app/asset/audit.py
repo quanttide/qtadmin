@@ -57,8 +57,10 @@ class AuditReport:
         print("Git 仓库资产审计报告")
         print("=" * 60)
         print(f"仓库路径：{self.repo_path}")
-        print(f"审计结果：{self.passed_count}/{self.total_count} 通过 "
-              f"({self.pass_rate:.1f}%)")
+        print(
+            f"审计结果：{self.passed_count}/{self.total_count} 通过 "
+            f"({self.pass_rate:.1f}%)"
+        )
         print("-" * 60)
 
         # 先显示未通过的项目
@@ -104,10 +106,12 @@ class GitRepoAuditor:
         "meta": "元数据目录",
     }
 
-    COMMIT_TYPES = {
-        "feat", "fix", "docs", "test",
-        "refactor", "chore", "style", "perf"
-    }
+    RELEASE_CHECKS = [
+        ("CHANGELOG.md", "CHANGELOG.md 是否更新"),
+        ("pyproject.toml", "版本号是否更新"),
+    ]
+
+    COMMIT_TYPES = {"feat", "fix", "docs", "test", "refactor", "chore", "style", "perf"}
 
     def __init__(self, repo_path: str):
         self.repo_path = Path(repo_path).resolve()
@@ -133,6 +137,7 @@ class GitRepoAuditor:
         self._check_gitignore_content()
         self._check_submodules()
         self._check_recent_commits()
+        self._check_release_consistency()
 
         report = AuditReport(str(self.repo_path))
         report.results = self._results
@@ -147,24 +152,34 @@ class GitRepoAuditor:
         for filename, description in self.REQUIRED_FILES.items():
             file_path = self.repo_path / filename
             passed = file_path.exists()
-            self._add_result(AuditResult(
-                name=f"必需文件：{filename}",
-                passed=passed,
-                message=f"{filename} - {description}" if passed else f"缺少 {filename}",
-                suggestion=f"创建 {filename} 文件" if not passed else None
-            ))
+            self._add_result(
+                AuditResult(
+                    name=f"必需文件：{filename}",
+                    passed=passed,
+                    message=f"{filename} - {description}"
+                    if passed
+                    else f"缺少 {filename}",
+                    suggestion=f"创建 {filename} 文件" if not passed else None,
+                )
+            )
 
     def _check_optional_dirs(self):
         """检查可选目录"""
         for dirname, description in self.OPTIONAL_DIRS.items():
             dir_path = self.repo_path / dirname
             passed = dir_path.exists() and dir_path.is_dir()
-            self._add_result(AuditResult(
-                name=f"可选目录：{dirname}/",
-                passed=passed,
-                message=f"{dirname}/ - {description}" if passed else f"缺少 {dirname}/ 目录",
-                suggestion=f"考虑创建 {dirname}/ 目录用于存储元数据" if not passed else None
-            ))
+            self._add_result(
+                AuditResult(
+                    name=f"可选目录：{dirname}/",
+                    passed=passed,
+                    message=f"{dirname}/ - {description}"
+                    if passed
+                    else f"缺少 {dirname}/ 目录",
+                    suggestion=f"考虑创建 {dirname}/ 目录用于存储元数据"
+                    if not passed
+                    else None,
+                )
+            )
 
     def _check_readme_content(self):
         """检查 README.md 内容"""
@@ -181,17 +196,25 @@ class GitRepoAuditor:
         has_structure = "目录" in content or "结构" in content or "```" in content
 
         # 检查是否包含快速开始
-        has_quickstart = ("快速" in content or "开始" in content or
-                         "Quick" in content or "Start" in content or
-                         "开始使用" in content)
+        has_quickstart = (
+            "快速" in content
+            or "开始" in content
+            or "Quick" in content
+            or "Start" in content
+            or "开始使用" in content
+        )
 
         passed = has_intro and (has_structure or has_quickstart)
-        self._add_result(AuditResult(
-            name="README.md 内容规范",
-            passed=passed,
-            message="包含项目简介、目录结构、快速开始" if passed else "内容不完整",
-            suggestion="添加项目简介、目录结构和快速开始指南" if not passed else None
-        ))
+        self._add_result(
+            AuditResult(
+                name="README.md 内容规范",
+                passed=passed,
+                message="包含项目简介、目录结构、快速开始" if passed else "内容不完整",
+                suggestion="添加项目简介、目录结构和快速开始指南"
+                if not passed
+                else None,
+            )
+        )
 
     def _check_contributing_content(self):
         """检查 CONTRIBUTING.md 内容"""
@@ -216,13 +239,18 @@ class GitRepoAuditor:
                 missing_sections.append(section_name)
 
         passed = len(missing_sections) == 0
-        self._add_result(AuditResult(
-            name="CONTRIBUTING.md 内容规范",
-            passed=passed,
-            message="包含项目结构、开发环境、提交规范、发布流程" if passed
-                    else f"缺少章节：{', '.join(missing_sections)}",
-            suggestion=f"添加缺失的章节：{', '.join(missing_sections)}" if not passed else None
-        ))
+        self._add_result(
+            AuditResult(
+                name="CONTRIBUTING.md 内容规范",
+                passed=passed,
+                message="包含项目结构、开发环境、提交规范、发布流程"
+                if passed
+                else f"缺少章节：{', '.join(missing_sections)}",
+                suggestion=f"添加缺失的章节：{', '.join(missing_sections)}"
+                if not passed
+                else None,
+            )
+        )
 
     def _check_agents_content(self):
         """检查 AGENTS.md 内容"""
@@ -235,29 +263,40 @@ class GitRepoAuditor:
 
         # 检查行数（建议 ~50 行）
         line_count = len(lines)
-        is_concise = line_count <= 100  # 宽松一点，不超过 100 行
+        is_concise = line_count <= 50
 
         # 检查是否包含使用场景表格
         has_table = "|" in content and "---" in content
 
         # 检查是否包含快速索引
-        has_index = ("索引" in content or "Index" in content or
-                    "README" in content or "CONTRIBUTING" in content)
+        has_index = (
+            "索引" in content
+            or "Index" in content
+            or "README" in content
+            or "CONTRIBUTING" in content
+        )
 
         # 检查是否包含自我更新说明（如何更新 AGENTS.md 自身）
-        has_self_update = ("更新" in content and "AGENTS" in content) or \
-                         ("维护" in content and "AGENTS" in content) or \
-                         ("self-update" in content.lower()) or \
-                         ("how to update" in content.lower())
+        has_self_update = (
+            ("更新" in content and "AGENTS" in content)
+            or ("维护" in content and "AGENTS" in content)
+            or ("self-update" in content.lower())
+            or ("how to update" in content.lower())
+        )
 
         passed = is_concise and (has_table or has_index) and has_self_update
-        self._add_result(AuditResult(
-            name="AGENTS.md 内容规范",
-            passed=passed,
-            message=f"简洁 ({line_count}行)，包含使用场景、快速索引和自我更新说明" if passed
-                    else f"需要优化 (共{line_count}行)",
-            suggestion="保持简洁 (~50 行)，添加使用场景表格、快速索引，以及「如何更新 AGENTS.md」的说明" if not passed else None
-        ))
+        self._add_result(
+            AuditResult(
+                name="AGENTS.md 内容规范",
+                passed=passed,
+                message=f"简洁 ({line_count}行)，包含使用场景、快速索引和自我更新说明"
+                if passed
+                else f"需要优化 (共{line_count}行)",
+                suggestion="保持简洁 (~50 行)，添加使用场景表格、快速索引，以及「如何更新 AGENTS.md」的说明"
+                if not passed
+                else None,
+            )
+        )
 
     def _check_changelog_format(self):
         """检查 CHANGELOG.md 格式"""
@@ -271,20 +310,25 @@ class GitRepoAuditor:
         has_changelog_header = "# Changelog" in content or "# CHANGELOG" in content
 
         # 检查是否有版本记录
-        has_version = bool(re.search(r'## \[?v?\d+\.\d+\.\d+', content))
+        has_version = bool(re.search(r"## \[?v?\d+\.\d+\.\d+", content))
 
         # 检查是否有分类标题
-        has_sections = any(section in content for section in
-                          ["### Added", "### Changed", "### Fixed", "### Removed"])
+        has_sections = any(
+            section in content
+            for section in ["### Added", "### Changed", "### Fixed", "### Removed"]
+        )
 
         passed = has_changelog_header and has_version
-        self._add_result(AuditResult(
-            name="CHANGELOG.md 格式规范",
-            passed=passed,
-            message="符合语义化版本格式" if passed else "格式不规范",
-            suggestion="添加 # Changelog 标题和版本号，使用 ### Added/Changed/Fixed/Removed 分类"
-                      if not passed else None
-        ))
+        self._add_result(
+            AuditResult(
+                name="CHANGELOG.md 格式规范",
+                passed=passed,
+                message="符合语义化版本格式" if passed else "格式不规范",
+                suggestion="添加 # Changelog 标题和版本号，使用 ### Added/Changed/Fixed/Removed 分类"
+                if not passed
+                else None,
+            )
+        )
 
     def _check_gitignore_content(self):
         """检查 .gitignore 内容"""
@@ -308,25 +352,32 @@ class GitRepoAuditor:
                 found_patterns.append(f"{pattern} ({description})")
 
         passed = len(found_patterns) >= 2  # 至少包含 2 个常见规则
-        self._add_result(AuditResult(
-            name=".gitignore 内容规范",
-            passed=passed,
-            message=f"包含 {len(found_patterns)} 个常见规则" if passed else "规则较少",
-            suggestion="添加常见的忽略规则：.venv, __pycache__, *.pyc, .env 等"
-                      if not passed else None
-        ))
+        self._add_result(
+            AuditResult(
+                name=".gitignore 内容规范",
+                passed=passed,
+                message=f"包含 {len(found_patterns)} 个常见规则"
+                if passed
+                else "规则较少",
+                suggestion="添加常见的忽略规则：.venv, __pycache__, *.pyc, .env 等"
+                if not passed
+                else None,
+            )
+        )
 
     def _check_submodules(self):
         """检查子模块配置"""
         gitmodules_path = self.repo_path / ".gitmodules"
 
         if not gitmodules_path.exists():
-            self._add_result(AuditResult(
-                name="子模块配置",
-                passed=True,
-                message="无子模块配置",
-                suggestion=None
-            ))
+            self._add_result(
+                AuditResult(
+                    name="子模块配置",
+                    passed=True,
+                    message="无子模块配置",
+                    suggestion=None,
+                )
+            )
             return
 
         # 检查 .gitmodules 文件格式
@@ -340,7 +391,7 @@ class GitRepoAuditor:
                 cwd=self.repo_path,
                 capture_output=True,
                 text=True,
-                timeout=10
+                timeout=10,
             )
             submodule_status = result.stdout.strip()
 
@@ -353,19 +404,27 @@ class GitRepoAuditor:
                         break
 
             passed = has_submodule and not unpushed
-            self._add_result(AuditResult(
-                name="子模块状态",
-                passed=passed,
-                message="子模块配置正确且已推送" if passed else "子模块有未推送的提交",
-                suggestion="请先推送所有子模块的提交，再推送父仓库" if not passed else None
-            ))
+            self._add_result(
+                AuditResult(
+                    name="子模块状态",
+                    passed=passed,
+                    message="子模块配置正确且已推送"
+                    if passed
+                    else "子模块有未推送的提交",
+                    suggestion="请先推送所有子模块的提交，再推送父仓库"
+                    if not passed
+                    else None,
+                )
+            )
         except (subprocess.TimeoutExpired, Exception) as e:
-            self._add_result(AuditResult(
-                name="子模块状态",
-                passed=has_submodule,
-                message=f"子模块配置存在，状态检查跳过 ({e})",
-                suggestion=None
-            ))
+            self._add_result(
+                AuditResult(
+                    name="子模块状态",
+                    passed=False,
+                    message=f"子模块配置存在，状态检查失败 ({e})",
+                    suggestion="请手动检查子模块是否已推送",
+                )
+            )
 
     def _check_recent_commits(self):
         """检查最近的提交是否符合规范"""
@@ -375,7 +434,7 @@ class GitRepoAuditor:
                 cwd=self.repo_path,
                 capture_output=True,
                 text=True,
-                timeout=10
+                timeout=10,
             )
 
             if result.returncode != 0:
@@ -385,9 +444,11 @@ class GitRepoAuditor:
             if not commits:
                 return
 
-            # 检查提交信息格式
+            # 检查提交信息格式（Conventional Commits）
+            # 支持格式：type(scope): description 或 type: description
             conventional_pattern = re.compile(
-                r'^[a-z]+\([a-z-]+\)?:|^feat:|^fix:|^docs:|^test:|^refactor:|^chore:|^style:|^perf:'
+                r"^(feat|fix|docs|test|refactor|chore|style|perf)"
+                r"(\([a-z0-9-]+\))?:\s.+"
             )
 
             compliant_count = 0
@@ -403,33 +464,93 @@ class GitRepoAuditor:
             compliance_rate = compliant_count / len(commits) * 100 if commits else 0
             passed = compliance_rate >= 50  # 至少 50% 符合规范
 
-            self._add_result(AuditResult(
-                name="提交规范符合度",
-                passed=passed,
-                message=f"{compliant_count}/{len(commits)} 符合 Conventional Commits "
-                       f"({compliance_rate:.0f}%)",
-                suggestion="使用 `cz commit` 创建规范提交，或手动遵循 <type>: <description> 格式"
-                          if not passed else None
-            ))
+            self._add_result(
+                AuditResult(
+                    name="提交规范符合度",
+                    passed=passed,
+                    message=f"{compliant_count}/{len(commits)} 符合 Conventional Commits "
+                    f"({compliance_rate:.0f}%)",
+                    suggestion="使用 `cz commit` 创建规范提交，或手动遵循 <type>: <description> 格式"
+                    if not passed
+                    else None,
+                )
+            )
         except (subprocess.TimeoutExpired, Exception) as e:
-            self._add_result(AuditResult(
-                name="提交规范符合度",
-                passed=True,
-                message=f"提交检查跳过 ({e})",
-                suggestion=None
-            ))
+            self._add_result(
+                AuditResult(
+                    name="提交规范符合度",
+                    passed=True,
+                    message=f"提交检查跳过 ({e})",
+                    suggestion=None,
+                )
+            )
+
+    def _check_release_consistency(self):
+        """检查版本发布规范一致性"""
+        changelog_path = self.repo_path / "CHANGELOG.md"
+        pyproject_path = self.repo_path / "pyproject.toml"
+
+        if not changelog_path.exists() or not pyproject_path.exists():
+            return
+
+        changelog_content = changelog_path.read_text(encoding="utf-8")
+        pyproject_content = pyproject_path.read_text(encoding="utf-8")
+
+        # 提取 pyproject.toml 中的版本号
+        version_match = re.search(r'version\s*=\s*"([^"]+)"', pyproject_content)
+        if not version_match:
+            return
+
+        pyproject_version = version_match.group(1)
+
+        # 检查 CHANGELOG 中是否有对应版本
+        changelog_has_version = bool(
+            re.search(rf"## \[?{re.escape(pyproject_version)}\]?", changelog_content)
+        )
+
+        # 检查最近提交中是否有版本发布相关提交
+        try:
+            result = subprocess.run(
+                ["git", "log", "--oneline", "-20"],
+                cwd=self.repo_path,
+                capture_output=True,
+                text=True,
+                timeout=10,
+            )
+            recent_commits = result.stdout.strip()
+            has_version_commit = bool(
+                re.search(
+                    rf"bump.*{re.escape(pyproject_version)}|v{re.escape(pyproject_version)}",
+                    recent_commits,
+                    re.IGNORECASE,
+                )
+            )
+        except (subprocess.TimeoutExpired, Exception):
+            has_version_commit = True
+
+        passed = changelog_has_version and has_version_commit
+        self._add_result(
+            AuditResult(
+                name="版本发布规范一致性",
+                passed=passed,
+                message="CHANGELOG 和 pyproject.toml 版本一致，且有版本提交"
+                if passed
+                else f"CHANGELOG 缺少 v{pyproject_version} 或缺少版本提交",
+                suggestion="发布前确保：1) 更新 CHANGELOG.md 2) 更新 pyproject.toml 3) 提交版本更新",
+            )
+        )
 
 
 def audit(
     repo_path: str = typer.Argument(".", help="要审计的 Git 仓库路径"),
-    verbose: bool = typer.Option(False, "--verbose", "-v", help="显示所有通过的项目")
+    verbose: bool = typer.Option(False, "--verbose", "-v", help="显示所有通过的项目"),
 ) -> bool:
     """
     审计 Git 仓库是否符合标准资产体系规范
-    
+
     检查项目包括：必需文件、可选目录、README/CONTRIBUTING/AGENTS/CHANGELOG 内容规范、
     .gitignore 规则、子模块状态、提交规范符合度
-    
+
     Returns:
         是否通过审计
     """

@@ -89,8 +89,8 @@ def move_files(...):
 
 ## 待办
 
-- [ ] 修改 `scan_journal_files()` 支持递归扫描
-- [ ] 修复分类逻辑（从路径提取正确的分类）
-- [ ] 保持嵌套目录结构
-- [ ] 添加单元测试覆盖嵌套目录场景
-- [ ] 更新文档 `src/cli/docs/dev/asset_backup.md`
+- [x] 修改 `scan_journal_files()` 支持递归扫描
+- [x] 修复分类逻辑（从路径提取正确的分类）
+- [x] 保持嵌套目录结构
+- [x] 添加单元测试覆盖嵌套目录场景
+- [x] 更新文档 `src/cli/docs/dev/asset_backup.md`
