@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## [0.0.1-beta.3] - 2026-04-04
+
+### Fixed
+- `asset refresh`: 修复硬编码 `origin/main` 导致无法识别非 main 分支子模块的更新
+- `asset refresh`: 同步逻辑改为动态获取子模块对应远程分支
+
 ## [0.0.1-beta.2] - 2026-04-04
 
 ### Fixed
