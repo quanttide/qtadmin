@@ -242,7 +242,11 @@ def _get_remote_branch(repo_path: Path) -> Optional[str]:
 def _get_submodules_behind_remote(
     repo_root: Path, submodule: Optional[str] = None
 ) -> list:
-    """获取落后于远程的子模块"""
+    """获取落后于远程的子模块
+
+    比较父仓库记录的子模块 commit 与子模块远程 HEAD，
+    而不是比较本地 checkout 的 HEAD。
+    """
     from dataclasses import dataclass
 
     @dataclass
@@ -259,15 +263,22 @@ def _get_submodules_behind_remote(
         if not full_path.exists():
             continue
         try:
+            # 获取父仓库记录的子模块 commit
             result = subprocess.run(
-                ["git", "-C", str(full_path), "rev-parse", "HEAD"],
+                ["git", "ls-tree", "HEAD", path],
+                cwd=repo_root,
                 capture_output=True,
                 text=True,
                 timeout=10,
             )
-            local_head = result.stdout.strip()
+            if result.returncode != 0:
+                continue
+            parts = result.stdout.strip().split()
+            if len(parts) < 3:
+                continue
+            recorded_commit = parts[2]
 
-            # 动态获取远程分支
+            # 获取子模块远程 HEAD
             remote_branch = _get_remote_branch(full_path)
             if not remote_branch:
                 continue
@@ -282,11 +293,11 @@ def _get_submodules_behind_remote(
                 continue
             remote_head = result.stdout.strip()
 
-            if local_head != remote_head:
+            if recorded_commit != remote_head:
                 behind.append(
                     SubmoduleInfo(
                         path=path,
-                        local_commit=local_head[:7],
+                        local_commit=recorded_commit[:7],
                         is_behind=True,
                     )
                 )
@@ -296,22 +307,10 @@ def _get_submodules_behind_remote(
 
 
 def _sync_submodule(repo_root: Path, path: str) -> None:
-    """同步单个子模块"""
-    full_path = repo_root / path
-    remote_branch = _get_remote_branch(full_path)
-    if not remote_branch:
-        remote_branch = "origin/main"
-
-    # 获取分支名（去掉 origin/ 前缀）
-    branch_name = remote_branch.replace("origin/", "")
-
-    # 尝试 checkout 到对应分支
+    """同步单个子模块到远程 HEAD"""
+    # 使用 submodule update --remote 来同步到远程最新
     subprocess.run(
-        ["git", "-C", str(full_path), "checkout", branch_name],
-        capture_output=True,
-    )
-    subprocess.run(
-        ["git", "-C", str(full_path), "pull", "origin", branch_name],
+        ["git", "-C", str(repo_root), "submodule", "update", "--remote", path],
         capture_output=True,
     )
 
