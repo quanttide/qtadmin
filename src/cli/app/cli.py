@@ -5,7 +5,6 @@ Qtadmin CLI
 import typer
 from importlib.metadata import version
 
-from app.asset import refresh as asset_refresh
 from app.asset import backup as asset_backup
 from app.asset import audit as asset_audit
 
@@ -13,7 +12,6 @@ from app.asset import audit as asset_audit
 app = typer.Typer(no_args_is_help=True, invoke_without_command=True)
 
 asset_app = typer.Typer(help="数字资产职能")
-asset_app.command()(asset_refresh.refresh)
 asset_app.command()(asset_backup.backup)
 asset_app.command()(asset_audit.audit)
 
