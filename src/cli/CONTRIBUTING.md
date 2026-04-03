@@ -16,18 +16,20 @@ version("qtadmin-cli")
 
 ```bash
 # 创建标签
-git tag cli/v0.0.1-alpha.7
+git tag cli/v0.0.1-beta.1
 
 # 推送标签
-git push origin cli/v0.0.1-alpha.7
+git push origin cli/v0.0.1-beta.1
 ```
 
 ## 发布流程
 
 1. 更新 `CHANGELOG.md` - 添加新版本和变更内容
-2. 提交 CHANGELOG
-3. 创建标签
-4. 推送标签到远程
+2. 更新 `pyproject.toml` - 版本号
+3. 提交 CHANGELOG 和 pyproject.toml
+4. 创建标签 `git tag cli/v<version>`
+5. 推送标签到远程 `git push origin cli/v<version>`
+6. 创建 GitHub Release `gh release create cli/v<version> --title "qtadmin-cli v<version>" --generate-notes`
 
 ## 版本规范
 
