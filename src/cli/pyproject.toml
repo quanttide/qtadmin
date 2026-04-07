@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "qtadmin-cli"
-version = "0.0.1-beta.5"
+version = "0.0.1"
 description = "Quanttide Admin CLI"
 requires-python = ">=3.10"
 dependencies = [
