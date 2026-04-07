@@ -1,5 +1,32 @@
 # CHANGELOG
 
+## [0.0.1] - 2026-04-07
+
+首个正式版本，提供数字资产管理工具集。
+
+### Added
+- CLI 基础框架：使用 typer 构建命令行工具，支持 `--help` 和 `--version`
+- `asset backup` 命令：日志归档功能，支持递归扫描和嵌套目录结构
+- `asset audit` 命令：资产审计功能
+  - AGENTS.md 完整性检查（行数阈值、自我更新说明要求）
+  - 版本发布规范一致性检查
+  - 提交规范检查
+- 动态获取子模块路径：从 `.gitmodules` 自动读取
+- 测试套件：集成测试和单元测试
+- 完整的用户文档和开发文档
+
+### Changed
+- 重构包结构：将 `qtadmin_cli` 重命名为 `app`
+- 重构命令组：将 `meta` 重命名为 `asset`（数字资产职能）
+- 版本号单一数据源：仅在 `pyproject.toml` 维护，代码动态获取
+
+### Removed
+- `asset refresh` 命令（功能已迁移至其他工具）
+
+### Fixed
+- CLI 入口点配置
+- 构建配置支持 `uv pip install`
+
 ## [0.0.1-beta.5] - 2026-04-04
 
 ### Removed
