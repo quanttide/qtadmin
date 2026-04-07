@@ -6,9 +6,11 @@
 
 | 资产类型 | 生命周期 | 存储位置 | OSS Bucket | 管理方式 |
 |----------|----------|----------|------------|----------|
-| 数据 | raw→cleaned→final | `data/` | `qttech-data` | OSS + 本地 |
-| 文档 | default→prd→meta | `docs/` | `qttech-docs`（待定） | Git + 本地 |
+| 数据 | raw→cleaned→final（待定） | `data/` | `qttech-data` | OSS + 本地 |
+| 文档 | dev/ops | `docs/` | Git 为主 | Git + 本地 |
 | 代码 | dev→staging→prod | `src/` | Git 为主 | Git |
+
+**注**：数据工作流程尚未确定，当前采用 raw→cleaned→final 作为过渡方案。
 
 ## 2. 数据资产
 
@@ -57,17 +59,11 @@ cleaned/ → 人工检查 → 确认 → final/ → 上传 OSS
 
 ## 3. 文档资产
 
-### 3.1 生命周期
+### 3.1 目录结构
 
-```
-default → prd → meta
-```
-
-| 阶段 | 说明 | 触发条件 |
-|------|------|----------|
-| default | 想法孵化、草稿 | 随时记录 |
-| prd | 正式需求文档 | 进入正式工作流程 |
-| meta | 项目级反思总结 | 项目里程碑完成 |
+按角色分类：
+- `docs/dev/`：开发文档（技术规范、API 文档、架构说明）
+- `docs/ops/`：运维文档（部署指南、维护手册、监控配置）
 
 ### 3.2 README vs index.md 职责分工
 
@@ -81,27 +77,12 @@ default → prd → meta
 - 查阅性内容写在 index.md
 - 不重复，相互引用
 
-### 3.3 文档流转规则
+### 3.3 管理方式
 
-1. `docs/default/`：想法孵化层，随意记录
-2. `docs/prd/`：需求层，进入正式工作流程
-3. `docs/meta/`：反思层，项目级总结
-
-如果流程规则变化，优先更新 `README.md`。
-
-### 3.4 目录结构标准
-
-```
-docs/
-├── README.md           # 文档工作流程说明
-├── default/            # 想法孵化
-│   └── <idea>.md
-├── prd/                # 产品需求
-│   ├── index.md        # PRD 总览
-│   ├── <module>.md     # 各模块需求
-└── meta/               # 项目反思
-    └── <milestone>.md
-```
+以 Git 为主，本地存储为辅：
+- 文档仓库托管在 GitHub/GitLab
+- 变更通过 Git 提交追踪
+- 文档不进入 OSS（除非需要备份）
 
 ## 4. 代码资产
 
@@ -135,7 +116,8 @@ dev → staging → prod
 ### 文档资产
 
 4. 作为知识工作者，我希望知道 README 和 index.md 分别该写什么，以便规范文档。
-5. 作为新成员，我希望通过 docs/default 了解团队的思考过程，以便理解决策背景。
+5. 作为开发者，我希望在 docs/dev/ 找到技术规范，以便理解系统架构。
+6. 作为运维人员，我希望在 docs/ops/ 找到部署指南，以便维护系统稳定。
 
 ### 代码资产
 
