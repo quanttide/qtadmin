@@ -291,10 +291,12 @@ git push origin studio/v0.0.1
 
 ### 发布流程
 
-1. **更新 CHANGELOG.md** - 在对应项目目录下添加新版本和变更内容
-2. **提交 CHANGELOG.md**
-3. **创建标签** - `git tag <project>/v<version>`
-4. **推送标签** - `git push origin <project>/v<version>`
+1. **更新版本号** - 在 `pyproject.toml` 或 `pubspec.yaml` 中更新版本号
+2. **更新 CHANGELOG.md** - 总结该版本所有变更（alpha/beta 版本应合并总结）
+3. **提交变更** - `git commit`
+4. **创建标签** - `git tag <project>/v<version>`
+5. **推送标签** - `git push origin <project>/v<version>`
+6. **创建 GitHub Release** - 使用 `gh release create` 创建正式发布说明
 
 ### 版本规范
 
