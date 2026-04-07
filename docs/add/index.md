@@ -1,62 +1,165 @@
-# 架构设计总览
+# 技术架构设计
 
-qtadmin 第二大脑平台的架构设计文档索引。
+qtadmin 第二大脑平台的整体技术架构。
 
 ## 1. 系统架构
 
-详见 [architecture.md](architecture.md)
+### 1.1 整体架构
 
-- 整体架构设计
-- 模块架构
-- 数据架构
-- 接口设计
-- 部署架构
+采用前后端分离 + 多工作空间架构：
 
-## 2. 技术栈
+```
+┌─────────────┐     ┌──────────────┐     ┌─────────────┐
+│   Flutter   │────▶│   FastAPI    │────▶│  Storage    │
+│   Studio    │     │   Provider   │     │  (OSS/DB)   │
+└─────────────┘     └──────────────┘     └─────────────┘
+                           │
+                           ▼
+                    ┌──────────────┐
+                    │  CLI Tool    │
+                    │  (Typer)     │
+                    └──────────────┘
+```
 
-详见 [tech-stack.md](tech-stack.md)
+### 1.2 模块架构
 
-- 后端技术栈
-- 前端技术栈
-- CLI 技术栈
-- 开发工具
-- 部署工具
+```
+qtadmin/
+├── src/
+│   ├── provider/       # FastAPI 后端服务
+│   ├── studio/         # Flutter 客户端
+│   └── cli/            # 命令行工具
+├── data/               # 数据工作空间
+│   └── <project>/
+│       ├── data/       # 数据文件
+│       ├── docs/       # 项目文档
+│       └── src/        # 处理脚本
+└── docs/               # 平台文档
+    ├── prd/            # 产品需求
+    └── add/            # 架构设计
+```
 
-## 3. 模块设计
+## 2. 核心模块
 
-| 模块 | 文档 | 说明 |
-|------|------|------|
-| 知识工作 | [modules/default.md](modules/default.md) | Default 模式、Work 模式、Meta 模块 |
-| 资产管理 | [modules/asset.md](modules/asset.md) | 数据、文档、代码资产管理 |
-| 命令行工具 | [modules/cli.md](modules/cli.md) | CLI 命令设计与实现 |
-| 数据可视化 | [modules/qtdata.md](modules/qtdata.md) | 项目扫描、依赖关系可视化 |
+### 2.1 Provider（后端服务）
 
-## 4. 基础设施
+**技术栈**：FastAPI + SQLModel + Uvicorn
 
-| 主题 | 文档 | 说明 |
-|------|------|------|
-| 数据库设计 | infrastructure/database.md | 表结构设计 |
-| API 规范 | infrastructure/api.md | RESTful API 设计规范 |
-| OSS 集成 | infrastructure/oss.md | 阿里云 OSS 集成方案 |
+**职责**：
+- 提供 RESTful API
+- 管理数据库模型
+- 协调各模块服务
+- 处理业务逻辑
 
-## 5. 设计原则
+**核心服务**：
+- 项目服务：项目管理、扫描、元数据
+- 资产服务：OSS 管理、验收流程、同步
+- 知识服务：碎片记录、工作协议、Meta 模块
 
-1. **分层架构**：前端、后端、存储分离
-2. **模块化**：各模块独立设计、松耦合
-3. **类型安全**：使用类型提示、静态检查
-4. **渐进式**：从简单方案开始，逐步增强
+### 2.2 Studio（前端客户端）
 
-## 6. 与 PRD 的关系
+**技术栈**：Flutter + Dart
 
-| PRD 内容 | ADD 内容 |
-|----------|----------|
-| 产品需求、用户故事 | 技术方案、接口设计 |
-| 业务流程、场景描述 | 数据结构、API 规范 |
-| 验收标准 | 实现细节、性能要求 |
+**职责**：
+- 提供用户界面
+- 调用后端 API
+- 本地状态管理
+- 可视化展示
 
-## 7. 维护规则
+**核心页面**：
+- Default 页面：碎片记录、快速检索
+- Work 页面：协议定义、双智能体协作
+- Asset 页面：OSS 管理、验收工作台
+- QtData 页面：项目列表、依赖关系图
 
-1. PRD 变更后，及时更新对应的 ADD 文档
-2. 技术选型变更需更新 tech-stack.md
-3. 新增模块需在 modules/ 下创建对应文档
-4. 架构调整需更新 architecture.md
+### 2.3 CLI（命令行工具）
+
+**技术栈**：Typer + Rich
+
+**职责**：
+- 命令行操作
+- OSS 数据操作
+- 项目管理
+- 操作历史记录
+
+**核心命令**：
+- `qt oss`：OSS 操作
+- `qt project`：项目管理
+- `qt run`：数据处理
+- `qt doc`：文档生成
+
+## 3. 数据架构
+
+### 3.1 数据库设计
+
+**主数据库**（SQLite → PostgreSQL）：
+
+| 表名 | 说明 |
+|------|------|
+| projects | 项目元数据 |
+| files | 文件元数据 |
+| fragments | 碎片记录 |
+| work_protocols | 工作协议 |
+| work_sessions | 工作会话 |
+| acceptance_records | 验收记录 |
+| command_history | 命令历史 |
+
+### 3.2 存储架构
+
+| 存储类型 | 技术 | 用途 |
+|----------|------|------|
+| 结构化数据 | SQLite/PostgreSQL | 元数据、业务数据 |
+| 文件数据 | 阿里云 OSS | 数据文件、文档 |
+| 本地缓存 | SQLite | CLI 历史记录、配置 |
+| 向量数据 | Chroma/Qdrant | Meta 模块经验记忆 |
+
+## 4. 接口设计
+
+### 4.1 API 规范
+
+- 遵循 RESTful 风格
+- 使用 OpenAPI 文档
+- 统一错误处理
+- 支持 JWT 认证
+
+### 4.2 命名约定
+
+- 使用复数名词：`/projects`, `/fragments`
+- 嵌套资源：`/projects/{id}/files`
+- 过滤参数：`?status=active&stage=raw`
+
+## 5. 部署架构
+
+### 5.1 开发环境
+
+```
+本地开发
+├── FastAPI (localhost:8000)
+├── Flutter (调试模式)
+├── SQLite (本地数据库)
+└── 阿里云 OSS (测试 bucket)
+```
+
+### 5.2 生产环境
+
+```
+云端部署
+├── FastAPI (云服务器 + Uvicorn)
+├── Flutter (Web/桌面/移动端)
+├── PostgreSQL (云数据库)
+└── 阿里云 OSS (生产 bucket)
+```
+
+## 6. 技术选型原则
+
+1. **成熟稳定**：优先选择社区活跃、文档完善的框架
+2. **类型安全**：使用 SQLModel、Typer 等支持类型提示的工具
+3. **渐进式**：从简单方案开始，逐步增强（如 SQLite → PostgreSQL）
+4. **可测试**：所有模块支持单元测试和集成测试
+
+## 7. 相关文档
+
+- [modules/default.md](modules/default.md)：知识工作模块技术设计
+- [modules/asset.md](modules/asset.md)：资产管理模块技术设计
+- [modules/cli.md](modules/cli.md)：CLI 模块技术设计
+- [modules/qtdata.md](modules/qtdata.md)：数据可视化模块技术设计
