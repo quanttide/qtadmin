@@ -17,9 +17,6 @@
 - `README.md`：流程与维护规则
 - `index.md`：架构设计总览
 - `modules/`：各模块技术设计
-- `infrastructure/`：基础设施设计
-- `architecture.md`：系统架构设计
-- `tech-stack.md`：技术栈选型
 
 ## 维护规则
 
