@@ -129,6 +129,8 @@ qtadmin 的 PRD 主线是构建 QuantTide 第二大脑平台。
 
 详见 [default.md](./default.md)
 
+包含：Default 模式（轻量入口）、Work 模式（正式工作）、个人场景、团队场景、Meta 模块（智能体元认知）。
+
 ---
 
 ## 12. QtData 模块：数据可视化
