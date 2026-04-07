@@ -19,6 +19,15 @@ Rules:
 - `index.md` files are for **content/summary** information.
 - If a workflow rule changes, update the relevant `README.md` first.
 
+## Confidentiality
+
+**禁止在公开文档、代码、示例中泄漏客户敏感信息**，包括但不限于：
+- 客户名称、公司名称
+- 业务数据、文件名称
+- 真实案例内容
+
+示例等场景应使用通用描述（如"文件1"、"数据清洗"），避免暴露具体项目名称或客户信息。
+
 ## Build/Lint/Test Commands
 
 ### Setup
