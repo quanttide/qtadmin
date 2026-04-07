@@ -162,4 +162,5 @@ qtadmin/
 - [modules/default.md](modules/default.md)：知识工作模块技术设计
 - [modules/asset.md](modules/asset.md)：资产管理模块技术设计
 - [modules/cli.md](modules/cli.md)：CLI 模块技术设计
-- [modules/qtdata.md](modules/qtdata.md)：数据可视化模块技术设计
+- [modules/data.md](modules/data.md)：数据可视化模块技术设计
+- [modules/project.md](modules/project.md)：项目管理可视化模块技术设计
