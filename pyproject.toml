@@ -25,6 +25,11 @@ where = ["src/cli"]
 [tool.setuptools.package-dir]
 "" = "src/cli"
 
+[tool.uv.workspace]
+members = [
+    "src/provider",
+]
+
 [build-system]
 requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
