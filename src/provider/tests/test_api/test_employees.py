@@ -7,7 +7,6 @@ from sqlalchemy import text
 from app.__main__ import app
 from app.database import get_session
 from app.models.employee import Employee
-from app.models.salary import SalaryCalculation
 
 
 # 测试数据库设置
@@ -50,10 +49,6 @@ def test_database_tables_exist(session):
         # 检查employee表
         result = session.exec(text("SELECT name FROM sqlite_master WHERE type='table' AND name='employee'"))
         assert result.first() is not None, "employee表不存在"
-        
-        # 检查salarycalculation表
-        result = session.exec(text("SELECT name FROM sqlite_master WHERE type='table' AND name='salarycalculation'"))
-        assert result.first() is not None, "salarycalculation表不存在"
     except Exception as e:
         pytest.fail(f"数据库表验证失败: {e}")
 

@@ -1,7 +1,7 @@
 # app/api/v1/employees.py
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
-from app.models.employee import Employee, EmployeeCreate, EmployeeRead, EmployeeWithSalaries
+from app.models.employee import Employee, EmployeeCreate, EmployeeRead
 from app.database import get_session
 
 router = APIRouter()
@@ -24,7 +24,7 @@ def get_employees(department: str = None, session: Session = Depends(get_session
         query = query.where(Employee.department == department)
     return session.exec(query).all()
 
-@router.get("/{employee_id}", response_model=EmployeeWithSalaries)
+@router.get("/{employee_id}", response_model=EmployeeRead)
 def get_employee(employee_id: int, session: Session = Depends(get_session)):
     employee = session.get(Employee, employee_id)
     if not employee:
