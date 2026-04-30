@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class MetaScreen extends StatelessWidget {
-  const MetaScreen({super.key});
+class AssetContractScreen extends StatelessWidget {
+  const AssetContractScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('九宫格记忆模型'),
+        title: const Text('数字资产契约'),
       ),
       body: const Padding(
         padding: EdgeInsets.all(16.0),
@@ -15,16 +15,16 @@ class MetaScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              '记忆分类框架',
+              '资产注册表',
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 8),
             Text(
-              '基于认知科学的记忆分类体系，定义了组织知识管理的认知基础。',
+              '基于记忆模型的多仓架构数字资产管理，与 .gitmodules 对齐',
               style: TextStyle(fontSize: 16, color: Colors.grey),
             ),
             SizedBox(height: 24),
-            Expanded(child: _MemoryGrid()),
+            Expanded(child: _AssetGrid()),
           ],
         ),
       ),
@@ -32,8 +32,8 @@ class MetaScreen extends StatelessWidget {
   }
 }
 
-class _MemoryGrid extends StatelessWidget {
-  const _MemoryGrid();
+class _AssetGrid extends StatelessWidget {
+  const _AssetGrid();
 
   @override
   Widget build(BuildContext context) {
@@ -42,22 +42,18 @@ class _MemoryGrid extends StatelessWidget {
       mainAxisSpacing: 12,
       crossAxisSpacing: 12,
       children: [
-        // 表头
-        _buildHeader('过去'),
-        _buildHeader('现在'),
-        _buildHeader('未来'),
-        // 事件类
-        _buildCell('Archive', '归档', Colors.orange.shade100),
-        _buildCell('Journal', '日志', Colors.blue.shade100),
-        _buildCell('Report', '报告', Colors.green.shade100),
-        // 语义类
-        _buildCell('Tutorial', '教程', Colors.purple.shade100),
-        _buildCell('Profile', '档案', Colors.teal.shade100),
-        _buildCell('Notice', '公告', Colors.cyan.shade100),
-        // 自我类
-        _buildCell('History', '历史', Colors.red.shade100),
-        _buildCell('Brochure', '宣传', Colors.pink.shade100),
-        _buildCell('Roadmap', '路线图', Colors.indigo.shade100),
+        _buildHeader('宪法层'),
+        _buildHeader('法律层'),
+        _buildHeader('法理层'),
+        _buildCell('Bylaw', '工作章程', Colors.orange.shade100),
+        _buildCell('Handbook', '工作手册', Colors.blue.shade100),
+        _buildCell('Tutorial', '工作教程', Colors.green.shade100),
+        _buildCell('Specification', '工程标准', Colors.purple.shade100),
+        _buildCell('Gallery', '工作案例', Colors.teal.shade100),
+        _buildCell('Essay', '工作札记', Colors.cyan.shade100),
+        _buildCell('Qtadmin', '管理后台', Colors.red.shade100),
+        _buildCell('Qtcloud', '数据云', Colors.pink.shade100),
+        _buildCell('Library', '图书馆', Colors.indigo.shade100),
       ],
     );
   }
