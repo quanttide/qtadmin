@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'screens/asset_contract_screen.dart';
-
 void main() {
   runApp(const QtAdminStudio());
 }
@@ -66,17 +64,12 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
   }
 
   Widget _buildPage() {
-    switch (_selectedIndex) {
-      case 4: // 资产契约
-        return const AssetContractScreen();
-      default:
-        return Center(
-          child: Text(
-            _navItems[_selectedIndex].label,
-            style: Theme.of(context).textTheme.headlineMedium,
-          ),
-        );
-    }
+    return Center(
+      child: Text(
+        _navItems[_selectedIndex].label,
+        style: Theme.of(context).textTheme.headlineMedium,
+      ),
+    );
   }
 }
 
