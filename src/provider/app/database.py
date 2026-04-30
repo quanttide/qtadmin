@@ -40,7 +40,6 @@ def init_db():
     """初始化数据库，创建所有表"""
     # 显式导入所有模型以确保SQLModel发现它们
     from app.models.employee import Employee
-    from app.models.salary import SalaryCalculation
 
     SQLModel.metadata.create_all(engine)
     print("数据库表已创建")
