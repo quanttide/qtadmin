@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>量潮 · 今日</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system,'Segoe UI','PingFang SC',sans-serif; background: #fff; color: #222; padding: 32px; max-width: 640px; margin: 0 auto; line-height: 1.6; }
+h1 { font-size: 20px; font-weight: 600; margin-bottom: 4px; }
+.date { font-size: 12px; color: #888; margin-bottom: 28px; }
+h2 { font-size: 13px; font-weight: 600; color: #555; margin-bottom: 10px; margin-top: 24px; }
+h2:first-of-type { margin-top: 0; }
+p, li { font-size: 13px; color: #333; }
+
+/* Decisions needing CEO */
+.decision-list { list-style: none; }
+.decision-list li {
+  padding: 12px 0;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+.decision-list li:last-child { border-bottom: none; }
+.d-who { font-size: 11px; color: #888; white-space: nowrap; margin-top: 1px; }
+.d-body { flex: 1; }
+.d-title { font-weight: 500; }
+.d-context { font-size: 12px; color: #666; margin-top: 2px; }
+.d-tag { font-size: 10px; padding: 1px 6px; border-radius: 3px; white-space: nowrap; }
+.d-tag.new { background: #e8f5e9; color: #1a7f37; }
+.d-tag.urgent { background: #fbe9e7; color: #b71c1c; }
+
+/* Health blocks */
+.health { display: flex; gap: 24px; flex-wrap: wrap; }
+.health-item { }
+.health-label { font-size: 11px; color: #888; }
+.health-value { font-size: 15px; font-weight: 600; margin-top: 1px; }
+.health-value.green { color: #1a7f37; }
+.health-value.yellow { color: #c8690a; }
+.health-value.red { color: #b71c1c; }
+
+/* Meta items */
+.meta-list { font-size: 13px; list-style: none; }
+.meta-list li { padding: 6px 0; display: flex; gap: 8px; color: #444; }
+.meta-list .label { color: #888; white-space: nowrap; }
+
+/* Silent items */
+.silent { font-size: 12px; color: #aaa; margin-top: 4px; }
+</style>
+</head>
+<body>
+
+<h1>量潮科技</h1>
+<div class="date">2026年5月2日 · 星期六</div>
+
+<!-- 需要你决定的事 -->
+<h2>需要你决定</h2>
+<ul class="decision-list">
+  <li>
+    <span class="d-who">陈小明</span>
+    <div class="d-body">
+      <div class="d-title">华为数据清洗项目 · 接不接？</div>
+      <div class="d-context">回头客，¥12,000，10周。产能刚好够，但接了之后教育类项目要等一个月。</div>
+    </div>
+    <span class="d-tag new">待处理</span>
+  </li>
+  <li>
+    <span class="d-who">王老师</span>
+    <div class="d-body">
+      <div class="d-title">杭电Python实训课 · 已经超期2周</div>
+      <div class="d-context">客户在催。需要决定：加人赶工还是和客户谈延期？</div>
+    </div>
+    <span class="d-tag urgent">超期</span>
+  </li>
+  <li>
+    <span class="d-who">李四维</span>
+    <div class="d-body">
+      <div class="d-title">牛津项目 · 对方提出新增一个分析维度</div>
+      <div class="d-context">合同范围外的需求。加的话要多2周工期，不加可能影响海外口碑。</div>
+    </div>
+    <span class="d-tag new">待处理</span>
+  </li>
+</ul>
+
+<p class="silent">其余 5 位成员无需你介入 · 今日无待审批报销</p>
+
+<!-- 系统在怎么运转 -->
+<h2>系统状态</h2>
+<div class="health">
+  <div class="health-item">
+    <div class="health-label">产教融合</div>
+    <div class="health-value green">运转中</div>
+  </div>
+  <div class="health-item">
+    <div class="health-label">数据类项目占比</div>
+    <div class="health-value">60%</div>
+  </div>
+  <div class="health-item">
+    <div class="health-label">决策委托率</div>
+    <div class="health-value yellow">42%</div>
+  </div>
+</div>
+
+<!-- 制度在怎么长 -->
+<h2>制度成熟度</h2>
+<ul class="meta-list">
+  <li><span class="label">标准化率</span> 业务流程文档化比例 60%</li>
+  <li><span class="label">去中心化度</span> 团队自主决策覆盖 40%</li>
+  <li><span class="label">透明化度</span> 经营数据对团队公开 70%</li>
+</ul>
+<p class="silent">本季度提升：标准化 +8% · 去中心化 +5% · 透明化 +2%</p>
+
+</body>
+</html>
