@@ -90,12 +90,12 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "com.quanttide" "\0"
-            VALUE "FileDescription", "qtadmin_client_flutter" "\0"
+            VALUE "FileDescription", "量潮管理后台" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "qtadmin_client_flutter" "\0"
+            VALUE "InternalName", "qtadmin_studio" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2022 com.quanttide. All rights reserved." "\0"
-            VALUE "OriginalFilename", "qtadmin_client_flutter.exe" "\0"
-            VALUE "ProductName", "qtadmin_client_flutter" "\0"
+            VALUE "OriginalFilename", "qtadmin_studio.exe" "\0"
+            VALUE "ProductName", "量潮管理后台" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

@@ -1,4 +1,4 @@
-package com.quanttide.qtadmin_client_flutter
+package com.quanttide.qtadmin_studio
 
 import io.flutter.embedding.android.FlutterActivity
 
