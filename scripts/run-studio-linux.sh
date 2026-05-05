@@ -11,4 +11,4 @@ flutter build linux
 
 echo ""
 echo "Running..."
-exec ./build/linux/x64/release/bundle/qtadmin_client_flutter
+exec ./build/linux/x64/release/bundle/qtadmin-studio
