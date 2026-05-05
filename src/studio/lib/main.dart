@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:qtadmin_studio/models/panorama.dart';
-import 'package:qtadmin_studio/screens/business_screen.dart';
-import 'package:qtadmin_studio/screens/function_screen.dart';
+import 'package:qtadmin_studio/screens/business_detail_screen.dart';
 import 'package:qtadmin_studio/screens/panorama_screen.dart';
 import 'package:qtadmin_studio/services/panorama_loader.dart';
 
@@ -87,23 +86,24 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
       case 0:
         return PanoramaScreen(data: _data!);
       case 1:
-        return BusinessScreen(data: _data!);
+        return BusinessDetailScreen(unit: _data!.businessUnits[0]);
       case 2:
-        return FunctionScreen(data: _data!);
+        return BusinessDetailScreen(unit: _data!.businessUnits[1]);
+      case 3:
+        return BusinessDetailScreen(unit: _data!.businessUnits[2]);
+      case 4:
+        return BusinessDetailScreen(unit: _data!.businessUnits[3]);
       default:
-        return Center(
-          child: Text(
-            _navItems[_selectedIndex].label,
-            style: Theme.of(context).textTheme.headlineMedium,
-          ),
-        );
+        return const SizedBox.shrink();
     }
   }
 
   static const _navItems = [
-    _NavItem(icon: Icons.today_outlined, label: '今日'),
-    _NavItem(icon: Icons.work_outline, label: '业务'),
-    _NavItem(icon: Icons.account_tree_outlined, label: '职能'),
+    _NavItem(icon: Icons.today_outlined, label: '全景图'),
+    _NavItem(icon: Icons.storage_outlined, label: '数据'),
+    _NavItem(icon: Icons.school_outlined, label: '课堂'),
+    _NavItem(icon: Icons.support_agent_outlined, label: '咨询'),
+    _NavItem(icon: Icons.cloud_outlined, label: '云'),
   ];
 }
 
