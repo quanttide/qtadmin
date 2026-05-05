@@ -372,6 +372,8 @@ def generate_report():
     for d in date_list:
         word_daily[d] = Counter(segment(journals[d]))
 
+    h = "前7天频次"
+
     lines = []
     lines.append("# 日志分析报告\n")
     lines.append(f"生成时间: {datetime.now().strftime('%Y-%m-%d %H:%M')}\n")
@@ -420,6 +422,92 @@ def generate_report():
                 bursts.append(f"{word}({count}/{avg:.1f})")
         if bursts:
             lines.append(f"- **{d}**: {', '.join(bursts)}\n")
+
+    lines.append("\n## 关联网络：最强共现词对\n\n")
+    pair_counter = Counter()
+    for text in journals.values():
+        words = segment(text)
+        s = sorted(set(words))
+        for i in range(len(s)):
+            for j in range(i + 1, len(s)):
+                pair_counter[(s[i], s[j])] += 1
+    lines.append("| 词A | 词B | 共现天数 |\n")
+    lines.append("|---|---|---|\n")
+    for (a, b), count in pair_counter.most_common(15):
+        lines.append(f"| {a} | {b} | {count} |\n")
+
+    lines.append("\n## 情绪倾向\n\n")
+    pos_words = {
+        "好", "不错", "愉快", "快乐", "开心", "期待", "满意", "突破", "成功",
+        "进步", "成长", "希望", "信心", "积极", "乐观", "清晰", "稳定", "成熟",
+        "顺利", "轻松", "舒适", "享受", "喜欢", "感动", "兴奋", "恭喜", "成就",
+        "收获", "领悟", "发现", "惊喜",
+    }
+    neg_words = {
+        "问题", "困难", "麻烦", "焦虑", "压力", "烦躁", "疲惫", "累", "沮丧",
+        "失望", "担心", "害怕", "紧张", "混乱", "模糊", "冲突", "矛盾", "失败",
+        "错误", "崩溃", "失控", "痛苦", "孤独", "无聊", "消极", "悲观", "批评",
+        "惩罚", "罚", "痛", "累死", "受不了", "头疼", "难受", "不安", "忧虑",
+    }
+    pos_counts = []
+    neg_counts = []
+    for d in date_list:
+        words = segment(journals[d])
+        pos = sum(1 for w in words if w in pos_words)
+        neg = sum(1 for w in words if w in neg_words)
+        pos_counts.append(pos)
+        neg_counts.append(neg)
+    avg_pos = sum(pos_counts) / len(pos_counts)
+    avg_neg = sum(neg_counts) / len(neg_counts)
+    lines.append(f"- 日均正向词: {avg_pos:.1f}\n")
+    lines.append(f"- 日均负向词: {avg_neg:.1f}\n")
+    pos_dates = [(d, pos_counts[i]) for i, d in enumerate(date_list) if pos_counts[i] > avg_pos * 1.5]
+    neg_dates = [(d, neg_counts[i]) for i, d in enumerate(date_list) if neg_counts[i] > avg_neg * 1.5]
+    if pos_dates:
+        lines.append(f"- 最积极日: {', '.join(f'{d}({c})' for d, c in pos_dates[:5])}\n")
+    if neg_dates:
+        lines.append(f"- 最消极日: {', '.join(f'{d}({c})' for d, c in neg_dates[:5])}\n")
+
+    lines.append("\n## 沉寂词（前7天高频但近期消失）\n\n")
+    early = date_list[:7]
+    recent = date_list[-3:]
+    early_counter = Counter()
+    for d in early:
+        early_counter.update(segment(journals[d]))
+    recent_words = set()
+    for d in recent:
+        recent_words.update(segment(journals[d]))
+    for word, freq in early_counter.most_common(50):
+        if word not in recent_words:
+            total = sum(1 for t in journals.values() if word in t)
+            lines.append(f"- **{word}**: 前7天 {freq} 次, 共 {total} 天\n")
+
+    lines.append("\n## 长尾词拾遗\n\n")
+    day_counter = Counter()
+    total_counter = Counter()
+    for text in journals.values():
+        for w in set(segment(text)):
+            day_counter[w] += 1
+        for w in segment(text):
+            total_counter[w] += 1
+    tails = [(w, day_counter[w]) for w in day_counter if 2 <= day_counter[w] <= 4 and total_counter[w] <= 6]
+    tails.sort(key=lambda x: -x[1])
+    for w, d in tails[:15]:
+        lines.append(f"- {w} ({d}天)\n")
+
+    lines.append("\n## 写作行为元特征\n\n")
+    lengths = []
+    for d in date_list:
+        words = segment(journals[d])
+        lengths.append((d, len(journals[d]), len(words)))
+    avg_chars = sum(l[1] for l in lengths) // len(lengths)
+    avg_words = sum(l[2] for l in lengths) // len(lengths)
+    max_day = max(lengths, key=lambda x: x[1])
+    min_day = min(lengths, key=lambda x: x[1])
+    lines.append(f"- 日均字数: {avg_chars}\n")
+    lines.append(f"- 日均词数: {avg_words}\n")
+    lines.append(f"- 最产出日: {max_day[0]} ({max_day[1]}字)\n")
+    lines.append(f"- 最简短日: {min_day[0]} ({min_day[1]}字)\n")
 
     os.makedirs(REPORT_DIR, exist_ok=True)
     path = os.path.join(REPORT_DIR, "journal_report.md")
