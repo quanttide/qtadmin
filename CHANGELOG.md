@@ -4,6 +4,24 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/).
 
+## [0.0.2] - 2026-05-06
+
+### Added
+
+- `src/studio/`: 全景图今日看板（Flutter 实现）
+  - 全景图主页面（业务线决策卡片 + 职能线指标卡片）
+  - 业务线详情页（量潮数据/课堂/咨询/云）
+  - 决策卡片交互（批准/驳回/附条件）
+  - 响应式布局（桌面多列 / 移动端单列+折叠）
+  - 数据抽离至 `assets/panorama.json`，支持热更新
+- `scripts/run-studio-linux.sh`：Linux 编译运行脚本
+
+### Changed
+
+- 全平台应用名统一为 `qtadmin_studio` / 量潮管理后台
+- Flutter 依赖升级至最新兼容版本
+- 导航栏重构为自定义侧边栏（全景图 + 4 业务线）
+
 ## [0.0.1] - 2026-04-30
 
 ### Added
