@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:qtadmin_studio/models/panorama.dart';
-import 'package:qtadmin_studio/widgets/function_section_widget.dart';
+import 'package:qtadmin_studio/widgets/biz_unit_widget.dart';
 
-class FunctionScreen extends StatelessWidget {
-  final PanoramaData data;
+class BusinessDetailScreen extends StatelessWidget {
+  final BusinessUnitData unit;
 
-  const FunctionScreen({super.key, required this.data});
+  const BusinessDetailScreen({super.key, required this.unit});
 
   @override
   Widget build(BuildContext context) {
@@ -16,9 +16,11 @@ class FunctionScreen extends StatelessWidget {
           padding: EdgeInsets.all(isMobile ? 14 : 24),
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 820),
-            child: FunctionSectionWidget(
-              cards: data.functionCards,
-              isMobile: isMobile,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                BizUnitWidget(data: unit),
+              ],
             ),
           ),
         );
