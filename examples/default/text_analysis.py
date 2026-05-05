@@ -45,6 +45,38 @@ STOP_WORDS = {
     "一样", "一点", "越来越", "越来越", "越来越",
 }
 
+POS_WORDS = {
+    "好", "不错", "愉快", "快乐", "开心", "期待", "满意", "突破", "成功",
+    "进步", "成长", "希望", "信心", "积极", "乐观", "清晰", "稳定", "成熟",
+    "顺利", "轻松", "舒适", "享受", "喜欢", "感动", "兴奋", "恭喜", "成就",
+    "收获", "领悟", "发现", "惊喜", "信任", "支持", "帮助", "提升", "改善",
+    "优雅", "丰富", "认可", "赞赏", "自豪", "从容", "扎实", "靠谱", "高效",
+    "通透", "通透", "明确", "灵活", "主动", "负责", "精彩", "了不起",
+    "愉悦", "畅快", "鼓舞", "振奋", "有价值",
+}
+
+NEG_WORDS = {
+    "问题", "困难", "麻烦", "焦虑", "压力", "烦躁", "疲惫", "累", "沮丧",
+    "失望", "担心", "害怕", "紧张", "混乱", "模糊", "冲突", "矛盾", "失败",
+    "错误", "崩溃", "失控", "痛苦", "孤独", "无聊", "消极", "悲观", "批评",
+    "惩罚", "罚", "痛", "累死", "受不了", "头疼", "难受", "不安", "忧虑",
+    "纠结", "折磨", "压抑", "沉重", "憋屈", "尴尬", "厌倦", "反感", "抵触",
+    "隐患", "风险", "危机", "障碍", "瓶颈", "缺陷", "漏洞", "困扰", "阻碍",
+    "瓶颈", "麻烦", "危险", "脆弱", "失控", "失调", "恐慌", "急躁", "冲动",
+    "怀疑", "排斥", "抗拒", "阻力", "拖累", "浪费", "徒劳",
+}
+
+EMOTION_CATEGORIES = {
+    "成就/掌控": {"突破", "成功", "掌控", "驾驭", "搞定", "完成", "达成", "实现", "确定", "稳定"},
+    "困惑/混沌": {"困惑", "模糊", "混乱", "矛盾", "纠结", "迷茫", "复杂", "想不通", "不确定"},
+    "压力/焦虑": {"焦虑", "压力", "紧张", "担心", "害怕", "不安", "恐慌", "急躁", "压迫"},
+    "启发/顿悟": {"发现", "领悟", "通透", "理解", "明白", "意识到", "想通", "灵感", "突破", "认知"},
+    "疲惫/倦怠": {"疲惫", "累", "累死", "倦怠", "疲劳", "透支", "乏力", "困", "厌倦", "无聊"},
+    "信任/期待": {"信任", "期待", "希望", "信心", "认可", "支持", "相信", "盼望"},
+    "批判/不满": {"批评", "惩罚", "罚", "抵触", "反感", "怀疑", "排斥", "不满", "质疑"},
+    "建设/推进": {"改进", "优化", "重构", "迭代", "推进", "落地", "落实", "执行", "建立"},
+}
+
 
 def load_journals():
     """加载所有日志文件，返回 {date_str: text} 字典"""
@@ -174,40 +206,59 @@ def cooccur(concept, top_n=20):
         print(f"{word:<10} {count:<6} {pct:.1f}%")
 
 
-def network_analysis(top_n=15):
-    """关联网络分析：构建全量共现网络，找出高频边和桥梁词"""
+def classify_context(window_words):
+    """对一段窗口词列表做情绪分类"""
+    pos = sum(1 for w in window_words if w in POS_WORDS)
+    neg = sum(1 for w in window_words if w in NEG_WORDS)
+    if pos > neg * 2:
+        return "积极"
+    if neg > pos * 2:
+        return "消极"
+    return "中性"
+
+
+def network_analysis(top_n=12):
+    """关联网络分析：按情绪上下文分类的共现关系"""
     journals = load_journals()
-    pair_counter = Counter()
+    pair_sentiment = defaultdict(lambda: {"积极": 0, "消极": 0, "中性": 0})
     word_counter = Counter()
     for text in journals.values():
         words = segment(text)
         word_set = set(words)
         for w in word_set:
             word_counter[w] += 1
-        sorted_words = sorted(word_set)
-        for i in range(len(sorted_words)):
-            for j in range(i + 1, len(sorted_words)):
-                a, b = sorted_words[i], sorted_words[j]
-                pair_counter[(a, b)] += 1
-    print("关联网络：共现强度最高的词对\n")
-    print(f"{'词A':<10} {'词B':<10} {'共现天数':<8}")
-    print("-" * 35)
-    for (a, b), count in pair_counter.most_common(top_n):
-        print(f"{a:<10} {b:<10} {count:<8}")
-    bridge_candidates = []
-    for w in word_counter:
-        if word_counter[w] < 5:
-            continue
-        neighbors = 0
-        for (a, b), _ in pair_counter.most_common(1000):
-            if a == w or b == w:
-                neighbors += 1
-        bridge_candidates.append((w, neighbors))
-    bridge_candidates.sort(key=lambda x: -x[1])
-    print(f"\n桥梁词（出现在最多不同词对中的词）:\n")
-    print(f"{'词':<10} {'连接数':<8}")
+        for w in word_set:
+            idxs = [i for i, x in enumerate(words) if x == w]
+            for idx in idxs:
+                start = max(0, idx - 8)
+                end = min(len(words), idx + 9)
+                ctx = words[start:idx] + words[idx+1:end]
+                tag = classify_context(ctx)
+                for other in word_set:
+                    if other != w and other in ctx:
+                        pair_sentiment[(min(w, other), max(w, other))][tag] += 1
+
+    print("关联网络：按情绪分类的共现关系\n")
+    for label, sentiment in [("积极关系", "积极"), ("消极关系", "消极"), ("中性关系", "中性")]:
+        pairs = [(a, b, c[sentiment]) for (a, b), c in pair_sentiment.items() if c[sentiment] > 0]
+        pairs.sort(key=lambda x: -x[2])
+        print(f"\n{label}:\n")
+        print(f"{'词A':<10} {'词B':<10} {'频次':<6}")
+        print("-" * 30)
+        for a, b, cnt in pairs[:top_n]:
+            total = sum(c["积极"] + c["消极"] + c["中性"] for (x, y), c in pair_sentiment.items() if (x, y) == (a, b))
+            print(f"{a:<10} {b:<10} {cnt}/{total}")
+
+    bridge_counter = Counter()
+    for (a, b), c in pair_sentiment.items():
+        total = c["积极"] + c["消极"] + c["中性"]
+        bridge_counter[a] += total
+        bridge_counter[b] += total
+    bridges = [(w, n) for w, n in bridge_counter.most_common(30) if word_counter[w] >= 5]
+    print(f"\n桥梁词:\n")
+    print(f"{'词':<10} {'连接强度':<8}")
     print("-" * 20)
-    for w, n in bridge_candidates[:top_n]:
+    for w, n in bridges[:top_n]:
         print(f"{w:<10} {n:<8}")
 
 
@@ -297,33 +348,35 @@ def long_tails():
 
 
 def sentiment_summary():
-    """情绪倾向概览：基于简单情感词典打分"""
-    pos_words = {
-        "好", "不错", "愉快", "快乐", "开心", "期待", "满意", "突破", "成功",
-        "进步", "成长", "希望", "信心", "积极", "乐观", "清晰", "稳定", "成熟",
-        "顺利", "轻松", "舒适", "享受", "喜欢", "感动", "兴奋", "恭喜", "成就",
-        "收获", "领悟", "发现", "惊喜",
-    }
-    neg_words = {
-        "问题", "困难", "麻烦", "焦虑", "压力", "烦躁", "疲惫", "累", "沮丧",
-        "失望", "担心", "害怕", "紧张", "混乱", "模糊", "冲突", "矛盾", "失败",
-        "错误", "崩溃", "失控", "痛苦", "孤独", "无聊", "消极", "悲观", "批评",
-        "惩罚", "罚", "痛", "累死", "受不了", "头疼", "难受", "不安", "忧虑",
-    }
+    """情绪倾向概览：多维度情绪分类"""
     journals = load_journals()
     date_list = sorted(journals.keys())
-    print(f"情绪倾向概览 ({date_list[0]} ~ {date_list[-1]})\n")
-    print(f"{'日期':<12} {'正向词':<7} {'负向词':<7} {'倾向':<8}")
-    print("-" * 40)
+    daily_emotions = []
     for d in date_list:
         words = segment(journals[d])
-        pos = sum(1 for w in words if w in pos_words)
-        neg = sum(1 for w in words if w in neg_words)
-        delta = pos - neg
-        tag = "积极" if delta > 2 else ("消极" if delta < -2 else "中性")
-        bar_pos = "■" * min(pos, 10)
-        bar_neg = "□" * min(neg, 10)
-        print(f"{d:<12} {pos:<7} {neg:<7} {bar_pos}{bar_neg} {tag}")
+        categories = Counter()
+        for w in words:
+            for cat, cat_words in EMOTION_CATEGORIES.items():
+                if w in cat_words:
+                    categories[cat] += 1
+        daily_emotions.append((d, categories))
+
+    total_by_cat = Counter()
+    for _, cats in daily_emotions:
+        total_by_cat.update(cats)
+
+    print(f"情绪倾向概览 ({date_list[0]} ~ {date_list[-1]})\n")
+    print("各情绪维度总频次:\n")
+    for cat, count in total_by_cat.most_common():
+        print(f"  {cat}: {count}")
+    print(f"\n情绪时间线 (逐日最显著维度):\n")
+    print(f"{'日期':<12} {'主导情绪':<16} {'得分':<6}")
+    print("-" * 40)
+    for d, cats in daily_emotions:
+        if cats:
+            top_cat, top_score = cats.most_common(1)[0]
+            bar = "■" * min(top_score, 10)
+            print(f"{d:<12} {top_cat:<16} {bar} {top_score}")
 
 
 def drift(concept):
@@ -423,50 +476,52 @@ def generate_report():
         if bursts:
             lines.append(f"- **{d}**: {', '.join(bursts)}\n")
 
-    lines.append("\n## 关联网络：最强共现词对\n\n")
-    pair_counter = Counter()
+    lines.append("\n## 关联网络：按情绪分类的共现关系\n\n")
+    pair_sentiment = defaultdict(lambda: {"积极": 0, "消极": 0, "中性": 0})
     for text in journals.values():
         words = segment(text)
-        s = sorted(set(words))
-        for i in range(len(s)):
-            for j in range(i + 1, len(s)):
-                pair_counter[(s[i], s[j])] += 1
-    lines.append("| 词A | 词B | 共现天数 |\n")
-    lines.append("|---|---|---|\n")
-    for (a, b), count in pair_counter.most_common(15):
-        lines.append(f"| {a} | {b} | {count} |\n")
+        word_set = set(words)
+        for w in word_set:
+            idxs = [i for i, x in enumerate(words) if x == w]
+            for idx in idxs:
+                start = max(0, idx - 8)
+                end = min(len(words), idx + 9)
+                ctx = words[start:idx] + words[idx+1:end]
+                tag = classify_context(ctx)
+                for other in word_set:
+                    if other != w and other in ctx:
+                        pair_sentiment[(min(w, other), max(w, other))][tag] += 1
+    for label, sentiment in [("积极关系", "积极"), ("消极关系", "消极"), ("中性关系", "中性")]:
+        pairs = [(a, b, c[sentiment]) for (a, b), c in pair_sentiment.items() if c[sentiment] >= 3]
+        pairs.sort(key=lambda x: -x[2])
+        if pairs:
+            lines.append(f"### {label}\n\n")
+            lines.append("| 词A | 词B | 出现次数 |\n")
+            lines.append("|---|---|---|\n")
+            for a, b, cnt in pairs[:10]:
+                lines.append(f"| {a} | {b} | {cnt} |\n")
 
-    lines.append("\n## 情绪倾向\n\n")
-    pos_words = {
-        "好", "不错", "愉快", "快乐", "开心", "期待", "满意", "突破", "成功",
-        "进步", "成长", "希望", "信心", "积极", "乐观", "清晰", "稳定", "成熟",
-        "顺利", "轻松", "舒适", "享受", "喜欢", "感动", "兴奋", "恭喜", "成就",
-        "收获", "领悟", "发现", "惊喜",
-    }
-    neg_words = {
-        "问题", "困难", "麻烦", "焦虑", "压力", "烦躁", "疲惫", "累", "沮丧",
-        "失望", "担心", "害怕", "紧张", "混乱", "模糊", "冲突", "矛盾", "失败",
-        "错误", "崩溃", "失控", "痛苦", "孤独", "无聊", "消极", "悲观", "批评",
-        "惩罚", "罚", "痛", "累死", "受不了", "头疼", "难受", "不安", "忧虑",
-    }
-    pos_counts = []
-    neg_counts = []
+    lines.append("\n## 情绪倾向（按维度的逐日分布）\n\n")
+    daily_emotions = []
     for d in date_list:
         words = segment(journals[d])
-        pos = sum(1 for w in words if w in pos_words)
-        neg = sum(1 for w in words if w in neg_words)
-        pos_counts.append(pos)
-        neg_counts.append(neg)
-    avg_pos = sum(pos_counts) / len(pos_counts)
-    avg_neg = sum(neg_counts) / len(neg_counts)
-    lines.append(f"- 日均正向词: {avg_pos:.1f}\n")
-    lines.append(f"- 日均负向词: {avg_neg:.1f}\n")
-    pos_dates = [(d, pos_counts[i]) for i, d in enumerate(date_list) if pos_counts[i] > avg_pos * 1.5]
-    neg_dates = [(d, neg_counts[i]) for i, d in enumerate(date_list) if neg_counts[i] > avg_neg * 1.5]
-    if pos_dates:
-        lines.append(f"- 最积极日: {', '.join(f'{d}({c})' for d, c in pos_dates[:5])}\n")
-    if neg_dates:
-        lines.append(f"- 最消极日: {', '.join(f'{d}({c})' for d, c in neg_dates[:5])}\n")
+        cats = Counter()
+        for w in words:
+            for cat_name, cat_words in EMOTION_CATEGORIES.items():
+                if w in cat_words:
+                    cats[cat_name] += 1
+        daily_emotions.append((d, cats))
+    total_by_cat = Counter()
+    for _, cats in daily_emotions:
+        total_by_cat.update(cats)
+    lines.append("各情绪维度总频次:\n\n")
+    for cat, count in total_by_cat.most_common():
+        lines.append(f"- {cat}: {count}\n")
+    lines.append(f"\n情绪时间线 (逐日主导维度):\n\n")
+    for d, cats in daily_emotions:
+        if cats:
+            top_cat, top_score = cats.most_common(1)[0]
+            lines.append(f"- {d}: {top_cat} ({top_score})\n")
 
     lines.append("\n## 沉寂词（前7天高频但近期消失）\n\n")
     early = date_list[:7]
