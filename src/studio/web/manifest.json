@@ -1,6 +1,6 @@
 {
-    "name": "qtadmin_client_flutter",
-    "short_name": "qtadmin_client_flutter",
+    "name": "量潮管理后台",
+    "short_name": "量潮管理后台",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

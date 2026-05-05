@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.quanttide.qtadmin_client_flutter">
+    package="com.quanttide.qtadmin_studio">
    <application
-        android:label="qtadmin_client_flutter"
+         android:label="量潮管理后台"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
