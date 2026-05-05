@@ -4,6 +4,25 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/).
 
+## [0.0.3] - 2026-05-06
+
+### Added
+
+- `src/studio/`: 多租户架构
+  - 量潮创始人：全景图 + 思考（认知演进报告）+ 写作（占位）
+  - 量潮科技：全景图 + 量潮数据/课堂/咨询/云
+  - 租户切换器（PopupMenuButton），支持一键切换
+  - 思考页面（ThinkingScreen）：认知建构与思维演进分析报告
+- `examples/default/`：日志文本分析工具及报告
+- `scripts/record-studio-linux.sh`：自动录屏脚本（ffmpeg + xdotool）
+- `assets/videos/studio.mp4`：客户端演示视频（Git LFS 管理）
+- `.gitattributes`：Git LFS 跟踪 `assets/videos/**`
+
+### Changed
+
+- Git LFS 管理大文件
+- Flutter 依赖升级
+
 ## [0.0.2] - 2026-05-06
 
 ### Added
