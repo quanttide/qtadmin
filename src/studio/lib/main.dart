@@ -104,11 +104,6 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
     _NavItem(icon: Icons.today_outlined, label: '今日'),
     _NavItem(icon: Icons.work_outline, label: '业务'),
     _NavItem(icon: Icons.account_tree_outlined, label: '职能'),
-    _NavItem(icon: Icons.lightbulb_outline, label: 'Think'),
-    _NavItem(icon: Icons.edit_outlined, label: 'Write'),
-    _NavItem(icon: Icons.people_outline, label: 'Team'),
-    _NavItem(icon: Icons.auto_stories_outlined, label: 'Meta'),
-    _NavItem(icon: Icons.settings_outlined, label: 'Settings'),
   ];
 }
 
