@@ -36,6 +36,7 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return MaterialApp(
       title: '量潮管理后台',
       debugShowCheckedModeBanner: false,
@@ -50,23 +51,47 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
       home: Scaffold(
         body: Row(
           children: [
-            NavigationRail(
-              extended: false,
-              minWidth: 72,
-              selectedIndex: _selectedIndex,
-              onDestinationSelected: (index) {
-                setState(() {
-                  _selectedIndex = index;
-                });
-              },
-              labelType: NavigationRailLabelType.all,
-              destinations: _navItems.map((item) {
-                return NavigationRailDestination(
-                  icon: Icon(item.icon),
-                  selectedIcon: Icon(item.icon),
-                  label: Text(item.label),
-                );
-              }).toList(),
+            Container(
+              width: 72,
+              color: theme.colorScheme.surface,
+              child: Column(
+                children: [
+                  const SizedBox(height: 8),
+                  _NavIcon(
+                    icon: Icons.today_outlined,
+                    label: '全景图',
+                    selected: _selectedIndex == 0,
+                    onTap: () => setState(() => _selectedIndex = 0),
+                  ),
+                  _buildDivider(),
+                  _NavIcon(
+                    icon: Icons.storage_outlined,
+                    label: '量潮数据',
+                    selected: _selectedIndex == 1,
+                    onTap: () => setState(() => _selectedIndex = 1),
+                  ),
+                  _NavIcon(
+                    icon: Icons.school_outlined,
+                    label: '量潮课堂',
+                    selected: _selectedIndex == 2,
+                    onTap: () => setState(() => _selectedIndex = 2),
+                  ),
+                  _NavIcon(
+                    icon: Icons.support_agent_outlined,
+                    label: '量潮咨询',
+                    selected: _selectedIndex == 3,
+                    onTap: () => setState(() => _selectedIndex = 3),
+                  ),
+                  _NavIcon(
+                    icon: Icons.cloud_outlined,
+                    label: '量潮云',
+                    selected: _selectedIndex == 4,
+                    onTap: () => setState(() => _selectedIndex = 4),
+                  ),
+                  _buildDivider(),
+                  const Spacer(),
+                ],
+              ),
             ),
             const VerticalDivider(thickness: 1, width: 1),
             Expanded(
@@ -75,6 +100,13 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildDivider() {
+    return const Padding(
+      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      child: Divider(height: 1, thickness: 1),
     );
   }
 
@@ -97,19 +129,49 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
         return const SizedBox.shrink();
     }
   }
-
-  static const _navItems = [
-    _NavItem(icon: Icons.today_outlined, label: '全景图'),
-    _NavItem(icon: Icons.storage_outlined, label: '数据'),
-    _NavItem(icon: Icons.school_outlined, label: '课堂'),
-    _NavItem(icon: Icons.support_agent_outlined, label: '咨询'),
-    _NavItem(icon: Icons.cloud_outlined, label: '云'),
-  ];
 }
 
-class _NavItem {
+class _NavIcon extends StatelessWidget {
   final IconData icon;
   final String label;
+  final bool selected;
+  final VoidCallback onTap;
 
-  const _NavItem({required this.icon, required this.label});
+  const _NavIcon({
+    required this.icon,
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 72,
+      height: 64,
+      child: InkWell(
+        onTap: onTap,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              icon,
+              size: 22,
+              color: selected ? const Color(0xFF1A1A1A) : const Color(0xFF888888),
+            ),
+            const SizedBox(height: 3),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 10,
+                color: selected ? const Color(0xFF1A1A1A) : const Color(0xFF888888),
+                fontWeight: selected ? FontWeight.w600 : FontWeight.normal,
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
