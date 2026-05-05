@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:qtadmin_studio/screens/panorama_screen.dart';
 
 void main() {
   runApp(const QtAdminStudio());
@@ -15,7 +16,7 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
   int _selectedIndex = 0;
 
   final List<_NavItem> _navItems = [
-    _NavItem(icon: Icons.work_outline, label: 'Work'),
+    _NavItem(icon: Icons.today_outlined, label: '今日'),
     _NavItem(icon: Icons.lightbulb_outline, label: 'Think'),
     _NavItem(icon: Icons.edit_outlined, label: 'Write'),
     _NavItem(icon: Icons.people_outline, label: 'Team'),
@@ -29,7 +30,11 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
       title: '量潮管理后台',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blueGrey),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.blueGrey,
+          surface: Colors.white,
+        ),
+        scaffoldBackgroundColor: Colors.white,
         useMaterial3: true,
       ),
       home: Scaffold(
@@ -64,12 +69,17 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
   }
 
   Widget _buildPage() {
-    return Center(
-      child: Text(
-        _navItems[_selectedIndex].label,
-        style: Theme.of(context).textTheme.headlineMedium,
-      ),
-    );
+    switch (_selectedIndex) {
+      case 0:
+        return const PanoramaScreen();
+      default:
+        return Center(
+          child: Text(
+            _navItems[_selectedIndex].label,
+            style: Theme.of(context).textTheme.headlineMedium,
+          ),
+        );
+    }
   }
 }
 
