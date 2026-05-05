@@ -5,8 +5,9 @@ import 'package:qtadmin_studio/widgets/function_section_widget.dart';
 
 class PanoramaScreen extends StatelessWidget {
   final PanoramaData data;
+  final String tenantName;
 
-  const PanoramaScreen({super.key, required this.data});
+  const PanoramaScreen({super.key, required this.data, this.tenantName = '量潮科技'});
 
   String _dateString() {
     final now = DateTime.now();
@@ -53,7 +54,7 @@ class PanoramaScreen extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          '量潮科技',
+          tenantName,
           style: TextStyle(
             fontSize: isMobile ? 18 : 20,
             fontWeight: FontWeight.w600,

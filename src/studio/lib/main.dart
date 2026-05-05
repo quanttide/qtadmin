@@ -2,10 +2,35 @@ import 'package:flutter/material.dart';
 import 'package:qtadmin_studio/models/panorama.dart';
 import 'package:qtadmin_studio/screens/business_detail_screen.dart';
 import 'package:qtadmin_studio/screens/panorama_screen.dart';
+import 'package:qtadmin_studio/screens/thinking_screen.dart';
 import 'package:qtadmin_studio/services/panorama_loader.dart';
 
 void main() {
   runApp(const QtAdminStudio());
+}
+
+class _NavItem {
+  final IconData icon;
+  final String label;
+  final Widget Function(PanoramaData, String tenantName) builder;
+
+  const _NavItem({
+    required this.icon,
+    required this.label,
+    required this.builder,
+  });
+}
+
+class _TenantConfig {
+  final String name;
+  final IconData icon;
+  final List<_NavItem> navItems;
+
+  const _TenantConfig({
+    required this.name,
+    required this.icon,
+    required this.navItems,
+  });
 }
 
 class QtAdminStudio extends StatefulWidget {
@@ -16,8 +41,78 @@ class QtAdminStudio extends StatefulWidget {
 }
 
 class _QtAdminStudioState extends State<QtAdminStudio> {
+  int _selectedTenant = 0;
   int _selectedIndex = 0;
   PanoramaData? _data;
+
+  static final _tenants = [
+    _TenantConfig(
+      name: '量潮创始人',
+      icon: Icons.person_outline,
+      navItems: [
+        _NavItem(
+          icon: Icons.today_outlined,
+          label: '全景图',
+          builder: _buildPanorama,
+        ),
+        _NavItem(
+          icon: Icons.psychology_outlined,
+          label: '思考',
+          builder: _buildThinking,
+        ),
+        _NavItem(
+          icon: Icons.edit_outlined,
+          label: '写作',
+          builder: _buildPlaceholder,
+        ),
+      ],
+    ),
+    _TenantConfig(
+      name: '量潮科技',
+      icon: Icons.business_outlined,
+      navItems: [
+        _NavItem(
+          icon: Icons.today_outlined,
+          label: '全景图',
+          builder: _buildPanorama,
+        ),
+        _NavItem(
+          icon: Icons.storage_outlined,
+          label: '量潮数据',
+          builder: (data, _) => BusinessDetailScreen(unit: data.businessUnits[0]),
+        ),
+        _NavItem(
+          icon: Icons.school_outlined,
+          label: '量潮课堂',
+          builder: (data, _) => BusinessDetailScreen(unit: data.businessUnits[1]),
+        ),
+        _NavItem(
+          icon: Icons.support_agent_outlined,
+          label: '量潮咨询',
+          builder: (data, _) => BusinessDetailScreen(unit: data.businessUnits[2]),
+        ),
+        _NavItem(
+          icon: Icons.cloud_outlined,
+          label: '量潮云',
+          builder: (data, _) => BusinessDetailScreen(unit: data.businessUnits[3]),
+        ),
+      ],
+    ),
+  ];
+
+  _TenantConfig get _currentTenant => _tenants[_selectedTenant];
+
+  static Widget _buildPanorama(PanoramaData data, String tenantName) {
+    return PanoramaScreen(data: data, tenantName: tenantName);
+  }
+
+  static Widget _buildThinking(PanoramaData data, String tenantName) {
+    return const ThinkingScreen();
+  }
+
+  static Widget _buildPlaceholder(PanoramaData data, String tenantName) {
+    return const Center(child: Text('即将上线'));
+  }
 
   @override
   void initState() {
@@ -56,38 +151,28 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
               color: theme.colorScheme.surface,
               child: Column(
                 children: [
-                  const SizedBox(height: 8),
-                  _NavIcon(
-                    icon: Icons.today_outlined,
-                    label: '全景图',
-                    selected: _selectedIndex == 0,
-                    onTap: () => setState(() => _selectedIndex = 0),
+                  const SizedBox(height: 4),
+                  _TenantSwitcher(
+                    tenants: _tenants,
+                    selectedIndex: _selectedTenant,
+                    onChanged: (index) {
+                      setState(() {
+                        _selectedTenant = index;
+                        _selectedIndex = 0;
+                      });
+                    },
                   ),
                   _buildDivider(),
-                  _NavIcon(
-                    icon: Icons.storage_outlined,
-                    label: '量潮数据',
-                    selected: _selectedIndex == 1,
-                    onTap: () => setState(() => _selectedIndex = 1),
-                  ),
-                  _NavIcon(
-                    icon: Icons.school_outlined,
-                    label: '量潮课堂',
-                    selected: _selectedIndex == 2,
-                    onTap: () => setState(() => _selectedIndex = 2),
-                  ),
-                  _NavIcon(
-                    icon: Icons.support_agent_outlined,
-                    label: '量潮咨询',
-                    selected: _selectedIndex == 3,
-                    onTap: () => setState(() => _selectedIndex = 3),
-                  ),
-                  _NavIcon(
-                    icon: Icons.cloud_outlined,
-                    label: '量潮云',
-                    selected: _selectedIndex == 4,
-                    onTap: () => setState(() => _selectedIndex = 4),
-                  ),
+                  ..._currentTenant.navItems.asMap().entries.map((entry) {
+                    final i = entry.key;
+                    final item = entry.value;
+                    return _NavIcon(
+                      icon: item.icon,
+                      label: item.label,
+                      selected: _selectedIndex == i,
+                      onTap: () => setState(() => _selectedIndex = i),
+                    );
+                  }),
                   _buildDivider(),
                   const Spacer(),
                 ],
@@ -105,7 +190,7 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
 
   Widget _buildDivider() {
     return const Padding(
-      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
       child: Divider(height: 1, thickness: 1),
     );
   }
@@ -114,20 +199,69 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
     if (_data == null) {
       return const Center(child: CircularProgressIndicator());
     }
-    switch (_selectedIndex) {
-      case 0:
-        return PanoramaScreen(data: _data!);
-      case 1:
-        return BusinessDetailScreen(unit: _data!.businessUnits[0]);
-      case 2:
-        return BusinessDetailScreen(unit: _data!.businessUnits[1]);
-      case 3:
-        return BusinessDetailScreen(unit: _data!.businessUnits[2]);
-      case 4:
-        return BusinessDetailScreen(unit: _data!.businessUnits[3]);
-      default:
-        return const SizedBox.shrink();
-    }
+    return _currentTenant.navItems[_selectedIndex].builder(_data!, _currentTenant.name);
+  }
+}
+
+class _TenantSwitcher extends StatelessWidget {
+  final List<_TenantConfig> tenants;
+  final int selectedIndex;
+  final ValueChanged<int> onChanged;
+
+  const _TenantSwitcher({
+    required this.tenants,
+    required this.selectedIndex,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final tenant = tenants[selectedIndex];
+    return PopupMenuButton<int>(
+      onSelected: onChanged,
+      offset: const Offset(0, 48),
+      itemBuilder: (context) => tenants.asMap().entries.map((entry) {
+        final i = entry.key;
+        final t = entry.value;
+        return PopupMenuItem<int>(
+          value: i,
+          child: Row(
+            children: [
+              Icon(t.icon, size: 18),
+              const SizedBox(width: 8),
+              Text(t.name, style: const TextStyle(fontSize: 14)),
+              if (i == selectedIndex)
+                const Padding(
+                  padding: EdgeInsets.only(left: 8),
+                  child: Icon(Icons.check, size: 16, color: Colors.blue),
+                ),
+            ],
+          ),
+        );
+      }).toList(),
+      child: Container(
+        width: 72,
+        height: 60,
+        padding: const EdgeInsets.symmetric(vertical: 4),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(tenant.icon, size: 22, color: const Color(0xFF1A1A1A)),
+            const SizedBox(height: 2),
+            Text(
+              tenant.name,
+              style: const TextStyle(
+                fontSize: 9,
+                color: Color(0xFF1A1A1A),
+                fontWeight: FontWeight.w600,
+              ),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
 
