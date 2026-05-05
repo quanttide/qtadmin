@@ -1,0 +1,128 @@
+{
+  "businessUnits": [
+    {
+      "name": "量潮数据",
+      "tag": "主营",
+      "isPrimary": true,
+      "decisions": [
+        {
+          "fromPerson": "陈小明",
+          "deadline": "本周内回复",
+          "title": "华为数据清洗 · 接不接？",
+          "context": "回头客 ¥12,000，10周。产能刚好够，但接了教育类要等一个月。",
+          "teamAdvice": "小明倾向：接，维持老客户",
+          "isUrgent": false,
+          "actions": [
+            { "label": "批准", "isPrimary": true },
+            { "label": "驳回", "isPrimary": false },
+            { "label": "附条件", "isPrimary": false }
+          ]
+        },
+        {
+          "fromPerson": "李四维",
+          "deadline": "下周一前",
+          "title": "牛津项目 · 新增分析维度",
+          "context": "合同外需求。加则多2周，不加可能影响海外口碑。",
+          "teamAdvice": "四维建议：加，牛津是桥头堡",
+          "isUrgent": false,
+          "actions": [
+            { "label": "同意加需求", "isPrimary": true },
+            { "label": "婉拒", "isPrimary": false }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "量潮课堂",
+      "tag": "主营",
+      "isPrimary": true,
+      "decisions": [
+        {
+          "fromPerson": "王老师",
+          "deadline": "今日需定",
+          "title": "杭电Python实训 · 已超期2周",
+          "context": "客户在催。加人赶工还是谈延期？",
+          "teamAdvice": "王老师建议：谈延期",
+          "isUrgent": true,
+          "actions": [
+            { "label": "同意延期", "isPrimary": true },
+            { "label": "加人赶工", "isPrimary": false }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "量潮咨询",
+      "tag": "主营",
+      "isPrimary": true,
+      "decisions": [
+        {
+          "fromPerson": "赵一凡",
+          "deadline": "本周五前",
+          "title": "某制造企业数字化评估 · 报价方案",
+          "context": "新客户，初步需求已明确。需提交评估报价，预计4周交付。",
+          "teamAdvice": "一凡建议：接，开拓制造业标杆",
+          "isUrgent": false,
+          "actions": [
+            { "label": "批准", "isPrimary": true },
+            { "label": "调整报价", "isPrimary": false },
+            { "label": "婉拒", "isPrimary": false }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "量潮云",
+      "tag": "孵化中",
+      "isPrimary": false,
+      "decisions": [],
+      "emptyMessage": "暂无待决策事项\n市场调研进行中"
+    }
+  ],
+  "functionCards": [
+    {
+      "name": "人力资源",
+      "metrics": [
+        { "label": "团队", "value": "8人" },
+        { "label": "出勤", "value": "全员" },
+        { "label": "待审批", "value": "0" }
+      ],
+      "trend": { "text": "无异常", "direction": "flat" }
+    },
+    {
+      "name": "财务管理",
+      "metrics": [
+        { "label": "本月回款", "value": "¥84k/120k" },
+        { "label": "现金流", "value": "健康" }
+      ],
+      "trend": { "text": "无预警", "direction": "flat" }
+    },
+    {
+      "name": "组织管理",
+      "isWarning": true,
+      "metrics": [
+        { "label": "决策委托率", "value": "42%" },
+        { "label": "标准化率", "value": "60%" },
+        { "label": "去中心化度", "value": "40%" }
+      ],
+      "trend": { "text": "↓5% 比上月", "direction": "down" },
+      "warning": "连续2月下降"
+    },
+    {
+      "name": "战略管理",
+      "metrics": [
+        { "label": "季度OKR", "value": "推进中" },
+        { "label": "量潮云", "value": "报告下周出" }
+      ],
+      "trend": { "text": "无阻塞", "direction": "flat" }
+    },
+    {
+      "name": "新媒体",
+      "metrics": [
+        { "label": "公众号", "value": "按时" },
+        { "label": "知乎", "value": "3篇/周" }
+      ],
+      "trend": { "text": "稳定", "direction": "flat" }
+    }
+  ]
+}
