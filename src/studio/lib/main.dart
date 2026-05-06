@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:qtadmin_studio/models/panorama.dart';
+import 'package:qtadmin_studio/models/qtconsult.dart';
 import 'package:qtadmin_studio/screens/business_detail_screen.dart';
 import 'package:qtadmin_studio/screens/panorama_screen.dart';
+import 'package:qtadmin_studio/screens/qtconsult_screen.dart';
 import 'package:qtadmin_studio/screens/thinking_screen.dart';
 import 'package:qtadmin_studio/services/panorama_loader.dart';
+import 'package:qtadmin_studio/services/qtconsult_loader.dart';
 
 void main() {
   runApp(const QtAdminStudio());
@@ -44,8 +47,9 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
   int _selectedTenant = 0;
   int _selectedIndex = 0;
   PanoramaData? _data;
+  QtConsultData? _consultData;
 
-  static final _tenants = [
+  late final List<_TenantConfig> _tenants = [
     _TenantConfig(
       name: '量潮创始人',
       icon: Icons.person_outline,
@@ -89,7 +93,7 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
         _NavItem(
           icon: Icons.support_agent_outlined,
           label: '量潮咨询',
-          builder: (data, _) => BusinessDetailScreen(unit: data.businessUnits[2]),
+          builder: _buildQtConsult,
         ),
         _NavItem(
           icon: Icons.cloud_outlined,
@@ -102,16 +106,23 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
 
   _TenantConfig get _currentTenant => _tenants[_selectedTenant];
 
-  static Widget _buildPanorama(PanoramaData data, String tenantName) {
+  Widget _buildPanorama(PanoramaData data, String tenantName) {
     return PanoramaScreen(data: data, tenantName: tenantName);
   }
 
-  static Widget _buildThinking(PanoramaData data, String tenantName) {
+  Widget _buildThinking(PanoramaData data, String tenantName) {
     return const ThinkingScreen();
   }
 
-  static Widget _buildPlaceholder(PanoramaData data, String tenantName) {
+  Widget _buildPlaceholder(PanoramaData data, String tenantName) {
     return const Center(child: Text('即将上线'));
+  }
+
+  Widget _buildQtConsult(PanoramaData data, String tenantName) {
+    if (_consultData == null) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    return QtConsultScreen(data: _consultData!);
   }
 
   @override
@@ -121,10 +132,14 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
   }
 
   Future<void> _loadData() async {
-    final data = await PanoramaLoader.load();
+    final results = await Future.wait([
+      PanoramaLoader.load(),
+      QtConsultLoader.load(),
+    ]);
     if (mounted) {
       setState(() {
-        _data = data;
+        _data = results[0] as PanoramaData;
+        _consultData = results[1] as QtConsultData;
       });
     }
   }
