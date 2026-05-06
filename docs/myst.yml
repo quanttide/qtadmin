@@ -31,6 +31,4 @@ project:
 site:
   template: book-theme
   options:
-    logo: qtadmin
-    favicon: favicon.ico
     folders: false
