@@ -29,10 +29,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - name: Install mystmd
-        run: npm install -g mystmd
-      - name: Build docs
-        run: mystmd build
+      - name: Install and build docs with MyST
+        run: |
+          npm install -g mystmd
+          npx mystmd build
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
