@@ -1,5 +1,17 @@
 # Changelog
 
+## v0.0.3
+
+### 新增
+- 量潮咨询详情页：双栏联动面板（信息看板 + 策略看板），支持发现记录、策略修正、决策链路管理
+- 咨询数据模型（DiscoveryData / StakeholderData / StrategyRevisionData）及 JSON 加载服务
+- 发现→策略强制联动：高风险/需关注发现自动追加策略审视记录
+- ADD 架构设计文档
+
+### 优化
+- 导航重构：`_tenants` 改为实例字段，支持动态页面加载
+- 资源注册：`qtconsult.json` 注册为 Flutter asset
+
 ## v0.0.2
 
 ### 新增
