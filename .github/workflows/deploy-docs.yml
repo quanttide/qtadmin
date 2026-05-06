@@ -33,6 +33,11 @@ jobs:
         run: |
           npm install -g mystmd
           npx mystmd build
+      - name: Locate build output
+        run: |
+          echo "=== _build/* ==="
+          ls -la _build/ 2>/dev/null || echo "_build/ not found"
+          find _build -type d 2>/dev/null
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
