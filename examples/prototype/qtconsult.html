@@ -5,69 +5,259 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>量潮咨询 · 项目详情</title>
         <style>
+            :root {
+                --green: #1a7f37;
+                --green-light: #e8f5e9;
+                --green-bg: #f0faf3;
+                --red: #b71c1c;
+                --red-light: #ffebee;
+                --orange: #c8690a;
+                --orange-light: #fff3e0;
+                --blue: #1a5fdc;
+                --blue-light: #e8f0ff;
+                --gray-50: #f9f9f9;
+                --gray-100: #f5f5f5;
+                --gray-200: #eee;
+                --gray-300: #ddd;
+                --gray-400: #ccc;
+                --gray-500: #aaa;
+                --gray-600: #888;
+                --gray-700: #555;
+                --gray-800: #333;
+                --gray-900: #222;
+                --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+                --shadow:
+                    0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+                --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+                --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.12);
+                --radius-sm: 6px;
+                --radius: 10px;
+                --radius-lg: 14px;
+                --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+
             * {
                 margin: 0;
                 padding: 0;
                 box-sizing: border-box;
             }
+
             body {
-                font-family: -apple-system, "Segoe UI", "PingFang SC",
-                    sans-serif;
-                background: #f5f5f5;
-                color: #222;
-                padding: 20px;
-                max-width: 1100px;
+                font-family:
+                    -apple-system, "Segoe UI", "PingFang SC", "Noto Sans SC",
+                    "Microsoft YaHei", sans-serif;
+                background: #f0f2f5;
+                color: var(--gray-900);
+                padding: 24px;
+                max-width: 1120px;
                 margin: 0 auto;
                 line-height: 1.5;
+                -webkit-font-smoothing: antialiased;
+                -moz-osx-font-smoothing: grayscale;
             }
 
             /* 顶部导航 */
             .topbar {
                 display: flex;
                 justify-content: space-between;
-                align-items: center;
+                align-items: flex-start;
                 margin-bottom: 20px;
+                flex-wrap: wrap;
+                gap: 12px;
+            }
+            .topbar .left-col {
+                display: flex;
+                flex-direction: column;
+                gap: 2px;
+            }
+            .topbar .back-link {
+                font-size: 12px;
+                color: var(--gray-600);
+                text-decoration: none;
+                transition: color var(--transition);
+                display: inline-flex;
+                align-items: center;
+                gap: 3px;
+                width: fit-content;
+            }
+            .topbar .back-link:hover {
+                color: var(--gray-900);
             }
             .topbar h1 {
-                font-size: 18px;
-                font-weight: 600;
+                font-size: 20px;
+                font-weight: 700;
+                letter-spacing: -0.01em;
+                color: var(--gray-900);
+            }
+            .topbar .right-col {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                flex-wrap: wrap;
             }
             .topbar .phase {
-                font-size: 12px;
-                background: #e8f5e9;
-                color: #1a7f37;
-                padding: 3px 10px;
-                border-radius: 4px;
+                font-size: 11px;
+                font-weight: 600;
+                background: var(--green-light);
+                color: var(--green);
+                padding: 5px 12px;
+                border-radius: 20px;
+                letter-spacing: 0.02em;
+                white-space: nowrap;
             }
-            .topbar .back {
-                font-size: 12px;
-                color: #888;
-                text-decoration: none;
+            .topbar .last-updated {
+                font-size: 10px;
+                color: var(--gray-500);
+                white-space: nowrap;
+            }
+            .btn-export {
+                font-size: 11px;
+                padding: 6px 14px;
+                border-radius: 20px;
+                border: 1px solid var(--gray-300);
+                background: #fff;
+                cursor: pointer;
+                color: var(--gray-700);
+                transition: all var(--transition);
+                white-space: nowrap;
+                font-weight: 500;
+            }
+            .btn-export:hover {
+                background: var(--gray-50);
+                border-color: var(--gray-400);
+                color: var(--gray-900);
+            }
+            .btn-export:active {
+                background: var(--gray-100);
+                transform: scale(0.97);
+            }
+
+            /* 统计条 */
+            .stats-bar {
+                display: flex;
+                gap: 18px;
+                flex-wrap: wrap;
+                margin-bottom: 16px;
+                font-size: 11px;
+                color: var(--gray-600);
+                background: #fff;
+                border-radius: var(--radius);
+                padding: 12px 18px;
+                box-shadow: var(--shadow-sm);
+                align-items: center;
+            }
+            .stats-bar .stat-item {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+            }
+            .stats-bar .stat-dot {
+                width: 7px;
+                height: 7px;
+                border-radius: 50%;
+                flex-shrink: 0;
+            }
+            .stats-bar .stat-dot.red {
+                background: var(--red);
+            }
+            .stats-bar .stat-dot.orange {
+                background: var(--orange);
+            }
+            .stats-bar .stat-dot.green {
+                background: var(--green);
+            }
+            .stats-bar .stat-dot.blue {
+                background: var(--blue);
+            }
+            .stats-bar .stat-num {
+                font-weight: 700;
+                color: var(--gray-900);
+            }
+            .stats-bar .pending-review-badge {
+                background: #fff3e0;
+                color: var(--orange);
+                padding: 4px 10px;
+                border-radius: 12px;
+                font-weight: 600;
+                font-size: 10px;
+                animation: pulse-badge 2s ease-in-out infinite;
+                cursor: pointer;
+                border: none;
+                white-space: nowrap;
+                transition: all var(--transition);
+            }
+            .stats-bar .pending-review-badge:hover {
+                background: #ffe8cc;
+                transform: translateY(-1px);
+            }
+            @keyframes pulse-badge {
+                0%,
+                100% {
+                    box-shadow: 0 0 0 0 rgba(200, 105, 10, 0.3);
+                }
+                50% {
+                    box-shadow: 0 0 0 8px rgba(200, 105, 10, 0);
+                }
             }
 
             /* 两栏布局 */
             .panels {
                 display: grid;
                 grid-template-columns: 1fr 1fr;
-                gap: 16px;
+                gap: 18px;
             }
 
             .panel {
                 background: #fff;
-                border-radius: 10px;
-                padding: 18px;
-                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+                border-radius: var(--radius-lg);
+                padding: 20px 22px;
+                box-shadow: var(--shadow);
+                transition:
+                    box-shadow var(--transition),
+                    border-color var(--transition);
+                position: relative;
+                border: 2px solid transparent;
+            }
+            .panel.highlight {
+                border-color: var(--orange);
+                box-shadow:
+                    var(--shadow-md),
+                    0 0 0 6px rgba(200, 105, 10, 0.06);
             }
             .panel h2 {
-                font-size: 13px;
-                font-weight: 600;
-                color: #555;
-                margin-bottom: 14px;
-                padding-bottom: 8px;
-                border-bottom: 1px solid #eee;
+                font-size: 14px;
+                font-weight: 700;
+                color: var(--gray-800);
+                margin-bottom: 16px;
+                padding-bottom: 10px;
+                border-bottom: 1.5px solid var(--gray-200);
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
+                letter-spacing: -0.005em;
+            }
+            .panel h2 .subtitle {
+                font-size: 11px;
+                color: var(--gray-500);
+                font-weight: 400;
+            }
+            .panel h2 .alert-dot {
+                width: 8px;
+                height: 8px;
+                border-radius: 50%;
+                background: var(--orange);
+                display: inline-block;
+                margin-left: 6px;
+                animation: blink-dot 1.2s ease-in-out infinite;
+            }
+            @keyframes blink-dot {
+                0%,
+                100% {
+                    opacity: 1;
+                }
+                50% {
+                    opacity: 0.3;
+                }
             }
 
             /* 信息看板 */
@@ -79,21 +269,35 @@
             }
             .tag {
                 font-size: 11px;
-                background: #f0f0f0;
-                padding: 3px 8px;
-                border-radius: 4px;
-                color: #555;
+                background: var(--gray-100);
+                padding: 5px 10px;
+                border-radius: 14px;
+                color: var(--gray-700);
+                font-weight: 500;
+                letter-spacing: 0.01em;
             }
             .tag.l2 {
-                background: #fff3e0;
-                color: #c8690a;
+                background: var(--orange-light);
+                color: var(--orange);
+                font-weight: 600;
             }
 
             .section-title {
                 font-size: 11px;
-                font-weight: 600;
-                color: #888;
-                margin: 14px 0 8px;
+                font-weight: 700;
+                color: var(--gray-600);
+                margin: 16px 0 10px;
+                text-transform: uppercase;
+                letter-spacing: 0.04em;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+            }
+            .section-title::after {
+                content: "";
+                flex: 1;
+                height: 1px;
+                background: var(--gray-200);
             }
 
             /* 发现清单 */
@@ -102,126 +306,319 @@
             }
             .discovery-item {
                 font-size: 12px;
-                padding: 8px 0;
-                border-bottom: 1px solid #f5f5f5;
+                padding: 10px 8px;
+                border-bottom: 1px solid var(--gray-100);
                 display: flex;
-                gap: 8px;
+                gap: 10px;
                 align-items: flex-start;
+                cursor: default;
+                transition:
+                    background var(--transition),
+                    transform var(--transition);
+                border-radius: var(--radius-sm);
+                margin: 0 -6px;
+                padding-left: 6px;
+                padding-right: 6px;
+                position: relative;
+                group: discovery-group;
+            }
+            .discovery-item:hover {
+                background: var(--gray-50);
             }
             .discovery-item:last-child {
                 border-bottom: none;
             }
             .discovery-item .dot {
-                width: 6px;
-                height: 6px;
+                width: 8px;
+                height: 8px;
                 border-radius: 50%;
-                background: #1a7f37;
-                margin-top: 6px;
+                margin-top: 7px;
                 flex-shrink: 0;
+                transition: transform var(--transition);
             }
             .discovery-item .dot.red {
-                background: #b71c1c;
+                background: var(--red);
+                box-shadow: 0 0 0 3px rgba(183, 28, 28, 0.12);
             }
             .discovery-item .dot.orange {
-                background: #c8690a;
+                background: var(--orange);
+                box-shadow: 0 0 0 3px rgba(200, 105, 10, 0.12);
+            }
+            .discovery-item .dot.green {
+                background: var(--green);
+                box-shadow: 0 0 0 3px rgba(26, 127, 55, 0.12);
+            }
+            .discovery-item .dot.blue {
+                background: var(--blue);
+                box-shadow: 0 0 0 3px rgba(26, 95, 220, 0.12);
+            }
+            .discovery-item .content-wrap {
+                flex: 1;
+                min-width: 0;
+            }
+            .discovery-item .discovery-text {
+                line-height: 1.5;
+                color: var(--gray-800);
             }
             .discovery-item .meta {
                 font-size: 10px;
-                color: #aaa;
-                margin-top: 2px;
+                color: var(--gray-500);
+                margin-top: 4px;
+                display: flex;
+                gap: 8px;
+                flex-wrap: wrap;
+                align-items: center;
+            }
+            .discovery-item .status-badge {
+                font-size: 10px;
+                padding: 2px 7px;
+                border-radius: 10px;
+                font-weight: 500;
+                white-space: nowrap;
+            }
+            .status-badge.confirmed {
+                background: #e8f5e9;
+                color: #1a7f37;
+            }
+            .status-badge.pending {
+                background: #fff8e1;
+                color: #b68a00;
+            }
+            .status-badge.dismissed {
+                background: #f5f5f5;
+                color: #999;
+                text-decoration: line-through;
+            }
+            .discovery-item .item-actions {
+                display: flex;
+                gap: 2px;
+                opacity: 0;
+                transition: opacity var(--transition);
+                flex-shrink: 0;
+                align-items: center;
+            }
+            .discovery-item:hover .item-actions {
+                opacity: 1;
+            }
+            .item-actions button {
+                width: 26px;
+                height: 26px;
+                border-radius: 50%;
+                border: none;
+                background: transparent;
+                cursor: pointer;
+                font-size: 12px;
+                color: var(--gray-500);
+                transition: all var(--transition);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .item-actions button:hover {
+                background: var(--gray-200);
+                color: var(--gray-800);
+            }
+            .item-actions button.danger:hover {
+                background: var(--red-light);
+                color: var(--red);
+            }
+            .item-actions button.confirm-btn:hover {
+                background: var(--green-light);
+                color: var(--green);
+            }
+            .discovery-item .linked-indicator {
+                font-size: 9px;
+                color: var(--orange);
+                cursor: help;
+                margin-left: 4px;
             }
 
             .add-discovery {
                 font-size: 12px;
-                color: #1a7f37;
+                color: var(--green);
                 background: none;
-                border: 1px dashed #ccc;
-                border-radius: 6px;
-                padding: 8px;
+                border: 1.5px dashed var(--gray-300);
+                border-radius: var(--radius-sm);
+                padding: 10px;
                 width: 100%;
                 cursor: pointer;
-                margin-top: 8px;
+                margin-top: 10px;
+                transition: all var(--transition);
+                font-weight: 500;
+                letter-spacing: 0.01em;
             }
             .add-discovery:hover {
-                background: #f9f9f9;
+                background: var(--green-bg);
+                border-color: var(--green);
+                color: #146b2e;
             }
 
             /* 沟通记录 */
             .comm-row {
                 display: flex;
                 justify-content: space-between;
+                align-items: center;
                 font-size: 12px;
-                padding: 6px 0;
-                border-bottom: 1px solid #f5f5f5;
+                padding: 9px 6px;
+                border-bottom: 1px solid var(--gray-100);
+                cursor: pointer;
+                transition: background var(--transition);
+                border-radius: var(--radius-sm);
+                margin: 0 -4px;
+                padding-left: 4px;
+                padding-right: 4px;
+                gap: 8px;
             }
             .comm-row:last-child {
                 border-bottom: none;
             }
-            .comm-row .date {
-                color: #aaa;
-                font-size: 11px;
+            .comm-row:hover {
+                background: var(--gray-50);
             }
-            .comm-row a {
-                color: #1a7f37;
-                text-decoration: none;
+            .comm-row .comm-title {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                flex: 1;
+                min-width: 0;
+            }
+            .comm-row .comm-icon {
+                font-size: 14px;
+                flex-shrink: 0;
+            }
+            .comm-row .date {
+                color: var(--gray-500);
+                font-size: 11px;
+                white-space: nowrap;
+                flex-shrink: 0;
+            }
+            .comm-row .expand-icon {
+                font-size: 10px;
+                color: var(--gray-400);
+                transition: transform var(--transition);
+                flex-shrink: 0;
+            }
+            .comm-row.expanded .expand-icon {
+                transform: rotate(180deg);
+            }
+            .comm-detail {
+                display: none;
+                font-size: 11px;
+                color: var(--gray-600);
+                padding: 8px 12px;
+                margin: 0 4px 4px;
+                background: var(--gray-50);
+                border-radius: var(--radius-sm);
+                line-height: 1.6;
+                border-left: 2px solid var(--gray-300);
+            }
+            .comm-detail.show {
+                display: block;
+                animation: slideDown 0.2s ease-out;
+            }
+            @keyframes slideDown {
+                from {
+                    opacity: 0;
+                    transform: translateY(-4px);
+                    max-height: 0;
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                    max-height: 200px;
+                }
             }
 
             /* 策略看板 */
             .strategy-section {
-                margin-bottom: 16px;
+                margin-bottom: 18px;
             }
             .strategy-section:last-child {
                 margin-bottom: 0;
             }
             .strategy-section h3 {
                 font-size: 12px;
-                font-weight: 600;
-                color: #555;
+                font-weight: 700;
+                color: var(--gray-700);
                 margin-bottom: 6px;
+                letter-spacing: 0.01em;
             }
             .strategy-section p,
             .strategy-section li {
                 font-size: 12px;
-                color: #333;
-                line-height: 1.6;
+                color: var(--gray-800);
+                line-height: 1.7;
+            }
+            .strategy-section .insight {
+                color: var(--gray-600);
+                font-size: 11px;
+                margin-top: 2px;
+                font-style: italic;
             }
             .strategy-section ul {
                 list-style: none;
                 padding: 0;
             }
             .strategy-section li {
-                padding: 4px 0;
-                padding-left: 12px;
+                padding: 5px 0 5px 16px;
                 position: relative;
             }
             .strategy-section li::before {
                 content: "→";
                 position: absolute;
                 left: 0;
-                color: #aaa;
+                color: var(--gray-400);
+                font-weight: 600;
+            }
+            .risk-note {
+                margin-top: 8px;
+                font-size: 11px;
+                color: var(--orange);
+                background: var(--orange-light);
+                padding: 8px 12px;
+                border-radius: var(--radius-sm);
+                border-left: 3px solid var(--orange);
+                font-weight: 500;
+                display: flex;
+                align-items: flex-start;
+                gap: 6px;
+                line-height: 1.5;
             }
 
             /* 决策链路 */
             .stakeholder {
                 display: grid;
-                grid-template-columns: 1fr 60px 1fr;
-                gap: 8px;
+                grid-template-columns: 1fr auto 1fr;
+                gap: 10px;
                 align-items: center;
-                padding: 6px 0;
-                border-bottom: 1px solid #f5f5f5;
+                padding: 8px 6px;
+                border-bottom: 1px solid var(--gray-100);
                 font-size: 12px;
+                cursor: pointer;
+                transition: background var(--transition);
+                border-radius: var(--radius-sm);
+                margin: 0 -4px;
+                padding-left: 4px;
+                padding-right: 4px;
             }
             .stakeholder:last-child {
                 border-bottom: none;
             }
-            .stakeholder .name {
-                font-weight: 500;
+            .stakeholder:hover {
+                background: var(--gray-50);
+            }
+            .stakeholder .sh-name {
+                font-weight: 600;
+                color: var(--gray-900);
             }
             .stance {
                 text-align: center;
-                font-size: 11px;
-                padding: 2px 6px;
-                border-radius: 3px;
+                font-size: 10px;
+                padding: 4px 10px;
+                border-radius: 12px;
+                font-weight: 700;
+                white-space: nowrap;
+                letter-spacing: 0.02em;
             }
             .stance.support {
                 background: #e8f5e9;
@@ -229,47 +626,288 @@
             }
             .stance.neutral {
                 background: #f5f5f5;
-                color: #888;
+                color: #777;
             }
             .stance.oppose {
                 background: #ffebee;
                 color: #b71c1c;
             }
-            .stakeholder .concern {
-                color: #888;
+            .stakeholder .sh-concern {
+                color: var(--gray-600);
                 font-size: 11px;
             }
-            .stakeholder .tactic {
-                color: #1a7f37;
+            .stakeholder .sh-detail {
+                display: none;
+                grid-column: 1 / -1;
                 font-size: 11px;
+                color: var(--gray-600);
+                padding: 8px 10px;
+                background: #fafafa;
+                border-radius: var(--radius-sm);
+                margin-top: 4px;
+                line-height: 1.6;
+            }
+            .stakeholder.expanded .sh-detail {
+                display: block;
+                animation: slideDown 0.2s ease-out;
             }
 
             /* 策略修正记录 */
             .revision {
                 font-size: 11px;
-                color: #888;
-                padding: 6px 0;
-                border-bottom: 1px solid #f5f5f5;
+                color: var(--gray-600);
+                padding: 8px 6px;
+                border-bottom: 1px solid var(--gray-100);
                 display: flex;
-                gap: 8px;
+                gap: 10px;
+                align-items: flex-start;
+                transition: background var(--transition);
+                border-radius: var(--radius-sm);
+                margin: 0 -4px;
+                padding-left: 4px;
+                padding-right: 4px;
             }
             .revision:last-child {
                 border-bottom: none;
             }
+            .revision.pending-review {
+                background: #fffdf7;
+                border-left: 3px solid var(--orange);
+                padding-left: 8px;
+                margin-left: -4px;
+                border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+            }
             .revision .rev-date {
-                color: #aaa;
+                color: var(--gray-500);
                 white-space: nowrap;
+                flex-shrink: 0;
+                font-weight: 500;
+                min-width: 50px;
+            }
+            .revision .rev-content {
+                flex: 1;
+                min-width: 0;
             }
             .revision .rev-reason {
-                color: #333;
+                color: var(--gray-800);
+                line-height: 1.5;
+            }
+            .revision .rev-status-tag {
+                font-size: 9px;
+                padding: 2px 7px;
+                border-radius: 10px;
+                font-weight: 600;
+                white-space: nowrap;
+                flex-shrink: 0;
+            }
+            .rev-status-tag.needs-review {
+                background: #fff3e0;
+                color: #c8690a;
+            }
+            .rev-status-tag.reviewed {
+                background: #e8f5e9;
+                color: #1a7f37;
+            }
+            .revision .btn-review-done {
+                font-size: 10px;
+                padding: 3px 10px;
+                border-radius: 12px;
+                border: 1px solid var(--green);
+                background: #fff;
+                color: var(--green);
+                cursor: pointer;
+                white-space: nowrap;
+                flex-shrink: 0;
+                transition: all var(--transition);
+                font-weight: 500;
+            }
+            .revision .btn-review-done:hover {
+                background: var(--green-light);
             }
 
-            /* 空状态提示 */
+            /* 空状态 */
             .empty-hint {
                 font-size: 12px;
-                color: #bbb;
+                color: #ccc;
                 text-align: center;
-                padding: 20px 0;
+                padding: 24px 0;
+                font-style: italic;
+            }
+
+            /* Toast通知 */
+            .toast-container {
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                z-index: 200;
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+            }
+            .toast {
+                font-size: 12px;
+                padding: 12px 18px;
+                border-radius: var(--radius-sm);
+                background: #1a1a1a;
+                color: #fff;
+                box-shadow: var(--shadow-lg);
+                animation: toastIn 0.3s ease-out;
+                max-width: 360px;
+                line-height: 1.4;
+                pointer-events: auto;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+            .toast.success {
+                border-left: 3px solid #4caf50;
+            }
+            .toast.warning {
+                border-left: 3px solid #ff9800;
+            }
+            .toast.info {
+                border-left: 3px solid #2196f3;
+            }
+            @keyframes toastIn {
+                from {
+                    opacity: 0;
+                    transform: translateX(40px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+            }
+            @keyframes toastOut {
+                from {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+                to {
+                    opacity: 0;
+                    transform: translateX(40px);
+                }
+            }
+
+            /* 弹窗 */
+            .modal-overlay {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.4);
+                z-index: 100;
+                justify-content: center;
+                align-items: center;
+                backdrop-filter: blur(2px);
+            }
+            .modal-overlay.show {
+                display: flex;
+            }
+            .modal {
+                background: #fff;
+                border-radius: var(--radius-lg);
+                padding: 24px;
+                width: 92%;
+                max-width: 440px;
+                box-shadow: var(--shadow-lg);
+                animation: modalIn 0.25s ease-out;
+            }
+            @keyframes modalIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(-20px) scale(0.96);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0) scale(1);
+                }
+            }
+            .modal h3 {
+                font-size: 15px;
+                font-weight: 700;
+                margin-bottom: 16px;
+                color: var(--gray-900);
+            }
+            .modal .form-group {
+                margin-bottom: 12px;
+            }
+            .modal label {
+                font-size: 11px;
+                font-weight: 600;
+                color: var(--gray-600);
+                display: block;
+                margin-bottom: 4px;
+                letter-spacing: 0.02em;
+                text-transform: uppercase;
+            }
+            .modal textarea {
+                width: 100%;
+                height: 85px;
+                border: 1.5px solid var(--gray-300);
+                border-radius: var(--radius-sm);
+                padding: 10px 12px;
+                font-size: 12px;
+                font-family: inherit;
+                resize: none;
+                transition: border-color var(--transition);
+                line-height: 1.5;
+            }
+            .modal textarea:focus {
+                outline: none;
+                border-color: var(--green);
+                box-shadow: 0 0 0 3px rgba(26, 127, 55, 0.08);
+            }
+            .modal select {
+                width: 100%;
+                padding: 8px 10px;
+                font-size: 12px;
+                border: 1.5px solid var(--gray-300);
+                border-radius: var(--radius-sm);
+                font-family: inherit;
+                background: #fff;
+                cursor: pointer;
+                transition: border-color var(--transition);
+            }
+            .modal select:focus {
+                outline: none;
+                border-color: var(--green);
+            }
+            .modal .field-hint {
+                font-size: 10px;
+                color: var(--gray-500);
+                margin-top: 3px;
+            }
+            .modal .modal-actions {
+                display: flex;
+                gap: 8px;
+                justify-content: flex-end;
+                margin-top: 18px;
+            }
+            .modal .modal-actions button {
+                font-size: 12px;
+                padding: 8px 18px;
+                border-radius: 20px;
+                border: 1.5px solid var(--gray-300);
+                background: #fff;
+                cursor: pointer;
+                font-weight: 500;
+                transition: all var(--transition);
+            }
+            .modal .modal-actions button:hover {
+                background: var(--gray-50);
+            }
+            .modal .modal-actions .primary {
+                background: #1a1a1a;
+                color: #fff;
+                border-color: #1a1a1a;
+                font-weight: 600;
+            }
+            .modal .modal-actions .primary:hover {
+                background: #333;
+                border-color: #333;
             }
 
             /* 响应式 */
@@ -278,81 +916,90 @@
                     grid-template-columns: 1fr;
                 }
                 body {
-                    padding: 12px;
+                    padding: 10px;
                 }
-            }
-
-            /* 新增发现弹窗 */
-            .modal-overlay {
-                display: none;
-                position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background: rgba(0, 0, 0, 0.3);
-                z-index: 100;
-                justify-content: center;
-                align-items: center;
-            }
-            .modal-overlay.show {
-                display: flex;
-            }
-            .modal {
-                background: #fff;
-                border-radius: 10px;
-                padding: 20px;
-                width: 90%;
-                max-width: 400px;
-            }
-            .modal h3 {
-                font-size: 14px;
-                margin-bottom: 12px;
-            }
-            .modal textarea {
-                width: 100%;
-                height: 80px;
-                border: 1px solid #ddd;
-                border-radius: 6px;
-                padding: 8px;
-                font-size: 12px;
-                font-family: inherit;
-                resize: none;
-            }
-            .modal .modal-actions {
-                display: flex;
-                gap: 8px;
-                justify-content: flex-end;
-                margin-top: 12px;
-            }
-            .modal .modal-actions button {
-                font-size: 12px;
-                padding: 6px 14px;
-                border-radius: 6px;
-                border: 1px solid #ddd;
-                background: #fff;
-                cursor: pointer;
-            }
-            .modal .modal-actions .primary {
-                background: #1a1a1a;
-                color: #fff;
-                border-color: #1a1a1a;
+                .panel {
+                    padding: 16px;
+                }
+                .stakeholder {
+                    grid-template-columns: 1fr auto;
+                    gap: 6px;
+                }
+                .stakeholder .sh-concern {
+                    grid-column: 1 / -1;
+                }
+                .stats-bar {
+                    gap: 10px;
+                    padding: 10px 14px;
+                    font-size: 10px;
+                }
+                .topbar h1 {
+                    font-size: 17px;
+                }
+                .modal {
+                    padding: 18px;
+                    width: 95%;
+                }
             }
         </style>
     </head>
     <body>
+        <!-- Toast通知容器 -->
+        <div class="toast-container" id="toast-container"></div>
+
+        <!-- 顶部导航 -->
         <div class="topbar">
-            <div>
-                <a href="#" class="back">← 量潮咨询</a>
-                <h1 style="margin-top: 4px;">某制造企业数字化项目</h1>
+            <div class="left-col">
+                <a href="#" class="back-link">← 量潮咨询</a>
+                <h1>某制造企业数字化项目</h1>
             </div>
-            <span class="phase">方案期</span>
+            <div class="right-col">
+                <span class="last-updated" id="last-updated"
+                    >最后更新：5月14日 15:30</span
+                >
+                <button
+                    class="btn-export"
+                    onclick="exportBrief()"
+                    title="复制项目简报"
+                >
+                    📋 复制简报
+                </button>
+                <span class="phase">方案期</span>
+            </div>
         </div>
 
+        <!-- 统计条 -->
+        <div class="stats-bar" id="stats-bar">
+            <div class="stat-item">
+                <span class="stat-dot green"></span> 已确认发现
+                <span class="stat-num" id="stat-confirmed">3</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-dot orange"></span> 高风险
+                <span class="stat-num" id="stat-highrisk">2</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-dot red"></span> 阻碍项
+                <span class="stat-num" id="stat-blocker">1</span>
+            </div>
+            <button
+                class="pending-review-badge"
+                id="pending-review-badge"
+                style="display: none"
+                onclick="scrollToRevisions()"
+            >
+                ⚠ 策略待审视 <span id="pending-count">0</span> 条
+            </button>
+        </div>
+
+        <!-- 两栏面板 -->
         <div class="panels">
             <!-- ===== 信息看板 ===== -->
             <div class="panel" id="info-panel">
-                <h2>信息看板 <span style="font-size:11px;color:#aaa;font-weight:400;">客户是什么情况</span></h2>
+                <h2>
+                    信息看板
+                    <span class="subtitle">客户是什么情况</span>
+                </h2>
 
                 <div class="profile-row">
                     <span class="tag">制造业 · 电子零部件</span>
@@ -361,91 +1008,67 @@
                 </div>
 
                 <div class="section-title">发现清单</div>
-                <ul class="discovery-list" id="discovery-list">
-                    <li class="discovery-item">
-                        <span class="dot orange"></span>
-                        <div>
-                            数据分散在3个ERP系统，无法打通
-                            <div class="meta">5月14日 需求调研会 · 已确认</div>
-                        </div>
-                    </li>
-                    <li class="discovery-item">
-                        <span class="dot orange"></span>
-                        <div>
-                            管理层有数字化意愿，但中层普遍抗拒
-                            <div class="meta">5月14日 需求调研会 · 已确认</div>
-                        </div>
-                    </li>
-                    <li class="discovery-item">
-                        <span class="dot red"></span>
-                        <div>
-                            IT部门仅2人，日常运维已吃紧，无力支撑系统迁移
-                            <div class="meta">5月10日 初次接触 · 已确认</div>
-                        </div>
-                    </li>
-                </ul>
-                <button class="add-discovery" onclick="showModal()">+ 添加新发现</button>
+                <ul class="discovery-list" id="discovery-list"></ul>
+                <button class="add-discovery" onclick="showModal()">
+                    + 添加新发现
+                </button>
 
                 <div class="section-title">沟通记录</div>
-                <div class="comm-row">
-                    <span>需求调研会 · 纪要看全文</span>
-                    <span class="date">5月14日</span>
-                </div>
-                <div class="comm-row">
-                    <span>初次接触 · 纪要看全文</span>
-                    <span class="date">5月10日</span>
-                </div>
+                <div id="comm-list"></div>
             </div>
 
             <!-- ===== 策略看板 ===== -->
             <div class="panel" id="strategy-panel">
-                <h2>策略看板 <span style="font-size:11px;color:#aaa;font-weight:400;">我们怎么应对</span></h2>
+                <h2>
+                    策略看板
+                    <span class="subtitle">我们怎么应对</span>
+                    <span
+                        class="alert-dot"
+                        id="strategy-alert-dot"
+                        style="display: none"
+                        title="有待审视的策略修正"
+                    ></span>
+                </h2>
 
                 <div class="strategy-section">
                     <h3>战略诉求</h3>
                     <p>客户表述：实现生产数据可视化，提升管理效率</p>
-                    <p style="color:#888; margin-top:2px;">判断：真实诉求可能是产能利用率不透明，管理层无法掌握真实生产进度。数据可视化只是手段，不是目的。</p>
+                    <p class="insight">
+                        判断：真实诉求可能是产能利用率不透明，管理层无法掌握真实生产进度。数据可视化只是手段，不是目的。
+                    </p>
                 </div>
 
                 <div class="strategy-section">
                     <h3>切入策略</h3>
                     <ul>
-                        <li>第一步：ERP数据打通试点（1个车间），快速出成果建立信任</li>
-                        <li>第二步：中层动员工作坊，让中层参与方案设计，减少实施阻力</li>
+                        <li>
+                            第一步：ERP数据打通试点（1个车间），快速出成果建立信任
+                        </li>
+                        <li>
+                            第二步：中层动员工作坊，让中层参与方案设计，减少实施阻力
+                        </li>
                         <li>第三步：逐步推广至全厂，同步评估IT团队扩容方案</li>
                     </ul>
-                    <div style="margin-top:6px;font-size:11px;color:#c8690a;">⚠ 风险：IT人力不足是硬约束，需在第一步中评估实际运维需求</div>
+                    <div class="risk-note">
+                        ⚠ 风险：IT人力不足是硬约束，需在第一步中评估实际运维需求
+                    </div>
                 </div>
 
                 <div class="strategy-section">
                     <h3>决策链路</h3>
-                    <div class="stakeholder">
-                        <span class="name">CEO 张总</span>
-                        <span class="stance support">支持</span>
-                        <span class="concern">关注降本增效，需要看到ROI</span>
-                    </div>
-                    <div class="stakeholder">
-                        <span class="name">CIO 李总</span>
-                        <span class="stance neutral">中立</span>
-                        <span class="concern">关注技术选型，倾向大厂方案</span>
-                    </div>
-                    <div class="stakeholder">
-                        <span class="name">财务 王总</span>
-                        <span class="stance oppose">反对</span>
-                        <span class="concern">预算紧张，需要分期方案</span>
-                    </div>
+                    <div id="stakeholder-list"></div>
                 </div>
 
-                <div class="section-title" style="margin-top:12px;">策略修正记录</div>
-                <div id="revision-list">
-                    <div class="revision">
-                        <span class="rev-date">5月14日</span>
-                        <span class="rev-reason">发现中层抗拒 → 切入策略增加第二步"中层动员"</span>
-                    </div>
-                    <div class="revision">
-                        <span class="rev-date">5月10日</span>
-                        <span class="rev-reason">发现IT人力不足 → 策略增加风险标注，第一步增加运维评估</span>
-                    </div>
+                <div class="section-title" style="margin-top: 14px">
+                    策略修正记录
+                </div>
+                <div id="revision-list"></div>
+                <div
+                    class="empty-hint"
+                    id="revision-empty"
+                    style="display: none"
+                >
+                    暂无策略修正记录
                 </div>
             </div>
         </div>
@@ -453,72 +1076,718 @@
         <!-- 新增发现弹窗 -->
         <div class="modal-overlay" id="modal">
             <div class="modal">
-                <h3>记录新发现</h3>
-                <textarea id="discovery-input" placeholder="这次接触发现了什么之前不知道的？"></textarea>
-                <div style="font-size:11px;color:#aaa;margin-top:4px;">提交后系统会自动检查策略是否需要调整</div>
+                <h3>📝 记录新发现</h3>
+                <div class="form-group">
+                    <label>发现内容 *</label>
+                    <textarea
+                        id="discovery-input"
+                        placeholder="这次接触发现了什么之前不知道的？描述具体事实……"
+                    ></textarea>
+                </div>
+                <div class="form-group">
+                    <label>发现类型</label>
+                    <select id="discovery-type">
+                        <option value="risk">⚠ 风险 / 阻碍</option>
+                        <option value="concern" selected>🔶 需关注</option>
+                        <option value="opportunity">💡 机会 / 积极信号</option>
+                        <option value="neutral">ℹ️ 中性信息</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>来源</label>
+                    <select id="discovery-source">
+                        <option value="刚刚记录">直接记录</option>
+                        <option value="需求调研会">
+                            需求调研会（5月14日）
+                        </option>
+                        <option value="初次接触">初次接触（5月10日）</option>
+                    </select>
+                </div>
+                <div class="field-hint">
+                    提交后系统会自动检查策略是否需要调整。高风险发现将触发策略审视提醒。
+                </div>
                 <div class="modal-actions">
                     <button onclick="hideModal()">取消</button>
-                    <button class="primary" onclick="addDiscovery()">提交</button>
+                    <button class="primary" onclick="addDiscovery()">
+                        提交发现
+                    </button>
                 </div>
             </div>
         </div>
 
         <script>
-            function showModal() {
-                document.getElementById("modal").classList.add("show");
-                document.getElementById("discovery-input").value = "";
-                document.getElementById("discovery-input").focus();
-            }
-            function hideModal() {
-                document.getElementById("modal").classList.remove("show");
-            }
+            (function () {
+                // ============ 数据模型 ============
+                const STORAGE_KEY = "quantidev_project_v2";
 
-            function addDiscovery() {
-                const input = document.getElementById("discovery-input");
-                const text = input.value.trim();
-                if (!text) return;
+                // 默认初始数据
+                const defaultState = {
+                    discoveries: [
+                        {
+                            id: "d1",
+                            text: "数据分散在3个ERP系统，无法打通",
+                            type: "concern",
+                            severity: "medium",
+                            status: "confirmed",
+                            source: "需求调研会",
+                            date: "5月14日",
+                            linkedToStrategy: true,
+                        },
+                        {
+                            id: "d2",
+                            text: "管理层有数字化意愿，但中层普遍抗拒",
+                            type: "concern",
+                            severity: "medium",
+                            status: "confirmed",
+                            source: "需求调研会",
+                            date: "5月14日",
+                            linkedToStrategy: true,
+                        },
+                        {
+                            id: "d3",
+                            text: "IT部门仅2人，日常运维已吃紧，无力支撑系统迁移",
+                            type: "risk",
+                            severity: "high",
+                            status: "confirmed",
+                            source: "初次接触",
+                            date: "5月10日",
+                            linkedToStrategy: true,
+                        },
+                    ],
+                    communications: [
+                        {
+                            id: "c1",
+                            title: "需求调研会",
+                            date: "5月14日",
+                            summary:
+                                "与CEO张总、CIO李总及核心中层进行了2小时的需求调研。明确了数据打通是首要诉求，但中层对变革存在明显疑虑，尤其是生产部门和财务部门。IT团队现状堪忧，仅2人维持日常运维。",
+                        },
+                        {
+                            id: "c2",
+                            title: "初次接触",
+                            date: "5月10日",
+                            summary:
+                                "与CEO张总初次会面，了解到企业数字化基础薄弱（L2级），但有明确的改进意愿。初步判断项目可行，但需关注内部阻力和资源约束。",
+                        },
+                    ],
+                    strategyRevisions: [
+                        {
+                            id: "r1",
+                            date: "5月14日",
+                            reason: "发现中层抗拒 → 切入策略增加第二步「中层动员」",
+                            relatedDiscoveryId: "d2",
+                            status: "reviewed",
+                        },
+                        {
+                            id: "r2",
+                            date: "5月10日",
+                            reason: "发现IT人力不足 → 策略增加风险标注，第一步增加运维评估",
+                            relatedDiscoveryId: "d3",
+                            status: "reviewed",
+                        },
+                    ],
+                    stakeholders: [
+                        {
+                            id: "s1",
+                            name: "CEO 张总",
+                            role: "CEO",
+                            stance: "support",
+                            concern: "关注降本增效，需要看到ROI",
+                            detail: "项目发起人，拥有最终决策权。对数字化转型有较清晰认知，但需要具体数据支撑决策。建议定期向其汇报阶段性成果。",
+                        },
+                        {
+                            id: "s2",
+                            name: "CIO 李总",
+                            role: "CIO",
+                            stance: "neutral",
+                            concern: "关注技术选型，倾向大厂方案",
+                            detail: "技术背景深厚，对方案的技术可行性有较高要求。倾向选择成熟大厂方案以降低风险。需要提供充分的技术论证和案例支持。",
+                        },
+                        {
+                            id: "s3",
+                            name: "财务 王总",
+                            role: "CFO",
+                            stance: "oppose",
+                            concern: "预算紧张，需要分期方案",
+                            detail: "对预算控制非常严格，是项目推进的主要阻力之一。需要提供详细的分期投入方案和ROI预测，用数据说服。建议在试点阶段控制成本，用实际效果证明价值。",
+                        },
+                    ],
+                    lastUpdated: "5月14日 15:30",
+                };
 
-                const list = document.getElementById("discovery-list");
-                const colors = ["", "orange", "red"];
-                const color = colors[Math.floor(Math.random() * colors.length)];
-                const item = document.createElement("li");
-                item.className = "discovery-item";
-                const now = new Date();
-                const dateStr =
-                    now.getMonth() + 1 + "月" + now.getDate() + "日";
-                item.innerHTML = `
-                    <span class="dot ${color}"></span>
-                    <div>
-                        ${text}
-                        <div class="meta">${dateStr} 刚刚记录 · 待确认</div>
-                    </div>
-                `;
-                list.insertBefore(item, list.firstChild);
+                let state;
 
-                // 策略看板自动追加修正记录
-                const revList = document.getElementById("revision-list");
-                const rev = document.createElement("div");
-                rev.className = "revision";
-                rev.innerHTML = `
-                    <span class="rev-date">${dateStr}</span>
-                    <span class="rev-reason">新发现：${text} → 策略待审视</span>
-                `;
-                revList.insertBefore(rev, revList.firstChild);
+                // 初始化：从localStorage读取或使用默认数据
+                function loadState() {
+                    try {
+                        const saved = localStorage.getItem(STORAGE_KEY);
+                        if (saved) {
+                            state = JSON.parse(saved);
+                            // 兼容旧版本数据
+                            if (!state.stakeholders)
+                                state.stakeholders = defaultState.stakeholders;
+                            if (!state.communications)
+                                state.communications =
+                                    defaultState.communications;
+                            if (!state.lastUpdated)
+                                state.lastUpdated = defaultState.lastUpdated;
+                        } else {
+                            state = JSON.parse(JSON.stringify(defaultState));
+                        }
+                    } catch (e) {
+                        state = JSON.parse(JSON.stringify(defaultState));
+                    }
+                }
 
-                // 给策略看板添加一条提醒
-                const panel = document.getElementById("strategy-panel");
-                panel.style.borderLeft = "3px solid #c8690a";
-                setTimeout(() => {
-                    panel.style.borderLeft = "none";
-                }, 2000);
+                function saveState() {
+                    state.lastUpdated = getNowString();
+                    try {
+                        localStorage.setItem(
+                            STORAGE_KEY,
+                            JSON.stringify(state),
+                        );
+                    } catch (e) {
+                        showToast("存储空间不足，请清理浏览器缓存", "warning");
+                    }
+                    updateLastUpdated();
+                }
 
-                hideModal();
-            }
+                function getNowString() {
+                    const now = new Date();
+                    const m = now.getMonth() + 1;
+                    const d = now.getDate();
+                    const h = now.getHours();
+                    const min = String(now.getMinutes()).padStart(2, "0");
+                    return m + "月" + d + "日 " + h + ":" + min;
+                }
 
-            // 点击弹窗外关闭
-            document.getElementById("modal").addEventListener("click", function (e) {
-                if (e.target === this) hideModal();
-            });
+                function getNowDateShort() {
+                    const now = new Date();
+                    return now.getMonth() + 1 + "月" + now.getDate() + "日";
+                }
+
+                function generateId() {
+                    return (
+                        "id_" +
+                        Date.now() +
+                        "_" +
+                        Math.random().toString(36).slice(2, 6)
+                    );
+                }
+
+                // ============ 渲染函数 ============
+                function renderAll() {
+                    renderDiscoveryList();
+                    renderCommList();
+                    renderStakeholderList();
+                    renderRevisionList();
+                    renderStatsBar();
+                    updateStrategyAlert();
+                    updateLastUpdated();
+                }
+
+                function renderDiscoveryList() {
+                    const list = document.getElementById("discovery-list");
+                    if (state.discoveries.length === 0) {
+                        list.innerHTML =
+                            '<div class="empty-hint">暂无发现，点击下方按钮记录</div>';
+                        return;
+                    }
+                    list.innerHTML = state.discoveries
+                        .map((d) => {
+                            const dotClass = getTypeDotClass(d.type);
+                            const statusClass = d.status;
+                            const statusLabel =
+                                d.status === "confirmed"
+                                    ? "已确认"
+                                    : d.status === "pending"
+                                      ? "待确认"
+                                      : "已驳回";
+                            const linkedIcon = d.linkedToStrategy
+                                ? ' <span class="linked-indicator" title="已关联策略修正">🔗</span>'
+                                : "";
+                            return `
+                            <li class="discovery-item" data-id="${d.id}">
+                                <span class="dot ${dotClass}"></span>
+                                <div class="content-wrap">
+                                    <div class="discovery-text">${escapeHtml(d.text)}${linkedIcon}</div>
+                                    <div class="meta">
+                                        <span>${d.date} · ${d.source}</span>
+                                        <span class="status-badge ${statusClass}">${statusLabel}</span>
+                                    </div>
+                                </div>
+                                <div class="item-actions">
+                                    ${d.status !== "confirmed" ? `<button class="confirm-btn" onclick="event.stopPropagation(); confirmDiscovery('${d.id}')" title="确认">✓</button>` : ""}
+                                    ${d.status !== "dismissed" ? `<button onclick="event.stopPropagation(); dismissDiscovery('${d.id}')" title="驳回" class="danger">✕</button>` : ""}
+                                    ${d.status === "dismissed" ? `<button class="confirm-btn" onclick="event.stopPropagation(); confirmDiscovery('${d.id}')" title="恢复确认">↩</button>` : ""}
+                                    <button onclick="event.stopPropagation(); deleteDiscovery('${d.id}')" title="删除" class="danger">🗑</button>
+                                </div>
+                            </li>
+                        `;
+                        })
+                        .join("");
+                }
+
+                function renderCommList() {
+                    const container = document.getElementById("comm-list");
+                    if (state.communications.length === 0) {
+                        container.innerHTML =
+                            '<div class="empty-hint">暂无沟通记录</div>';
+                        return;
+                    }
+                    container.innerHTML = state.communications
+                        .map(
+                            (c) => `
+                        <div class="comm-row" data-id="${c.id}" onclick="toggleCommDetail('${c.id}')">
+                            <span class="comm-title"><span class="comm-icon">📄</span> ${escapeHtml(c.title)} · 纪要看全文</span>
+                            <span class="date">${c.date}</span>
+                            <span class="expand-icon">▼</span>
+                        </div>
+                        <div class="comm-detail" id="comm-detail-${c.id}">${escapeHtml(c.summary)}</div>
+                    `,
+                        )
+                        .join("");
+                }
+
+                function renderStakeholderList() {
+                    const container =
+                        document.getElementById("stakeholder-list");
+                    container.innerHTML = state.stakeholders
+                        .map(
+                            (s) => `
+                        <div class="stakeholder" data-id="${s.id}" onclick="toggleStakeholder('${s.id}')">
+                            <span class="sh-name">${escapeHtml(s.name)}</span>
+                            <span class="stance ${s.stance}">${
+                                s.stance === "support"
+                                    ? "支持"
+                                    : s.stance === "neutral"
+                                      ? "中立"
+                                      : "反对"
+                            }</span>
+                            <span class="sh-concern">${escapeHtml(s.concern)}</span>
+                            <div class="sh-detail">${escapeHtml(s.detail)}</div>
+                        </div>
+                    `,
+                        )
+                        .join("");
+                }
+
+                function renderRevisionList() {
+                    const container = document.getElementById("revision-list");
+                    const emptyHint = document.getElementById("revision-empty");
+                    if (state.strategyRevisions.length === 0) {
+                        container.innerHTML = "";
+                        emptyHint.style.display = "block";
+                        return;
+                    }
+                    emptyHint.style.display = "none";
+                    container.innerHTML = state.strategyRevisions
+                        .map((r) => {
+                            const isPending = r.status === "pending_review";
+                            const statusTag = isPending
+                                ? '<span class="rev-status-tag needs-review">待审视</span>'
+                                : '<span class="rev-status-tag reviewed">已审视</span>';
+                            const reviewBtn = isPending
+                                ? `<button class="btn-review-done" onclick="event.stopPropagation(); markRevisionReviewed('${r.id}')">确认审视</button>`
+                                : "";
+                            return `
+                            <div class="revision ${isPending ? "pending-review" : ""}" data-id="${r.id}">
+                                <span class="rev-date">${r.date}</span>
+                                <div class="rev-content">
+                                    <span class="rev-reason">${escapeHtml(r.reason)}</span>
+                                    ${statusTag}
+                                </div>
+                                ${reviewBtn}
+                            </div>
+                        `;
+                        })
+                        .join("");
+                }
+
+                function renderStatsBar() {
+                    const confirmed = state.discoveries.filter(
+                        (d) => d.status === "confirmed",
+                    ).length;
+                    const highRisk = state.discoveries.filter(
+                        (d) =>
+                            (d.type === "risk" || d.severity === "high") &&
+                            d.status === "confirmed",
+                    ).length;
+                    const blockers = state.discoveries.filter(
+                        (d) => d.type === "risk" && d.status === "confirmed",
+                    ).length;
+                    const pendingReviews = state.strategyRevisions.filter(
+                        (r) => r.status === "pending_review",
+                    ).length;
+
+                    document.getElementById("stat-confirmed").textContent =
+                        confirmed;
+                    document.getElementById("stat-highrisk").textContent =
+                        highRisk;
+                    document.getElementById("stat-blocker").textContent =
+                        blockers;
+                    document.getElementById("pending-count").textContent =
+                        pendingReviews;
+
+                    const badge = document.getElementById(
+                        "pending-review-badge",
+                    );
+                    if (pendingReviews > 0) {
+                        badge.style.display = "inline-block";
+                    } else {
+                        badge.style.display = "none";
+                    }
+                }
+
+                function updateStrategyAlert() {
+                    const pendingReviews = state.strategyRevisions.filter(
+                        (r) => r.status === "pending_review",
+                    ).length;
+                    const dot = document.getElementById("strategy-alert-dot");
+                    const panel = document.getElementById("strategy-panel");
+                    if (pendingReviews > 0) {
+                        dot.style.display = "inline-block";
+                        panel.classList.add("highlight");
+                    } else {
+                        dot.style.display = "none";
+                        panel.classList.remove("highlight");
+                    }
+                }
+
+                function updateLastUpdated() {
+                    document.getElementById("last-updated").textContent =
+                        "最后更新：" + (state.lastUpdated || getNowString());
+                }
+
+                function getTypeDotClass(type) {
+                    switch (type) {
+                        case "risk":
+                            return "red";
+                        case "concern":
+                            return "orange";
+                        case "opportunity":
+                            return "green";
+                        case "neutral":
+                            return "blue";
+                        default:
+                            return "orange";
+                    }
+                }
+
+                function escapeHtml(str) {
+                    const div = document.createElement("div");
+                    div.textContent = str;
+                    return div.innerHTML;
+                }
+
+                // ============ 交互操作 ============
+                function showModal() {
+                    document.getElementById("modal").classList.add("show");
+                    document.getElementById("discovery-input").value = "";
+                    document.getElementById("discovery-type").value = "concern";
+                    document.getElementById("discovery-source").value =
+                        "刚刚记录";
+                    setTimeout(() => {
+                        document.getElementById("discovery-input").focus();
+                    }, 150);
+                }
+
+                function hideModal() {
+                    document.getElementById("modal").classList.remove("show");
+                }
+
+                function addDiscovery() {
+                    const input = document.getElementById("discovery-input");
+                    const text = input.value.trim();
+                    if (!text) {
+                        showToast("请输入发现内容", "warning");
+                        return;
+                    }
+
+                    const type =
+                        document.getElementById("discovery-type").value;
+                    const source =
+                        document.getElementById("discovery-source").value;
+                    const dateStr = getNowDateShort();
+                    const isHighRisk = type === "risk";
+
+                    const newDiscovery = {
+                        id: generateId(),
+                        text: text,
+                        type: type,
+                        severity: isHighRisk ? "high" : "medium",
+                        status: "pending",
+                        source: source,
+                        date: dateStr,
+                        linkedToStrategy: isHighRisk,
+                    };
+
+                    state.discoveries.unshift(newDiscovery);
+
+                    // 高风险发现自动添加策略修正记录
+                    if (isHighRisk) {
+                        const newRevision = {
+                            id: generateId(),
+                            date: dateStr,
+                            reason:
+                                "新发现（高风险）：" + text + " → 策略待审视",
+                            relatedDiscoveryId: newDiscovery.id,
+                            status: "pending_review",
+                        };
+                        state.strategyRevisions.unshift(newRevision);
+                        showToast(
+                            "高风险发现已记录，策略看板需要审视 ⚠️",
+                            "warning",
+                        );
+                    } else if (type === "concern") {
+                        const newRevision = {
+                            id: generateId(),
+                            date: dateStr,
+                            reason: "新发现：" + text + " → 策略待审视",
+                            relatedDiscoveryId: newDiscovery.id,
+                            status: "pending_review",
+                        };
+                        state.strategyRevisions.unshift(newRevision);
+                        showToast(
+                            "发现已记录，建议检查策略是否需要调整",
+                            "info",
+                        );
+                    } else {
+                        showToast("发现已记录 ✓", "success");
+                    }
+
+                    saveState();
+                    renderAll();
+                    hideModal();
+
+                    // 短暂高亮策略面板
+                    if (isHighRisk || type === "concern") {
+                        const panel = document.getElementById("strategy-panel");
+                        panel.classList.add("highlight");
+                        setTimeout(() => {
+                            updateStrategyAlert();
+                        }, 2500);
+                    }
+                }
+
+                function confirmDiscovery(id) {
+                    const discovery = state.discoveries.find(
+                        (d) => d.id === id,
+                    );
+                    if (discovery) {
+                        discovery.status = "confirmed";
+                        discovery.date = getNowDateShort();
+                        saveState();
+                        renderAll();
+                        showToast("发现已确认 ✓", "success");
+                    }
+                }
+
+                function dismissDiscovery(id) {
+                    const discovery = state.discoveries.find(
+                        (d) => d.id === id,
+                    );
+                    if (discovery) {
+                        discovery.status = "dismissed";
+                        saveState();
+                        renderAll();
+                        showToast("发现已驳回", "info");
+                    }
+                }
+
+                function deleteDiscovery(id) {
+                    if (!confirm("确定删除这条发现吗？此操作不可恢复。"))
+                        return;
+                    state.discoveries = state.discoveries.filter(
+                        (d) => d.id !== id,
+                    );
+                    // 同时清理关联的策略修正记录
+                    state.strategyRevisions = state.strategyRevisions.filter(
+                        (r) => r.relatedDiscoveryId !== id,
+                    );
+                    saveState();
+                    renderAll();
+                    showToast("发现已删除", "info");
+                }
+
+                function markRevisionReviewed(id) {
+                    const revision = state.strategyRevisions.find(
+                        (r) => r.id === id,
+                    );
+                    if (revision) {
+                        revision.status = "reviewed";
+                        revision.date = getNowDateShort() + " 已审视";
+                        saveState();
+                        renderAll();
+                        showToast("策略已审视 ✓", "success");
+                    }
+                }
+
+                function toggleCommDetail(id) {
+                    const detail = document.getElementById("comm-detail-" + id);
+                    const row = document.querySelector(
+                        `.comm-row[data-id="${id}"]`,
+                    );
+                    if (!detail || !row) return;
+                    const isOpen = detail.classList.contains("show");
+                    // 关闭所有其他展开的
+                    document
+                        .querySelectorAll(".comm-detail.show")
+                        .forEach((el) => el.classList.remove("show"));
+                    document
+                        .querySelectorAll(".comm-row.expanded")
+                        .forEach((el) => el.classList.remove("expanded"));
+                    if (!isOpen) {
+                        detail.classList.add("show");
+                        row.classList.add("expanded");
+                    }
+                }
+
+                function toggleStakeholder(id) {
+                    const row = document.querySelector(
+                        `.stakeholder[data-id="${id}"]`,
+                    );
+                    if (!row) return;
+                    row.classList.toggle("expanded");
+                }
+
+                function scrollToRevisions() {
+                    document
+                        .getElementById("revision-list")
+                        .scrollIntoView({
+                            behavior: "smooth",
+                            block: "center",
+                        });
+                    // 闪烁待审视的记录
+                    const pendingItems = document.querySelectorAll(
+                        ".revision.pending-review",
+                    );
+                    pendingItems.forEach((item, i) => {
+                        setTimeout(() => {
+                            item.style.background = "#fff8e1";
+                            setTimeout(() => {
+                                item.style.background = "";
+                            }, 600);
+                        }, i * 150);
+                    });
+                }
+
+                function exportBrief() {
+                    const confirmed = state.discoveries.filter(
+                        (d) => d.status === "confirmed",
+                    );
+                    const pending = state.discoveries.filter(
+                        (d) => d.status === "pending",
+                    );
+                    const pendingRevs = state.strategyRevisions.filter(
+                        (r) => r.status === "pending_review",
+                    );
+
+                    let brief = "【量潮咨询 · 项目简报】\n";
+                    brief += "项目：某制造企业数字化项目\n";
+                    brief += "阶段：方案期\n";
+                    brief +=
+                        "更新时间：" +
+                        (state.lastUpdated || getNowString()) +
+                        "\n";
+                    brief += "────────────────────\n";
+                    brief += "已确认发现 (" + confirmed.length + "条)：\n";
+                    confirmed.forEach((d, i) => {
+                        brief +=
+                            "  " +
+                            (i + 1) +
+                            ". [" +
+                            (d.type === "risk" ? "风险" : "关注") +
+                            "] " +
+                            d.text +
+                            "\n";
+                    });
+                    if (pending.length > 0) {
+                        brief += "待确认发现 (" + pending.length + "条)：\n";
+                        pending.forEach((d, i) => {
+                            brief += "  " + (i + 1) + ". " + d.text + "\n";
+                        });
+                    }
+                    if (pendingRevs.length > 0) {
+                        brief +=
+                            "⚠ 策略待审视 (" + pendingRevs.length + "条)：\n";
+                        pendingRevs.forEach((r, i) => {
+                            brief += "  " + (i + 1) + ". " + r.reason + "\n";
+                        });
+                    }
+                    brief += "────────────────────\n";
+                    brief += "利益相关者：CEO(支持) / CIO(中立) / CFO(反对)\n";
+
+                    navigator.clipboard
+                        .writeText(brief)
+                        .then(() =>
+                            showToast("简报已复制到剪贴板 📋", "success"),
+                        )
+                        .catch(() =>
+                            showToast("复制失败，请手动复制", "warning"),
+                        );
+                }
+
+                // ============ Toast通知 ============
+                function showToast(message, type) {
+                    const container =
+                        document.getElementById("toast-container");
+                    const toast = document.createElement("div");
+                    toast.className = "toast " + (type || "info");
+                    const icons = { success: "✓", warning: "⚠", info: "ℹ" };
+                    toast.innerHTML = `<span>${icons[type] || "ℹ"}</span> ${message}`;
+                    container.appendChild(toast);
+
+                    setTimeout(() => {
+                        toast.style.animation =
+                            "toastOut 0.3s ease-out forwards";
+                        setTimeout(() => {
+                            if (toast.parentNode)
+                                toast.parentNode.removeChild(toast);
+                        }, 300);
+                    }, 2500);
+                }
+
+                // ============ 全局事件 ============
+                document
+                    .getElementById("modal")
+                    .addEventListener("click", function (e) {
+                        if (e.target === this) hideModal();
+                    });
+
+                document.addEventListener("keydown", function (e) {
+                    if (e.key === "Escape") hideModal();
+                });
+
+                // ============ 暴露到全局作用域 ============
+                window.showModal = showModal;
+                window.hideModal = hideModal;
+                window.addDiscovery = addDiscovery;
+                window.confirmDiscovery = confirmDiscovery;
+                window.dismissDiscovery = dismissDiscovery;
+                window.deleteDiscovery = deleteDiscovery;
+                window.markRevisionReviewed = markRevisionReviewed;
+                window.toggleCommDetail = toggleCommDetail;
+                window.toggleStakeholder = toggleStakeholder;
+                window.scrollToRevisions = scrollToRevisions;
+                window.exportBrief = exportBrief;
+
+                // ============ 启动 ============
+                loadState();
+                renderAll();
+
+                console.log("✓ 量潮咨询 · 项目详情面板已就绪");
+                console.log(
+                    "  - 发现清单：" + state.discoveries.length + " 条",
+                );
+                console.log(
+                    "  - 沟通记录：" + state.communications.length + " 条",
+                );
+                console.log(
+                    "  - 策略修正：" + state.strategyRevisions.length + " 条",
+                );
+                console.log("  - 数据自动保存到 localStorage");
+            })();
         </script>
     </body>
 </html>
