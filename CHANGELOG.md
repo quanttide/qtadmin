@@ -4,6 +4,28 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/).
 
+## [0.0.4] - 2026-05-06
+
+### Added
+
+- `docs/`: 咨询业务线全套文档
+  - BRD：信息-策略断层业务需求说明书
+  - PRD：双栏联动设计 + 三层交互原则
+  - IXD：信息看板+策略看板页面布局
+  - ADD：咨询模块数据模型与架构设计文档
+- `src/studio/`: 量潮咨询详情页（QtConsultScreen）
+  - 双栏联动面板：信息看板（发现/沟通） + 策略看板（诉求/策略/决策链路）
+  - 发现→策略强制联动：高风险发现自动追加审视记录
+  - 完整 CRUD 交互（添加/确认/驳回/删除发现，标记审视）
+  - 数据抽离至 `assets/qtconsult.json`
+  - ADD 架构设计文档
+- `examples/prototype/qtconsult.html`：咨询原型（本地存储 + 完整交互）
+
+### Changed
+
+- `src/studio/` 导航重构：`_tenants` 改为实例字段，支持动态页面加载
+- `src/studio/pubspec.yaml` 注册 `qtconsult.json` asset
+
 ## [0.0.3] - 2026-05-06
 
 ### Added
