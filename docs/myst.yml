@@ -1,0 +1,37 @@
+# MyST configuration for qtadmin project docs
+version: 1
+project:
+  title: qtadmin
+  description: 量潮科技内部第二大脑
+  keywords:
+    - 量潮科技
+    - qtadmin
+    - 内部知识库
+  authors:
+    - name: 量潮科技
+  github: https://github.com/quanttide/qtadmin
+  license: Proprietary
+  toc:
+    - file: README.md
+      children:
+        - title: 业务需求说明书
+          children:
+            - file: brd/index.md
+            - file: brd/qtconsult.md
+        - title: 产品需求文档
+          children:
+            - file: prd/index.md
+            - file: prd/qtconsult.md
+        - title: 交互设计
+          children:
+            - file: ixd/panorama.md
+            - file: ixd/qtconsult.md
+        - title: 架构设计
+          children:
+            - file: add/qtconsult.md
+site:
+  template: book-theme
+  options:
+    logo: qtadmin
+    favicon: favicon.ico
+    folders: false
