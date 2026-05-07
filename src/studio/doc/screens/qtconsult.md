@@ -1,8 +1,8 @@
-# 量潮咨询模块数据模型
+# 量潮咨询模块
 
 ## 状态
 
-草案
+已实现（`lib/models/qtconsult.dart`）
 
 ## 上下文
 
@@ -28,6 +28,8 @@
 
 ### 数据模型
 
+数据 schema 详见 `docs/drd/qtconsult.md`，以下是关键设计点：
+
 ```
 QtConsultData
 ├── 租户信息        tenant: "customer" | "internal"
@@ -43,32 +45,11 @@ QtConsultData
 - `customer`：发现和沟通记录由顾问手动输入（客户提供的信息）
 - `internal`：发现清单初始来源于量潮云的领域层数据，创始人在此基础上做观察和判断。沟通记录为空（没有外部客户）
 
-### 核心实体
-
-**DiscoveryData（发现）**
-
-| 字段 | 类型 | 约束 |
-|------|------|------|
-| id | String | PK |
-| text | String | 描述具体事实 |
-| type | DiscoveryType | risk / concern / opportunity / neutral |
-| status | DiscoveryStatus | pending → confirmed / dismissed |
-| source | String | 来源会议 |
-| linkedToStrategy | bool | 高风险/需关注类型自动标记为 true |
-
-**StrategyRevisionData（策略修正）**
-
-| 字段 | 类型 | 约束 |
-|------|------|------|
-| id | String | PK |
-| relatedDiscoveryId | String? | FK → DiscoveryData.id |
-| isReviewed | bool | 默认 false，顾问确认后置 true |
-
 ### 数据流
 
 ```
-assets/qtconsult.json
-    │ QtConsultLoader.load()
+assets/fixtures/{tenant}/qtconsult.json
+    │ QtConsultLoader.load(tenant)
     ▼
 QtConsultScreen State
     │ discoveries: List<DiscoveryData>    ← mutable
