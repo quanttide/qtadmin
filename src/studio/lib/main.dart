@@ -29,22 +29,21 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
   int _selectedTenant = 0;
   int _selectedIndex = 0;
 
-  NavMetadata? _founderMetadata;
-  NavMetadata? _companyMetadata;
+  List<TenantInfo> _tenants = [];
+  final Map<String, NavMetadata> _navData = {};
+  final Map<String, SectionDef> _sectionDefs = {};
   PanoramaData? _founderPanorama;
   PanoramaData? _companyPanorama;
   QtConsultData? _consultData;
   List<NavSection> _sections = [];
 
-  NavMetadata get _currentMetadata =>
-      _selectedTenant == 0 ? _founderMetadata! : _companyMetadata!;
   PanoramaData? get _data =>
       _selectedTenant == 0 ? _founderPanorama : _companyPanorama;
 
   Widget _buildScreenForItem(NavItemData item) {
     switch (item.pageType) {
       case 'panorama':
-        return PanoramaScreen(data: _data!, tenantName: _currentMetadata.tenant.name);
+        return PanoramaScreen(data: _data!, tenantName: _tenants[_selectedTenant].name);
       case 'thinking':
         return const ThinkingScreen();
       case 'writing':
@@ -71,8 +70,11 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
   }
 
   void _buildSections() {
-    _sections = _currentMetadata.sections.map((section) {
+    final dir = _tenants[_selectedTenant].dir;
+    final nav = _navData[dir]!;
+    _sections = nav.sections.map((section) {
       return NavSection(
+        dividerBefore: _sectionDefs[section.id]?.dividerBefore ?? true,
         items: section.items.map((item) {
           return NavItem(
             icon: item.resolveIcon(),
@@ -91,17 +93,22 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
   }
 
   Future<void> _loadData() async {
+    final root = await MetadataLoader.loadRoot();
     final results = await Future.wait([
-      MetadataLoader.load(tenant: TenantType.internal),
-      MetadataLoader.load(tenant: TenantType.customer),
+      MetadataLoader.load(root.tenants[0].dir),
+      MetadataLoader.load(root.tenants[1].dir),
       PanoramaLoader.load(tenant: TenantType.internal),
       PanoramaLoader.load(tenant: TenantType.customer),
       QtConsultLoader.load(tenant: TenantType.customer),
     ]);
     if (mounted) {
       setState(() {
-        _founderMetadata = results[0] as NavMetadata;
-        _companyMetadata = results[1] as NavMetadata;
+        _tenants = root.tenants;
+        for (final section in root.sections) {
+          _sectionDefs[section.id] = section;
+        }
+        _navData[root.tenants[0].dir] = results[0] as NavMetadata;
+        _navData[root.tenants[1].dir] = results[1] as NavMetadata;
         _founderPanorama = results[2] as PanoramaData;
         _companyPanorama = results[3] as PanoramaData;
         _consultData = results[4] as QtConsultData;
@@ -127,7 +134,22 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
       home: Scaffold(
         body: Row(
           children: [
-            _buildSidebar(theme),
+            NavSidebar(
+              tenants: _tenants,
+              selectedTenant: _selectedTenant,
+              onTenantChanged: (index) {
+                setState(() {
+                  _selectedTenant = index;
+                  _selectedIndex = 0;
+                  _buildSections();
+                });
+              },
+              sections: _sections,
+              selectedIndex: _selectedIndex,
+              onItemTap: (index) {
+                setState(() => _selectedIndex = index);
+              },
+            ),
             const VerticalDivider(thickness: 1, width: 1),
             Expanded(
               child: _buildPage(),
@@ -138,61 +160,12 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
     );
   }
 
-  Widget _buildSidebar(ThemeData theme) {
-    int flatIndex = 0;
-
-    return Container(
-      width: 72,
-      color: theme.colorScheme.surface,
-      child: Column(
-        children: [
-          const SizedBox(height: 4),
-          TenantSwitcher(
-            tenants: [_founderMetadata!.tenant, _companyMetadata!.tenant],
-            selectedIndex: _selectedTenant,
-            onChanged: (index) {
-              setState(() {
-                _selectedTenant = index;
-                _selectedIndex = 0;
-                _buildSections();
-              });
-            },
-          ),
-          ..._sections.asMap().entries.expand((entry) {
-            final i = entry.key;
-            final section = entry.value;
-            final items = section.items.map((item) {
-              final idx = flatIndex++;
-              return NavIcon(
-                icon: item.icon,
-                label: item.label,
-                selected: _selectedIndex == idx,
-                onTap: () => setState(() => _selectedIndex = idx),
-              );
-            }).toList();
-            return [
-              if (i == 0 && items.isNotEmpty)
-                buildNavDivider()
-              else if (i > 0)
-                buildNavDivider(),
-          }),
-          buildNavDivider(),
-              ...items,
-            ];
-          }),
-          _buildDivider(),
-          const Spacer(),
-        ],
-      ),
-    );
-  }
-
   Widget _buildPage() {
     if (_data == null) {
       return const Center(child: CircularProgressIndicator());
     }
-    final allItems = _currentMetadata.allItems;
+    final allItems = _sections.expand((s) => s.items).toList();
     if (_selectedIndex >= allItems.length) return const SizedBox.shrink();
-    return _sections.expand((s) => s.items).toList()[_selectedIndex].builder();
+    return allItems[_selectedIndex].builder();
   }
 }

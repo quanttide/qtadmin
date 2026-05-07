@@ -41,12 +41,14 @@ class NavItemData {
 }
 
 class NavSectionData {
+  final String id;
   final List<NavItemData> items;
 
-  const NavSectionData({required this.items});
+  const NavSectionData({required this.id, required this.items});
 
   factory NavSectionData.fromJson(Map<String, dynamic> json) {
     return NavSectionData(
+      id: json['id'] as String,
       items: (json['items'] as List<dynamic>)
           .map((i) => NavItemData.fromJson(i as Map<String, dynamic>))
           .toList(),
@@ -57,13 +59,19 @@ class NavSectionData {
 class TenantInfo {
   final String name;
   final String icon;
+  final String dir;
 
-  const TenantInfo({required this.name, required this.icon});
+  const TenantInfo({
+    required this.name,
+    required this.icon,
+    required this.dir,
+  });
 
   factory TenantInfo.fromJson(Map<String, dynamic> json) {
     return TenantInfo(
       name: json['name'] as String,
       icon: json['icon'] as String,
+      dir: json['dir'] as String,
     );
   }
 
@@ -77,14 +85,12 @@ class TenantInfo {
 }
 
 class NavMetadata {
-  final TenantInfo tenant;
   final List<NavSectionData> sections;
 
-  const NavMetadata({required this.tenant, required this.sections});
+  const NavMetadata({required this.sections});
 
   factory NavMetadata.fromJson(Map<String, dynamic> json) {
     return NavMetadata(
-      tenant: TenantInfo.fromJson(json['tenant'] as Map<String, dynamic>),
       sections: (json['sections'] as List<dynamic>)
           .map((s) => NavSectionData.fromJson(s as Map<String, dynamic>))
           .toList(),
@@ -92,4 +98,44 @@ class NavMetadata {
   }
 
   List<NavItemData> get allItems => sections.expand((s) => s.items).toList();
+}
+
+class SectionDef {
+  final String id;
+  final bool dividerBefore;
+
+  const SectionDef({required this.id, required this.dividerBefore});
+
+  factory SectionDef.fromJson(Map<String, dynamic> json) {
+    return SectionDef(
+      id: json['id'] as String,
+      dividerBefore: json['dividerBefore'] as bool,
+    );
+  }
+}
+
+class RootMetadata {
+  final List<TenantInfo> tenants;
+  final List<SectionDef> sections;
+
+  const RootMetadata({required this.tenants, required this.sections});
+
+  factory RootMetadata.fromJson(Map<String, dynamic> json) {
+    return RootMetadata(
+      tenants: (json['tenants'] as List<dynamic>)
+          .map((t) => TenantInfo.fromJson(t as Map<String, dynamic>))
+          .toList(),
+      sections: (json['sections'] as List<dynamic>)
+          .map((s) => SectionDef.fromJson(s as Map<String, dynamic>))
+          .toList(),
+    );
+  }
+
+  TenantInfo tenantById(String id) {
+    return tenants.firstWhere((t) => t.dir == id);
+  }
+
+  SectionDef sectionById(String id) {
+    return sections.firstWhere((s) => s.id == id);
+  }
 }

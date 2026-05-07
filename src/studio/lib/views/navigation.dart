@@ -15,8 +15,9 @@ class NavItem {
 
 class NavSection {
   final List<NavItem> items;
+  final bool dividerBefore;
 
-  const NavSection({required this.items});
+  const NavSection({required this.items, this.dividerBefore = true});
 }
 
 class NavIcon extends StatelessWidget {
@@ -133,4 +134,62 @@ Widget buildNavDivider() {
     padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
     child: Divider(height: 1, thickness: 1),
   );
+}
+
+class NavSidebar extends StatelessWidget {
+  final List<TenantInfo> tenants;
+  final int selectedTenant;
+  final ValueChanged<int> onTenantChanged;
+  final List<NavSection> sections;
+  final int selectedIndex;
+  final ValueChanged<int> onItemTap;
+
+  const NavSidebar({
+    super.key,
+    required this.tenants,
+    required this.selectedTenant,
+    required this.onTenantChanged,
+    required this.sections,
+    required this.selectedIndex,
+    required this.onItemTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    int flatIndex = 0;
+
+    return Container(
+      width: 72,
+      color: Theme.of(context).colorScheme.surface,
+      child: Column(
+        children: [
+          const SizedBox(height: 4),
+          TenantSwitcher(
+            tenants: tenants,
+            selectedIndex: selectedTenant,
+            onChanged: onTenantChanged,
+          ),
+          ...sections.asMap().entries.expand((entry) {
+            final section = entry.value;
+            final items = section.items.map((item) {
+              final idx = flatIndex++;
+              return NavIcon(
+                icon: item.icon,
+                label: item.label,
+                selected: selectedIndex == idx,
+                onTap: () => onItemTap(idx),
+              );
+            }).toList();
+            return [
+              if (section.dividerBefore && items.isNotEmpty)
+                buildNavDivider(),
+              ...items,
+            ];
+          }),
+          buildNavDivider(),
+          const Spacer(),
+        ],
+      ),
+    );
+  }
 }
