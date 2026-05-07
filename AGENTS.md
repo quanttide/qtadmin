@@ -35,5 +35,5 @@ pytest
 
 ## Flutter 导航结构规范
 
-详见 `docs/ixd/navigation-architecture.md`。
+详见 `docs/ixd/navigation.md`。
 **要点：** 所有租户共享同一套 `_NavSection`（全景图 → 业务线 → 职能线 → 咨询），不允许硬编码差异。业务和职能之间必须用分隔线隔开。
