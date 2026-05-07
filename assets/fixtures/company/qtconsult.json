@@ -1,101 +1,97 @@
 {
-  "tenant": "customer",
-  "projectName": "某制造企业数字化项目",
-  "phase": "方案期",
-  "industry": "制造业 · 电子零部件",
-  "scale": "500人",
-  "maturity": "数字化成熟度 L2",
-  "strategyGoal": "实现生产数据可视化，提升管理效率",
-  "strategyInsight": "判断：真实诉求可能是产能利用率不透明，管理层无法掌握真实生产进度。数据可视化只是手段，不是目的。",
+  "tenant": "internal",
+  "projectName": "量潮科技自我诊断",
+  "phase": "持续观察",
+  "industry": "IT咨询 · 技术服务",
+  "scale": "核心团队",
+  "maturity": "数字化成熟度 L3",
+  "strategyGoal": "建立稳定的高客单价项目获取机制，提升交付效率与团队承载力",
+  "strategyInsight": "判断：团队能力已溢出当前项目体量，但不敢接大单。瓶颈不在交付能力，而在预期管理和销售自信。",
   "strategySteps": [
-    "第一步：ERP数据打通试点（1个车间），快速出成果建立信任",
-    "第二步：中层动员工作坊，让中层参与方案设计，减少实施阻力",
-    "第三步：逐步推广至全厂，同步评估IT团队扩容方案"
+    "第一步：用当前接近谈成的大单验证交付能力，建立标杆案例",
+    "第二步：重构项目管理框架（以看板为原方法统一瀑布与敏捷），拉升团队承载力",
+    "第三步：建立「内观-外观」双平台机制，让自我观察成为制度化能力"
   ],
-  "riskNote": "IT人力不足是硬约束，需在第一步中评估实际运维需求",
+  "riskNote": "创始人精力分散风险：同时在跑平台建设、项目交付、商务谈判三条线，需要秘书处分担协调工作",
   "discoveries": [
     {
       "id": "d1",
-      "text": "数据分散在3个ERP系统，无法打通",
+      "text": "团队产能利用率不足60%，但每个人感觉都在满负荷运转",
       "type": "concern",
       "status": "confirmed",
-      "source": "需求调研会",
-      "date": "5月14日",
+      "source": "量潮云 · 项目数据",
+      "date": "5月7日",
       "linkedToStrategy": true
     },
     {
       "id": "d2",
-      "text": "管理层有数字化意愿，但中层普遍抗拒",
-      "type": "concern",
+      "text": "连续3个小项目利润率为负，占用了核心团队时间却未产生合理收益",
+      "type": "risk",
       "status": "confirmed",
-      "source": "需求调研会",
-      "date": "5月14日",
+      "source": "量潮云 · 财务数据",
+      "date": "5月7日",
       "linkedToStrategy": true
     },
     {
       "id": "d3",
-      "text": "IT部门仅2人，日常运维已吃紧，无力支撑系统迁移",
-      "type": "risk",
-      "status": "confirmed",
-      "source": "初次接触",
-      "date": "5月10日",
+      "text": "近一个月无主动销售行为，所有项目机会均来自老客户复购或被动咨询",
+      "type": "concern",
+      "status": "pending",
+      "source": "量潮云 · 销售看板",
+      "date": "5月7日",
       "linkedToStrategy": true
-    }
-  ],
-  "communications": [
-    {
-      "id": "c1",
-      "title": "需求调研会",
-      "date": "5月14日",
-      "summary": "与CEO张总、CIO李总及核心中层进行了2小时的需求调研。明确了数据打通是首要诉求，但中层对变革存在明显疑虑，尤其是生产部门和财务部门。IT团队现状堪忧，仅2人维持日常运维。"
     },
     {
-      "id": "c2",
-      "title": "初次接触",
-      "date": "5月10日",
-      "summary": "与CEO张总初次会面，了解到企业数字化基础薄弱（L2级），但有明确的改进意愿。初步判断项目可行，但需关注内部阻力和资源约束。"
+      "id": "d4",
+      "text": "咨询平台原型已跑通，客户反馈正面",
+      "type": "opportunity",
+      "status": "confirmed",
+      "source": "量潮云 · 项目数据",
+      "date": "5月6日",
+      "linkedToStrategy": false
     }
   ],
+  "communications": [],
   "revisions": [
     {
       "id": "r1",
-      "date": "5月14日",
-      "reason": "发现中层抗拒 → 切入策略增加第二步「中层动员」",
-      "relatedDiscoveryId": "d2",
+      "date": "5月7日",
+      "reason": "发现产能利用率低 + 小项目利润率为负 → 策略转向大项目路线",
+      "relatedDiscoveryId": "d1",
       "isReviewed": true
     },
     {
       "id": "r2",
-      "date": "5月10日",
-      "reason": "发现IT人力不足 → 策略增加风险标注，第一步增加运维评估",
+      "date": "5月7日",
+      "reason": "发现无主动销售行为 → 需建立市场机制，不再依赖被动获客",
       "relatedDiscoveryId": "d3",
-      "isReviewed": true
+      "isReviewed": false
     }
   ],
   "stakeholders": [
     {
       "id": "s1",
-      "name": "CEO 张总",
-      "role": "CEO",
+      "name": "创始人",
+      "role": "最终决策者",
       "stance": "support",
-      "concern": "关注降本增效，需要看到ROI",
-      "detail": "项目发起人，拥有最终决策权。对数字化转型有较清晰认知，但需要具体数据支撑决策。建议定期向其汇报阶段性成果。"
+      "concern": "关注平台化与可持续增长机制",
+      "detail": "对双平台架构有清晰认知，但执行上容易陷入细节。需要秘书处分担协调事务，聚焦战略决策。"
     },
     {
       "id": "s2",
-      "name": "CIO 李总",
-      "role": "CIO",
+      "name": "团队",
+      "role": "执行层",
       "stance": "neutral",
-      "concern": "关注技术选型，倾向大厂方案",
-      "detail": "技术背景深厚，对方案的技术可行性有较高要求。倾向选择成熟大厂方案以降低风险。需要提供充分的技术论证和案例支持。"
+      "concern": "关注工作强度与技能成长",
+      "detail": "核心团队能力在快速提升，但项目类型杂导致聚焦困难。需要更清晰的项目分工和能力建设路径。"
     },
     {
       "id": "s3",
-      "name": "财务 王总",
-      "role": "CFO",
-      "stance": "oppose",
-      "concern": "预算紧张，需要分期方案",
-      "detail": "对预算控制非常严格，是项目推进的主要阻力之一。需要提供详细的分期投入方案和ROI预测。建议在试点阶段控制成本，用实际效果证明价值。"
+      "name": "客户市场",
+      "role": "外部环境",
+      "stance": "neutral",
+      "concern": "关注交付质量与响应速度",
+      "detail": "市场对量潮的认知仍停留在小项目阶段，需要标杆大单来重塑品牌定位。"
     }
   ]
 }

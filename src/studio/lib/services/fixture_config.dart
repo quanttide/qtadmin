@@ -31,4 +31,13 @@ class FixtureConfig {
         return '$_basePath/founder/qtconsult.json';
     }
   }
+
+  static String metadataPath(TenantType tenant) {
+    switch (tenant) {
+      case TenantType.internal:
+        return '$_basePath/founder/metadata.json';
+      case TenantType.customer:
+        return '$_basePath/company/metadata.json';
+    }
+  }
 }
