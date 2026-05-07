@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:qtadmin_studio/models/panorama.dart';
-import 'package:qtadmin_studio/widgets/decision_card_widget.dart';
+import 'package:qtadmin_studio/views/decision_card_widget.dart';
 
 class BizUnitWidget extends StatelessWidget {
   final BusinessUnitData data;

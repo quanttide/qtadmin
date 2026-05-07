@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:qtadmin_studio/models/panorama.dart';
-import 'package:qtadmin_studio/widgets/business_section_widget.dart';
-import 'package:qtadmin_studio/widgets/function_section_widget.dart';
+import 'package:qtadmin_studio/views/business_section_widget.dart';
+import 'package:qtadmin_studio/views/function_section_widget.dart';
 
 class PanoramaScreen extends StatelessWidget {
   final PanoramaData data;
