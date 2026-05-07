@@ -52,8 +52,10 @@ class QtAdminStudio extends StatefulWidget {
 class _QtAdminStudioState extends State<QtAdminStudio> {
   int _selectedTenant = 0;
   int _selectedIndex = 0;
-  PanoramaData? _data;
-  QtConsultData? _consultData;
+  PanoramaData? _founderPanorama;
+  PanoramaData? _companyPanorama;
+  QtConsultData? _customerConsultData;
+  QtConsultData? _internalConsultData;
   List<_NavSection> _sections = [];
 
   static const _tenants = [
@@ -62,6 +64,7 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
   ];
 
   _TenantConfig get _currentTenant => _tenants[_selectedTenant];
+  PanoramaData? get _data => _selectedTenant == 0 ? _founderPanorama : _companyPanorama;
 
   IconData _iconForName(String name) {
     switch (name) {
@@ -73,6 +76,8 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
         return Icons.support_agent_outlined;
       case '量潮云':
         return Icons.cloud_outlined;
+      case '自身观察':
+        return Icons.self_improvement_outlined;
       case '人力资源':
         return Icons.people_outline;
       case '财务管理':
@@ -102,7 +107,10 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
         return _NavItem(
           icon: _iconForName(unit.name),
           label: unit.name,
-          builder: unit.isConsulting ? _buildConsult : (_, __) => BusinessDetailScreen(unit: unit),
+          builder: unit.isConsulting ? (_, __) {
+            final consult = unit.consultSource == 'internal' ? _internalConsultData : _customerConsultData;
+            return QtConsultScreen(data: consult!);
+          } : (_, __) => BusinessDetailScreen(unit: unit),
         );
       }).toList()),
       _NavSection(items: _data!.functionCards.map((card) {
@@ -115,13 +123,6 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
     ];
   }
 
-  Widget _buildConsult(PanoramaData data, String tenantName) {
-    if (_consultData == null) {
-      return const Center(child: CircularProgressIndicator());
-    }
-    return QtConsultScreen(data: _consultData!);
-  }
-
   @override
   void initState() {
     super.initState();
@@ -130,13 +131,17 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
 
   Future<void> _loadData() async {
     final results = await Future.wait([
-      PanoramaLoader.load(),
+      PanoramaLoader.load(tenant: TenantType.internal),
+      PanoramaLoader.load(tenant: TenantType.customer),
       QtConsultLoader.load(tenant: TenantType.customer),
+      QtConsultLoader.load(tenant: TenantType.internal),
     ]);
     if (mounted) {
       setState(() {
-        _data = results[0] as PanoramaData;
-        _consultData = results[1] as QtConsultData;
+        _founderPanorama = results[0] as PanoramaData;
+        _companyPanorama = results[1] as PanoramaData;
+        _customerConsultData = results[2] as QtConsultData;
+        _internalConsultData = results[3] as QtConsultData;
         _buildSections();
       });
     }

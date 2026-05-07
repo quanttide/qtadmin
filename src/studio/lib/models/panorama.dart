@@ -53,6 +53,7 @@ class BusinessUnitData {
   final String tag;
   final bool isPrimary;
   final String screenType;
+  final String? consultSource;
   final List<DecisionData> decisions;
   final String? emptyMessage;
 
@@ -61,6 +62,7 @@ class BusinessUnitData {
     required this.tag,
     this.isPrimary = true,
     this.screenType = 'detail',
+    this.consultSource,
     this.decisions = const [],
     this.emptyMessage,
   });
@@ -71,6 +73,7 @@ class BusinessUnitData {
       tag: json['tag'] as String,
       isPrimary: json['isPrimary'] as bool? ?? true,
       screenType: json['screenType'] as String? ?? 'detail',
+      consultSource: json['consultSource'] as String?,
       decisions: (json['decisions'] as List<dynamic>?)
               ?.map((d) => DecisionData.fromJson(d as Map<String, dynamic>))
               .toList() ??
