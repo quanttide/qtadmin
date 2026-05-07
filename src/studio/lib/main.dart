@@ -11,28 +11,11 @@ import 'package:qtadmin_studio/screens/thinking_screen.dart';
 import 'package:qtadmin_studio/services/metadata_loader.dart';
 import 'package:qtadmin_studio/services/panorama_loader.dart';
 import 'package:qtadmin_studio/services/qtconsult_loader.dart';
+import 'package:qtadmin_studio/views/navigation.dart';
 
 void main() async {
   await dotenv.load();
   runApp(const QtAdminStudio());
-}
-
-class _NavItem {
-  final IconData icon;
-  final String label;
-  final Widget Function() builder;
-
-  const _NavItem({
-    required this.icon,
-    required this.label,
-    required this.builder,
-  });
-}
-
-class _NavSection {
-  final List<_NavItem> items;
-
-  const _NavSection({required this.items});
 }
 
 class QtAdminStudio extends StatefulWidget {
@@ -51,7 +34,7 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
   PanoramaData? _founderPanorama;
   PanoramaData? _companyPanorama;
   QtConsultData? _consultData;
-  List<_NavSection> _sections = [];
+  List<NavSection> _sections = [];
 
   NavMetadata get _currentMetadata =>
       _selectedTenant == 0 ? _founderMetadata! : _companyMetadata!;
@@ -89,9 +72,9 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
 
   void _buildSections() {
     _sections = _currentMetadata.sections.map((section) {
-      return _NavSection(
+      return NavSection(
         items: section.items.map((item) {
-          return _NavItem(
+          return NavItem(
             icon: item.resolveIcon(),
             label: item.label,
             builder: () => _buildScreenForItem(item),
@@ -164,7 +147,7 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
       child: Column(
         children: [
           const SizedBox(height: 4),
-          _TenantSwitcher(
+          TenantSwitcher(
             tenants: [_founderMetadata!.tenant, _companyMetadata!.tenant],
             selectedIndex: _selectedTenant,
             onChanged: (index) {
@@ -180,7 +163,7 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
             final section = entry.value;
             final items = section.items.map((item) {
               final idx = flatIndex++;
-              return _NavIcon(
+              return NavIcon(
                 icon: item.icon,
                 label: item.label,
                 selected: _selectedIndex == idx,
@@ -189,9 +172,11 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
             }).toList();
             return [
               if (i == 0 && items.isNotEmpty)
-                _buildDivider()
+                buildNavDivider()
               else if (i > 0)
-                _buildDivider(),
+                buildNavDivider(),
+          }),
+          buildNavDivider(),
               ...items,
             ];
           }),
@@ -202,13 +187,6 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
     );
   }
 
-  Widget _buildDivider() {
-    return const Padding(
-      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-      child: Divider(height: 1, thickness: 1),
-    );
-  }
-
   Widget _buildPage() {
     if (_data == null) {
       return const Center(child: CircularProgressIndicator());
@@ -216,112 +194,5 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
     final allItems = _currentMetadata.allItems;
     if (_selectedIndex >= allItems.length) return const SizedBox.shrink();
     return _sections.expand((s) => s.items).toList()[_selectedIndex].builder();
-  }
-}
-
-class _TenantSwitcher extends StatelessWidget {
-  final List<TenantInfo> tenants;
-  final int selectedIndex;
-  final ValueChanged<int> onChanged;
-
-  const _TenantSwitcher({
-    required this.tenants,
-    required this.selectedIndex,
-    required this.onChanged,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final tenant = tenants[selectedIndex];
-    return PopupMenuButton<int>(
-      onSelected: onChanged,
-      offset: const Offset(0, 48),
-      itemBuilder: (context) => tenants.asMap().entries.map((entry) {
-        final i = entry.key;
-        final t = entry.value;
-        return PopupMenuItem<int>(
-          value: i,
-          child: Row(
-            children: [
-              Icon(t.resolveIcon(), size: 18),
-              const SizedBox(width: 8),
-              Text(t.name, style: const TextStyle(fontSize: 14)),
-              if (i == selectedIndex)
-                const Padding(
-                  padding: EdgeInsets.only(left: 8),
-                  child: Icon(Icons.check, size: 16, color: Colors.blue),
-                ),
-            ],
-          ),
-        );
-      }).toList(),
-      child: Container(
-        width: 72,
-        height: 60,
-        padding: const EdgeInsets.symmetric(vertical: 4),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(tenant.resolveIcon(), size: 22, color: const Color(0xFF1A1A1A)),
-            const SizedBox(height: 2),
-            Text(
-              tenant.name,
-              style: const TextStyle(
-                fontSize: 9,
-                color: Color(0xFF1A1A1A),
-                fontWeight: FontWeight.w600,
-              ),
-              overflow: TextOverflow.ellipsis,
-              maxLines: 1,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _NavIcon extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final bool selected;
-  final VoidCallback onTap;
-
-  const _NavIcon({
-    required this.icon,
-    required this.label,
-    required this.selected,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: 72,
-      height: 64,
-      child: InkWell(
-        onTap: onTap,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              icon,
-              size: 22,
-              color: selected ? const Color(0xFF1A1A1A) : const Color(0xFF888888),
-            ),
-            const SizedBox(height: 3),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 10,
-                color: selected ? const Color(0xFF1A1A1A) : const Color(0xFF888888),
-                fontWeight: selected ? FontWeight.w600 : FontWeight.normal,
-              ),
-              overflow: TextOverflow.ellipsis,
-            ),
-          ],
-        ),
-      ),
-    );
   }
 }

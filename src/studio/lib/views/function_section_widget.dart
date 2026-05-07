@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:qtadmin_studio/models/panorama.dart';
-import 'package:qtadmin_studio/widgets/func_card_widget.dart';
-import 'package:qtadmin_studio/widgets/section_header.dart';
+import 'package:qtadmin_studio/views/func_card_widget.dart';
+import 'package:qtadmin_studio/views/section_header.dart';
 
 class FunctionSectionWidget extends StatefulWidget {
   final List<FuncCardData> cards;

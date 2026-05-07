@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:qtadmin_studio/models/panorama.dart';
-import 'package:qtadmin_studio/widgets/func_card_widget.dart';
+import 'package:qtadmin_studio/views/func_card_widget.dart';
 
 class FuncDetailScreen extends StatelessWidget {
   final FuncCardData card;
