@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:qtadmin_studio/models/metadata.dart';
 import 'package:qtadmin_studio/models/panorama.dart';
 import 'package:qtadmin_studio/models/qtconsult.dart';
 import 'package:qtadmin_studio/screens/business_detail_screen.dart';
@@ -7,6 +8,7 @@ import 'package:qtadmin_studio/screens/function_detail_screen.dart';
 import 'package:qtadmin_studio/screens/panorama_screen.dart';
 import 'package:qtadmin_studio/screens/qtconsult_screen.dart';
 import 'package:qtadmin_studio/screens/thinking_screen.dart';
+import 'package:qtadmin_studio/services/metadata_loader.dart';
 import 'package:qtadmin_studio/services/panorama_loader.dart';
 import 'package:qtadmin_studio/services/qtconsult_loader.dart';
 
@@ -18,7 +20,7 @@ void main() async {
 class _NavItem {
   final IconData icon;
   final String label;
-  final Widget Function(PanoramaData, String tenantName) builder;
+  final Widget Function() builder;
 
   const _NavItem({
     required this.icon,
@@ -33,16 +35,6 @@ class _NavSection {
   const _NavSection({required this.items});
 }
 
-class _TenantConfig {
-  final String name;
-  final IconData icon;
-
-  const _TenantConfig({
-    required this.name,
-    required this.icon,
-  });
-}
-
 class QtAdminStudio extends StatefulWidget {
   const QtAdminStudio({super.key});
 
@@ -53,87 +45,60 @@ class QtAdminStudio extends StatefulWidget {
 class _QtAdminStudioState extends State<QtAdminStudio> {
   int _selectedTenant = 0;
   int _selectedIndex = 0;
+
+  NavMetadata? _founderMetadata;
+  NavMetadata? _companyMetadata;
   PanoramaData? _founderPanorama;
   PanoramaData? _companyPanorama;
   QtConsultData? _consultData;
   List<_NavSection> _sections = [];
 
-  static const _tenants = [
-    _TenantConfig(name: '量潮创始人', icon: Icons.person_outline),
-    _TenantConfig(name: '量潮科技', icon: Icons.business_outlined),
-  ];
+  NavMetadata get _currentMetadata =>
+      _selectedTenant == 0 ? _founderMetadata! : _companyMetadata!;
+  PanoramaData? get _data =>
+      _selectedTenant == 0 ? _founderPanorama : _companyPanorama;
 
-  _TenantConfig get _currentTenant => _tenants[_selectedTenant];
-  PanoramaData? get _data => _selectedTenant == 0 ? _founderPanorama : _companyPanorama;
-
-  IconData _iconForName(String name) {
-    switch (name) {
-      case '量潮数据':
-        return Icons.storage_outlined;
-      case '量潮课堂':
-        return Icons.school_outlined;
-      case '量潮咨询':
-        return Icons.support_agent_outlined;
-      case '量潮云':
-        return Icons.cloud_outlined;
-      case '思考':
-        return Icons.psychology_outlined;
-      case '写作':
-        return Icons.edit_outlined;
-      case '人力资源':
-        return Icons.people_outline;
-      case '财务管理':
-        return Icons.account_balance_outlined;
-      case '组织管理':
-        return Icons.account_tree_outlined;
-      case '战略管理':
-        return Icons.track_changes_outlined;
-      case '新媒体':
-        return Icons.campaign_outlined;
+  Widget _buildScreenForItem(NavItemData item) {
+    switch (item.pageType) {
+      case 'panorama':
+        return PanoramaScreen(data: _data!, tenantName: _currentMetadata.tenant.name);
+      case 'thinking':
+        return const ThinkingScreen();
+      case 'writing':
+        return const Center(child: Text('即将上线'));
+      case 'consulting':
+        return QtConsultScreen(data: _consultData!);
+      case 'business_detail': {
+        final unit = _data!.businessUnits.firstWhere(
+          (u) => u.name == item.label,
+          orElse: () => throw StateError('未找到业务单元: ${item.label}'),
+        );
+        return BusinessDetailScreen(unit: unit);
+      }
+      case 'function_detail': {
+        final card = _data!.functionCards.firstWhere(
+          (c) => c.name == item.label,
+          orElse: () => throw StateError('未找到职能卡: ${item.label}'),
+        );
+        return FuncDetailScreen(card: card);
+      }
       default:
-        return Icons.circle_outlined;
+        return const SizedBox.shrink();
     }
   }
 
   void _buildSections() {
-    _sections = [
-      _NavSection(items: [
-        _NavItem(
-          icon: Icons.today_outlined,
-          label: '全景图',
-          builder: (data, tenantName) =>
-              PanoramaScreen(data: data, tenantName: tenantName),
-        ),
-      ]),
-      _NavSection(items: _data!.businessUnits.map((unit) {
-        Widget page;
-        switch (unit.screenType) {
-          case 'thinking':
-            page = const ThinkingScreen();
-            break;
-          case 'writing':
-            page = const Center(child: Text('即将上线'));
-            break;
-          case 'consulting':
-            page = QtConsultScreen(data: _consultData!);
-            break;
-          default:
-            page = BusinessDetailScreen(unit: unit);
-        }
-        return _NavItem(
-          icon: _iconForName(unit.name),
-          label: unit.name,
-          builder: (_, __) => page,
-        );
-      }).toList()),
-      _NavSection(items: _data!.functionCards.map((card) {
-        return _NavItem(
-          icon: _iconForName(card.name),
-          label: card.name,
-          builder: (_, __) => FuncDetailScreen(card: card),
-        );
-      }).toList()),
-    ];
+    _sections = _currentMetadata.sections.map((section) {
+      return _NavSection(
+        items: section.items.map((item) {
+          return _NavItem(
+            icon: item.resolveIcon(),
+            label: item.label,
+            builder: () => _buildScreenForItem(item),
+          );
+        }).toList(),
+      );
+    }).toList();
   }
 
   @override
@@ -144,15 +109,19 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
 
   Future<void> _loadData() async {
     final results = await Future.wait([
+      MetadataLoader.load(tenant: TenantType.internal),
+      MetadataLoader.load(tenant: TenantType.customer),
       PanoramaLoader.load(tenant: TenantType.internal),
       PanoramaLoader.load(tenant: TenantType.customer),
       QtConsultLoader.load(tenant: TenantType.customer),
     ]);
     if (mounted) {
       setState(() {
-        _founderPanorama = results[0] as PanoramaData;
-        _companyPanorama = results[1] as PanoramaData;
-        _consultData = results[2] as QtConsultData;
+        _founderMetadata = results[0] as NavMetadata;
+        _companyMetadata = results[1] as NavMetadata;
+        _founderPanorama = results[2] as PanoramaData;
+        _companyPanorama = results[3] as PanoramaData;
+        _consultData = results[4] as QtConsultData;
         _buildSections();
       });
     }
@@ -196,12 +165,13 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
         children: [
           const SizedBox(height: 4),
           _TenantSwitcher(
-            tenants: _tenants,
+            tenants: [_founderMetadata!.tenant, _companyMetadata!.tenant],
             selectedIndex: _selectedTenant,
             onChanged: (index) {
               setState(() {
                 _selectedTenant = index;
                 _selectedIndex = 0;
+                _buildSections();
               });
             },
           ),
@@ -243,14 +213,14 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
     if (_data == null) {
       return const Center(child: CircularProgressIndicator());
     }
-    final allItems = _sections.expand((s) => s.items).toList();
+    final allItems = _currentMetadata.allItems;
     if (_selectedIndex >= allItems.length) return const SizedBox.shrink();
-    return allItems[_selectedIndex].builder(_data!, _currentTenant.name);
+    return _sections.expand((s) => s.items).toList()[_selectedIndex].builder();
   }
 }
 
 class _TenantSwitcher extends StatelessWidget {
-  final List<_TenantConfig> tenants;
+  final List<TenantInfo> tenants;
   final int selectedIndex;
   final ValueChanged<int> onChanged;
 
@@ -273,7 +243,7 @@ class _TenantSwitcher extends StatelessWidget {
           value: i,
           child: Row(
             children: [
-              Icon(t.icon, size: 18),
+              Icon(t.resolveIcon(), size: 18),
               const SizedBox(width: 8),
               Text(t.name, style: const TextStyle(fontSize: 14)),
               if (i == selectedIndex)
@@ -292,7 +262,7 @@ class _TenantSwitcher extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(tenant.icon, size: 22, color: const Color(0xFF1A1A1A)),
+            Icon(tenant.resolveIcon(), size: 22, color: const Color(0xFF1A1A1A)),
             const SizedBox(height: 2),
             Text(
               tenant.name,

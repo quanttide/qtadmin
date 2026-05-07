@@ -1,0 +1,19 @@
+{
+  "tenant": {
+    "name": "量潮创始人",
+    "icon": "person_outline"
+  },
+  "sections": [
+    {
+      "items": [
+        { "label": "全景图", "icon": "today_outlined", "pageType": "panorama" }
+      ]
+    },
+    {
+      "items": [
+        { "label": "思考", "icon": "psychology_outlined", "pageType": "thinking" },
+        { "label": "写作", "icon": "edit_outlined", "pageType": "writing" }
+      ]
+    }
+  ]
+}

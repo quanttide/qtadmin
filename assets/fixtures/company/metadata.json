@@ -1,0 +1,30 @@
+{
+  "tenant": {
+    "name": "量潮科技",
+    "icon": "business_outlined"
+  },
+  "sections": [
+    {
+      "items": [
+        { "label": "全景图", "icon": "today_outlined", "pageType": "panorama" }
+      ]
+    },
+    {
+      "items": [
+        { "label": "量潮数据", "icon": "storage_outlined", "pageType": "business_detail" },
+        { "label": "量潮课堂", "icon": "school_outlined", "pageType": "business_detail" },
+        { "label": "量潮咨询", "icon": "support_agent_outlined", "pageType": "consulting" },
+        { "label": "量潮云", "icon": "cloud_outlined", "pageType": "business_detail" }
+      ]
+    },
+    {
+      "items": [
+        { "label": "人力资源", "icon": "people_outline", "pageType": "function_detail" },
+        { "label": "财务管理", "icon": "account_balance_outlined", "pageType": "function_detail" },
+        { "label": "组织管理", "icon": "account_tree_outlined", "pageType": "function_detail" },
+        { "label": "战略管理", "icon": "track_changes_outlined", "pageType": "function_detail" },
+        { "label": "新媒体", "icon": "campaign_outlined", "pageType": "function_detail" }
+      ]
+    }
+  ]
+}
