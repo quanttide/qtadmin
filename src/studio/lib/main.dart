@@ -3,9 +3,9 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:qtadmin_studio/models/panorama.dart';
 import 'package:qtadmin_studio/models/qtconsult.dart';
 import 'package:qtadmin_studio/screens/business_detail_screen.dart';
+import 'package:qtadmin_studio/screens/function_detail_screen.dart';
 import 'package:qtadmin_studio/screens/panorama_screen.dart';
 import 'package:qtadmin_studio/screens/qtconsult_screen.dart';
-import 'package:qtadmin_studio/screens/thinking_screen.dart';
 import 'package:qtadmin_studio/services/panorama_loader.dart';
 import 'package:qtadmin_studio/services/qtconsult_loader.dart';
 
@@ -26,15 +26,21 @@ class _NavItem {
   });
 }
 
+class _NavSection {
+  final List<_NavItem> items;
+
+  const _NavSection({required this.items});
+}
+
 class _TenantConfig {
   final String name;
   final IconData icon;
-  final List<_NavItem> navItems;
+  final String consultLabel;
 
   const _TenantConfig({
     required this.name,
     required this.icon,
-    required this.navItems,
+    required this.consultLabel,
   });
 }
 
@@ -51,93 +57,81 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
   PanoramaData? _data;
   QtConsultData? _customerConsultData;
   QtConsultData? _internalConsultData;
+  List<_NavSection> _sections = [];
 
-  late final List<_TenantConfig> _tenants = [
-    _TenantConfig(
-      name: '量潮创始人',
-      icon: Icons.person_outline,
-      navItems: [
-        _NavItem(
-          icon: Icons.today_outlined,
-          label: '全景图',
-          builder: _buildPanorama,
-        ),
-        _NavItem(
-          icon: Icons.psychology_outlined,
-          label: '思考',
-          builder: _buildThinking,
-        ),
-        _NavItem(
-          icon: Icons.edit_outlined,
-          label: '写作',
-          builder: _buildPlaceholder,
-        ),
-        _NavItem(
-          icon: Icons.support_agent_outlined,
-          label: '咨询（自观）',
-          builder: _buildInternalConsult,
-        ),
-      ],
-    ),
-    _TenantConfig(
-      name: '量潮科技',
-      icon: Icons.business_outlined,
-      navItems: [
-        _NavItem(
-          icon: Icons.today_outlined,
-          label: '全景图',
-          builder: _buildPanorama,
-        ),
-        _NavItem(
-          icon: Icons.storage_outlined,
-          label: '量潮数据',
-          builder: (data, _) => BusinessDetailScreen(unit: data.businessUnits[0]),
-        ),
-        _NavItem(
-          icon: Icons.school_outlined,
-          label: '量潮课堂',
-          builder: (data, _) => BusinessDetailScreen(unit: data.businessUnits[1]),
-        ),
-        _NavItem(
-          icon: Icons.support_agent_outlined,
-          label: '量潮咨询',
-          builder: _buildCustomerConsult,
-        ),
-        _NavItem(
-          icon: Icons.cloud_outlined,
-          label: '量潮云',
-          builder: (data, _) => BusinessDetailScreen(unit: data.businessUnits[3]),
-        ),
-      ],
-    ),
+  static const _tenants = [
+    _TenantConfig(name: '量潮创始人', icon: Icons.person_outline, consultLabel: '咨询（自观）'),
+    _TenantConfig(name: '量潮科技', icon: Icons.business_outlined, consultLabel: '量潮咨询'),
   ];
 
   _TenantConfig get _currentTenant => _tenants[_selectedTenant];
 
-  Widget _buildPanorama(PanoramaData data, String tenantName) {
-    return PanoramaScreen(data: data, tenantName: tenantName);
+  IconData _iconForName(String name) {
+    switch (name) {
+      case '量潮数据':
+        return Icons.storage_outlined;
+      case '量潮课堂':
+        return Icons.school_outlined;
+      case '量潮咨询':
+        return Icons.support_agent_outlined;
+      case '量潮云':
+        return Icons.cloud_outlined;
+      case '人力资源':
+        return Icons.people_outline;
+      case '财务管理':
+        return Icons.account_balance_outlined;
+      case '组织管理':
+        return Icons.account_tree_outlined;
+      case '战略管理':
+        return Icons.track_changes_outlined;
+      case '新媒体':
+        return Icons.campaign_outlined;
+      default:
+        return Icons.circle_outlined;
+    }
   }
 
-  Widget _buildThinking(PanoramaData data, String tenantName) {
-    return const ThinkingScreen();
+  void _buildSections() {
+    _sections = [
+      _NavSection(items: [
+        _NavItem(
+          icon: Icons.today_outlined,
+          label: '全景图',
+          builder: (data, tenantName) =>
+              PanoramaScreen(data: data, tenantName: tenantName),
+        ),
+      ]),
+      _NavSection(items: _data!.businessUnits.map((unit) {
+        return _NavItem(
+          icon: _iconForName(unit.name),
+          label: unit.name,
+          builder: (_, __) => BusinessDetailScreen(unit: unit),
+        );
+      }).toList()),
+      _NavSection(items: _data!.functionCards.map((card) {
+        return _NavItem(
+          icon: _iconForName(card.name),
+          label: card.name,
+          builder: (_, __) => FuncDetailScreen(card: card),
+        );
+      }).toList()),
+      _NavSection(items: [
+        _NavItem(
+          icon: Icons.support_agent_outlined,
+          label: '',
+          builder: _buildConsult,
+        ),
+      ]),
+    ];
   }
 
-  Widget _buildPlaceholder(PanoramaData data, String tenantName) {
-    return const Center(child: Text('即将上线'));
-  }
-
-  Widget _buildCustomerConsult(PanoramaData data, String tenantName) {
-    if (_customerConsultData == null) {
+  Widget _buildConsult(PanoramaData data, String tenantName) {
+    final consult =
+        _selectedTenant == 0 ? _internalConsultData : _customerConsultData;
+    if (consult == null) {
       return const Center(child: CircularProgressIndicator());
     }
-    return QtConsultScreen(data: _customerConsultData!);
-  }
-
-  Widget _buildInternalConsult(PanoramaData data, String tenantName) {
-    if (_internalConsultData == null) {
-      return const Center(child: CircularProgressIndicator());
-    }
-    return QtConsultScreen(data: _internalConsultData!);
+    return QtConsultScreen(data: consult);
   }
 
   @override
@@ -157,6 +151,7 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
         _data = results[0] as PanoramaData;
         _customerConsultData = results[1] as QtConsultData;
         _internalConsultData = results[2] as QtConsultData;
+        _buildSections();
       });
     }
   }
@@ -178,44 +173,61 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
       home: Scaffold(
         body: Row(
           children: [
-            Container(
-              width: 72,
-              color: theme.colorScheme.surface,
-              child: Column(
-                children: [
-                  const SizedBox(height: 4),
-                  _TenantSwitcher(
-                    tenants: _tenants,
-                    selectedIndex: _selectedTenant,
-                    onChanged: (index) {
-                      setState(() {
-                        _selectedTenant = index;
-                        _selectedIndex = 0;
-                      });
-                    },
-                  ),
-                  _buildDivider(),
-                  ..._currentTenant.navItems.asMap().entries.map((entry) {
-                    final i = entry.key;
-                    final item = entry.value;
-                    return _NavIcon(
-                      icon: item.icon,
-                      label: item.label,
-                      selected: _selectedIndex == i,
-                      onTap: () => setState(() => _selectedIndex = i),
-                    );
-                  }),
-                  _buildDivider(),
-                  const Spacer(),
-                ],
-              ),
-            ),
+            _buildSidebar(theme),
             const VerticalDivider(thickness: 1, width: 1),
             Expanded(
               child: _buildPage(),
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildSidebar(ThemeData theme) {
+    int flatIndex = 0;
+
+    return Container(
+      width: 72,
+      color: theme.colorScheme.surface,
+      child: Column(
+        children: [
+          const SizedBox(height: 4),
+          _TenantSwitcher(
+            tenants: _tenants,
+            selectedIndex: _selectedTenant,
+            onChanged: (index) {
+              setState(() {
+                _selectedTenant = index;
+                _selectedIndex = 0;
+              });
+            },
+          ),
+          ..._sections.asMap().entries.expand((entry) {
+            final i = entry.key;
+            final section = entry.value;
+            final items = section.items.map((item) {
+              final idx = flatIndex++;
+              final label =
+                  item.label.isNotEmpty ? item.label : _currentTenant.consultLabel;
+              return _NavIcon(
+                icon: item.icon,
+                label: label,
+                selected: _selectedIndex == idx,
+                onTap: () => setState(() => _selectedIndex = idx),
+              );
+            }).toList();
+            return [
+              if (i == 0 && items.isNotEmpty)
+                _buildDivider()
+              else if (i > 0)
+                _buildDivider(),
+              ...items,
+            ];
+          }),
+          _buildDivider(),
+          const Spacer(),
+        ],
       ),
     );
   }
@@ -231,7 +243,9 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
     if (_data == null) {
       return const Center(child: CircularProgressIndicator());
     }
-    return _currentTenant.navItems[_selectedIndex].builder(_data!, _currentTenant.name);
+    final allItems = _sections.expand((s) => s.items).toList();
+    if (_selectedIndex >= allItems.length) return const SizedBox.shrink();
+    return allItems[_selectedIndex].builder(_data!, _currentTenant.name);
   }
 }
 
