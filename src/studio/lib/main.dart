@@ -54,8 +54,7 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
   int _selectedIndex = 0;
   PanoramaData? _founderPanorama;
   PanoramaData? _companyPanorama;
-  QtConsultData? _customerConsultData;
-  QtConsultData? _internalConsultData;
+  QtConsultData? _consultData;
   List<_NavSection> _sections = [];
 
   static const _tenants = [
@@ -108,8 +107,7 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
           icon: _iconForName(unit.name),
           label: unit.name,
           builder: unit.isConsulting ? (_, __) {
-            final consult = unit.consultSource == 'internal' ? _internalConsultData : _customerConsultData;
-            return QtConsultScreen(data: consult!);
+            return QtConsultScreen(data: _consultData!);
           } : (_, __) => BusinessDetailScreen(unit: unit),
         );
       }).toList()),
@@ -134,14 +132,12 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
       PanoramaLoader.load(tenant: TenantType.internal),
       PanoramaLoader.load(tenant: TenantType.customer),
       QtConsultLoader.load(tenant: TenantType.customer),
-      QtConsultLoader.load(tenant: TenantType.internal),
     ]);
     if (mounted) {
       setState(() {
         _founderPanorama = results[0] as PanoramaData;
         _companyPanorama = results[1] as PanoramaData;
-        _customerConsultData = results[2] as QtConsultData;
-        _internalConsultData = results[3] as QtConsultData;
+        _consultData = results[2] as QtConsultData;
         _buildSections();
       });
     }
