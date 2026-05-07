@@ -4,7 +4,30 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/).
 
-## [0.0.4] - 2026-05-06
+## [0.0.5] - 2026-05-08
+
+### Added
+
+- `assets/fixtures/metadata.json`：根注册表（租户清单 + 段定义）
+- `NavSidebar` 独立组件，封装侧边栏全部布局逻辑
+- `docs/drd/` 数据规范目录：metadata.json + qtconsult.json schema
+- `docs/dev/README.md`：主仓库开发文档边界说明
+
+### Changed
+
+- `src/studio/` 导航重构：
+  - 根 metadata + 每租户 metadata 两层分离，分隔线规则从 Dart 代码移到 JSON
+  - `_NavItem`/`_NavIcon`/`_TenantSwitcher` 从 `main.dart` 私有类提取为公开组件
+  - `lib/widgets/` → `lib/views/`
+  - `_buildSidebar` 替换为 `NavSidebar`，新增租户无需改 Dart 代码
+- `src/studio/CHANGELOG.md`：独立维护 Studio 版本日志
+- 文档结构重组：
+  - `docs/dev/studio.md` → `src/studio/doc/index.md`（Studio 实现文档归入子模块）
+  - `docs/add/qtconsult.md` → `src/studio/doc/screens/qtconsult.md`（降级为屏幕实现）
+  - `docs/add/multi-tenant.md` 删除
+  - `docs/drd/` 新增数据规范，与实现文档分离
+  - `docs/myst.yml` 同步更新目录结构
+
 
 ### Added
 
