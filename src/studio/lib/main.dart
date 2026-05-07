@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:qtadmin_studio/models/panorama.dart';
 import 'package:qtadmin_studio/models/qtconsult.dart';
 import 'package:qtadmin_studio/screens/business_detail_screen.dart';
@@ -8,7 +9,8 @@ import 'package:qtadmin_studio/screens/thinking_screen.dart';
 import 'package:qtadmin_studio/services/panorama_loader.dart';
 import 'package:qtadmin_studio/services/qtconsult_loader.dart';
 
-void main() {
+void main() async {
+  await dotenv.load();
   runApp(const QtAdminStudio());
 }
 
@@ -47,7 +49,8 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
   int _selectedTenant = 0;
   int _selectedIndex = 0;
   PanoramaData? _data;
-  QtConsultData? _consultData;
+  QtConsultData? _customerConsultData;
+  QtConsultData? _internalConsultData;
 
   late final List<_TenantConfig> _tenants = [
     _TenantConfig(
@@ -68,6 +71,11 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
           icon: Icons.edit_outlined,
           label: '写作',
           builder: _buildPlaceholder,
+        ),
+        _NavItem(
+          icon: Icons.support_agent_outlined,
+          label: '咨询（自观）',
+          builder: _buildInternalConsult,
         ),
       ],
     ),
@@ -93,7 +101,7 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
         _NavItem(
           icon: Icons.support_agent_outlined,
           label: '量潮咨询',
-          builder: _buildQtConsult,
+          builder: _buildCustomerConsult,
         ),
         _NavItem(
           icon: Icons.cloud_outlined,
@@ -118,11 +126,18 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
     return const Center(child: Text('即将上线'));
   }
 
-  Widget _buildQtConsult(PanoramaData data, String tenantName) {
-    if (_consultData == null) {
+  Widget _buildCustomerConsult(PanoramaData data, String tenantName) {
+    if (_customerConsultData == null) {
       return const Center(child: CircularProgressIndicator());
     }
-    return QtConsultScreen(data: _consultData!);
+    return QtConsultScreen(data: _customerConsultData!);
+  }
+
+  Widget _buildInternalConsult(PanoramaData data, String tenantName) {
+    if (_internalConsultData == null) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    return QtConsultScreen(data: _internalConsultData!);
   }
 
   @override
@@ -134,12 +149,14 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
   Future<void> _loadData() async {
     final results = await Future.wait([
       PanoramaLoader.load(),
-      QtConsultLoader.load(),
+      QtConsultLoader.load(tenant: TenantType.customer),
+      QtConsultLoader.load(tenant: TenantType.internal),
     ]);
     if (mounted) {
       setState(() {
         _data = results[0] as PanoramaData;
-        _consultData = results[1] as QtConsultData;
+        _customerConsultData = results[1] as QtConsultData;
+        _internalConsultData = results[2] as QtConsultData;
       });
     }
   }

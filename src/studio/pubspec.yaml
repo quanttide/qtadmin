@@ -35,6 +35,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   provider: ^6.1.5
   freezed_annotation: ^3.1.0
+  flutter_dotenv: ^5.2.1
 
 dev_dependencies:
   flutter_test:
@@ -62,8 +63,7 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/panorama.json
-    - assets/qtconsult.json
+    - .env
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
