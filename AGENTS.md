@@ -28,41 +28,12 @@ pytest
 - `README.md` — 流程/操作信息
 - `index.md` — 内容/摘要信息
 
-## Multi-Tenant 设计原则
+## 多租户设计原则
 
-**核心：一套代码复用，差异由数据驱动。** 不要用 if-else / 枚举分支区分租户。
-
-**反例（本次踩坑）：**
-```dart
-// ❌ 两套列表 + TenantType 分支
-_founderSections = _buildSections(TenantType.internal);
-_companySections = _buildSections(TenantType.customer);
-```
-
-**正例（重构后）：**
-```dart
-// ✓ 单份 sections，无分支
-void _buildSections() { /* 仅从 _data 构建 */ }
-_TenantConfig(name: '量潮创始人', consultLabel: '咨询（自观）')
-_TenantConfig(name: '量潮科技', consultLabel: '量潮咨询')
-```
-
-**判断标准：** 新增租户只需 fixture 数据文件 + 一行配置，不改代码。同构 = 代码结构同构，不只是 UI 像。
+详见 `docs/add/multi-tenant.md`。
+**一句话：** 一套代码复用，差异由数据驱动。不要用 if-else / 枚举分支区分租户。新增租户只需 fixture + 一行配置，不改代码。
 
 ## Flutter 导航结构规范
 
-所有租户共享同一套 `_NavSection`：
-
-```
-[全景图]         ← 概览
-───────
-[业务线条目...]   ← PanoramaData.businessUnits
-───────
-[职能线条目...]   ← PanoramaData.functionCards
-───────
-[咨询模块]       ← QtConsultData，标签由租户配置
-```
-
-- 不允许在不同租户间硬编码不同的导航项
-- 业务和职能之间必须有分隔线
-- 图标映射集中管理（`_iconForName`），不分散在 JSON 或租户配置中
+详见 `docs/ixd/navigation-architecture.md`。
+**要点：** 所有租户共享同一套 `_NavSection`（全景图 → 业务线 → 职能线 → 咨询），不允许硬编码差异。业务和职能之间必须用分隔线隔开。
