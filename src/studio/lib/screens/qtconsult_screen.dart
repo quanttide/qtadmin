@@ -142,7 +142,9 @@ class _QtConsultScreenState extends State<QtConsultScreen> {
                       autofocus: true,
                       maxLines: 4,
                       decoration: InputDecoration(
-                        hintText: '这次接触发现了什么之前不知道的？描述具体事实……',
+                        hintText: widget.data.isInternal
+                            ? '量潮云数据揭示了什么之前没注意到的问题？'
+                            : '这次接触发现了什么之前不知道的？描述具体事实……',
                         hintStyle: const TextStyle(fontSize: 13, color: Color(0xFFAAAAAA)),
                         border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
                         focusedBorder: OutlineInputBorder(
@@ -182,11 +184,18 @@ class _QtConsultScreenState extends State<QtConsultScreen> {
                         contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                         isDense: true,
                       ),
-                      items: const [
-                        DropdownMenuItem(value: '直接记录', child: Text('直接记录', style: TextStyle(fontSize: 13))),
-                        DropdownMenuItem(value: '需求调研会（5月14日）', child: Text('需求调研会（5月14日）', style: TextStyle(fontSize: 13))),
-                        DropdownMenuItem(value: '初次接触（5月10日）', child: Text('初次接触（5月10日）', style: TextStyle(fontSize: 13))),
-                      ],
+                      items: widget.data.isInternal
+                          ? const [
+                              DropdownMenuItem(value: '量潮云 · 项目数据', child: Text('量潮云 · 项目数据', style: TextStyle(fontSize: 13))),
+                              DropdownMenuItem(value: '量潮云 · 财务数据', child: Text('量潮云 · 财务数据', style: TextStyle(fontSize: 13))),
+                              DropdownMenuItem(value: '量潮云 · 销售看板', child: Text('量潮云 · 销售看板', style: TextStyle(fontSize: 13))),
+                              DropdownMenuItem(value: '直接观察', child: Text('直接观察', style: TextStyle(fontSize: 13))),
+                            ]
+                          : const [
+                              DropdownMenuItem(value: '直接记录', child: Text('直接记录', style: TextStyle(fontSize: 13))),
+                              DropdownMenuItem(value: '需求调研会（5月14日）', child: Text('需求调研会（5月14日）', style: TextStyle(fontSize: 13))),
+                              DropdownMenuItem(value: '初次接触（5月10日）', child: Text('初次接触（5月10日）', style: TextStyle(fontSize: 13))),
+                            ],
                       onChanged: (v) {
                         if (v != null) setDialogState(() => selectedSource = v);
                       },
@@ -245,6 +254,9 @@ class _QtConsultScreenState extends State<QtConsultScreen> {
   }
 
   Widget _buildTopbar(bool isMobile) {
+    final phaseTag = widget.data.isInternal ? '内部观察' : widget.data.phase;
+    final phaseColor = widget.data.isInternal ? const Color(0xFF6A1B9A) : const Color(0xFF1A7F37);
+    final phaseBg = widget.data.isInternal ? const Color(0xFFF3E5F5) : const Color(0xFFE8F5E9);
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -260,21 +272,29 @@ class _QtConsultScreenState extends State<QtConsultScreen> {
                   color: const Color(0xFF222222),
                 ),
               ),
+              if (widget.data.isInternal)
+                const Padding(
+                  padding: EdgeInsets.only(top: 4),
+                  child: Text(
+                    '以独立观察者身份审视公司现状',
+                    style: TextStyle(fontSize: 11, color: Color(0xFF999999)),
+                  ),
+                ),
             ],
           ),
         ),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
           decoration: BoxDecoration(
-            color: const Color(0xFFE8F5E9),
+            color: phaseBg,
             borderRadius: BorderRadius.circular(20),
           ),
           child: Text(
-            widget.data.phase,
-            style: const TextStyle(
+            phaseTag,
+            style: TextStyle(
               fontSize: 11,
               fontWeight: FontWeight.w600,
-              color: Color(0xFF1A7F37),
+              color: phaseColor,
             ),
           ),
         ),
@@ -372,6 +392,11 @@ class _QtConsultScreenState extends State<QtConsultScreen> {
 
   // ============ 信息看板 ============
 
+  String get _infoPanelSubtitle {
+    if (widget.data.isInternal) return '组织自身是什么情况';
+    return '客户是什么情况';
+  }
+
   Widget _buildInfoPanel() {
     return Container(
       decoration: BoxDecoration(
@@ -383,7 +408,7 @@ class _QtConsultScreenState extends State<QtConsultScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _panelHeader('信息看板', '客户是什么情况'),
+          _panelHeader('信息看板', _infoPanelSubtitle),
           const SizedBox(height: 12),
           _buildProfileRow(),
           const SizedBox(height: 14),
@@ -404,9 +429,11 @@ class _QtConsultScreenState extends State<QtConsultScreen> {
               ),
             ),
           ),
-          const SizedBox(height: 16),
-          _sectionTitle('沟通记录'),
-          ...widget.data.communications.map(_buildCommItem),
+          if (widget.data.communications.isNotEmpty) ...[
+            const SizedBox(height: 16),
+            _sectionTitle('沟通记录'),
+            ...widget.data.communications.map(_buildCommItem),
+          ],
         ],
       ),
     );
