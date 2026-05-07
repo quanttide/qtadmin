@@ -55,6 +55,7 @@
       "name": "量潮咨询",
       "tag": "主营",
       "isPrimary": true,
+      "screenType": "consulting",
       "decisions": [
         {
           "fromPerson": "赵一凡",

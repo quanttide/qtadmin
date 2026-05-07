@@ -35,12 +35,10 @@ class _NavSection {
 class _TenantConfig {
   final String name;
   final IconData icon;
-  final String consultLabel;
 
   const _TenantConfig({
     required this.name,
     required this.icon,
-    required this.consultLabel,
   });
 }
 
@@ -60,8 +58,8 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
   List<_NavSection> _sections = [];
 
   static const _tenants = [
-    _TenantConfig(name: '量潮创始人', icon: Icons.person_outline, consultLabel: '咨询（自观）'),
-    _TenantConfig(name: '量潮科技', icon: Icons.business_outlined, consultLabel: '量潮咨询'),
+    _TenantConfig(name: '量潮创始人', icon: Icons.person_outline),
+    _TenantConfig(name: '量潮科技', icon: Icons.business_outlined),
   ];
 
   _TenantConfig get _currentTenant => _tenants[_selectedTenant];
@@ -105,7 +103,7 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
         return _NavItem(
           icon: _iconForName(unit.name),
           label: unit.name,
-          builder: (_, __) => BusinessDetailScreen(unit: unit),
+          builder: unit.isConsulting ? _buildConsult : (_, __) => BusinessDetailScreen(unit: unit),
         );
       }).toList()),
       _NavSection(items: _data!.functionCards.map((card) {
@@ -115,13 +113,6 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
           builder: (_, __) => FuncDetailScreen(card: card),
         );
       }).toList()),
-      _NavSection(items: [
-        _NavItem(
-          icon: Icons.support_agent_outlined,
-          label: '',
-          builder: _buildConsult,
-        ),
-      ]),
     ];
   }
 
@@ -208,11 +199,9 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
             final section = entry.value;
             final items = section.items.map((item) {
               final idx = flatIndex++;
-              final label =
-                  item.label.isNotEmpty ? item.label : _currentTenant.consultLabel;
               return _NavIcon(
                 icon: item.icon,
-                label: label,
+                label: item.label,
                 selected: _selectedIndex == idx,
                 onTap: () => setState(() => _selectedIndex = idx),
               );

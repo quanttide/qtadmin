@@ -52,6 +52,7 @@ class BusinessUnitData {
   final String name;
   final String tag;
   final bool isPrimary;
+  final String screenType;
   final List<DecisionData> decisions;
   final String? emptyMessage;
 
@@ -59,6 +60,7 @@ class BusinessUnitData {
     required this.name,
     required this.tag,
     this.isPrimary = true,
+    this.screenType = 'detail',
     this.decisions = const [],
     this.emptyMessage,
   });
@@ -68,6 +70,7 @@ class BusinessUnitData {
       name: json['name'] as String,
       tag: json['tag'] as String,
       isPrimary: json['isPrimary'] as bool? ?? true,
+      screenType: json['screenType'] as String? ?? 'detail',
       decisions: (json['decisions'] as List<dynamic>?)
               ?.map((d) => DecisionData.fromJson(d as Map<String, dynamic>))
               .toList() ??
@@ -77,6 +80,7 @@ class BusinessUnitData {
   }
 
   bool get isEmpty => decisions.isEmpty;
+  bool get isConsulting => screenType == 'consulting';
 }
 
 class MetricData {
