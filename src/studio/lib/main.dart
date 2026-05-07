@@ -53,8 +53,7 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
   int _selectedTenant = 0;
   int _selectedIndex = 0;
   PanoramaData? _data;
-  QtConsultData? _customerConsultData;
-  QtConsultData? _internalConsultData;
+  QtConsultData? _consultData;
   List<_NavSection> _sections = [];
 
   static const _tenants = [
@@ -117,12 +116,10 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
   }
 
   Widget _buildConsult(PanoramaData data, String tenantName) {
-    final consult =
-        _selectedTenant == 0 ? _internalConsultData : _customerConsultData;
-    if (consult == null) {
+    if (_consultData == null) {
       return const Center(child: CircularProgressIndicator());
     }
-    return QtConsultScreen(data: consult);
+    return QtConsultScreen(data: _consultData!);
   }
 
   @override
@@ -135,13 +132,11 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
     final results = await Future.wait([
       PanoramaLoader.load(),
       QtConsultLoader.load(tenant: TenantType.customer),
-      QtConsultLoader.load(tenant: TenantType.internal),
     ]);
     if (mounted) {
       setState(() {
         _data = results[0] as PanoramaData;
-        _customerConsultData = results[1] as QtConsultData;
-        _internalConsultData = results[2] as QtConsultData;
+        _consultData = results[1] as QtConsultData;
         _buildSections();
       });
     }
