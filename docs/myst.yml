@@ -25,9 +25,17 @@ project:
       children:
         - file: ixd/panorama.md
         - file: ixd/qtconsult.md
-    - title: 架构设计
+    - title: 架构决策
       children:
-        - file: add/qtconsult.md
+        - file: add/README.md
+    - title: 数据规范
+      children:
+        - file: drd/README.md
+        - file: drd/metadata.md
+        - file: drd/qtconsult.md
+    - title: 开发文档
+      children:
+        - file: dev/README.md
 site:
   template: book-theme
   options:
