@@ -1,15 +1,13 @@
 {
-  "tenant": {
-    "name": "量潮科技",
-    "icon": "business_outlined"
-  },
   "sections": [
     {
+      "id": "panorama",
       "items": [
         { "label": "全景图", "icon": "today_outlined", "pageType": "panorama" }
       ]
     },
     {
+      "id": "business",
       "items": [
         { "label": "量潮数据", "icon": "storage_outlined", "pageType": "business_detail" },
         { "label": "量潮课堂", "icon": "school_outlined", "pageType": "business_detail" },
@@ -18,6 +16,7 @@
       ]
     },
     {
+      "id": "function",
       "items": [
         { "label": "人力资源", "icon": "people_outline", "pageType": "function_detail" },
         { "label": "财务管理", "icon": "account_balance_outlined", "pageType": "function_detail" },
