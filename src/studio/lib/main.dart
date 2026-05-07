@@ -6,6 +6,7 @@ import 'package:qtadmin_studio/screens/business_detail_screen.dart';
 import 'package:qtadmin_studio/screens/function_detail_screen.dart';
 import 'package:qtadmin_studio/screens/panorama_screen.dart';
 import 'package:qtadmin_studio/screens/qtconsult_screen.dart';
+import 'package:qtadmin_studio/screens/thinking_screen.dart';
 import 'package:qtadmin_studio/services/panorama_loader.dart';
 import 'package:qtadmin_studio/services/qtconsult_loader.dart';
 
@@ -75,8 +76,10 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
         return Icons.support_agent_outlined;
       case '量潮云':
         return Icons.cloud_outlined;
-      case '自身观察':
-        return Icons.self_improvement_outlined;
+      case '思考':
+        return Icons.psychology_outlined;
+      case '写作':
+        return Icons.edit_outlined;
       case '人力资源':
         return Icons.people_outline;
       case '财务管理':
@@ -103,12 +106,24 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
         ),
       ]),
       _NavSection(items: _data!.businessUnits.map((unit) {
+        Widget page;
+        switch (unit.screenType) {
+          case 'thinking':
+            page = const ThinkingScreen();
+            break;
+          case 'writing':
+            page = const Center(child: Text('即将上线'));
+            break;
+          case 'consulting':
+            page = QtConsultScreen(data: _consultData!);
+            break;
+          default:
+            page = BusinessDetailScreen(unit: unit);
+        }
         return _NavItem(
           icon: _iconForName(unit.name),
           label: unit.name,
-          builder: unit.isConsulting ? (_, __) {
-            return QtConsultScreen(data: _consultData!);
-          } : (_, __) => BusinessDetailScreen(unit: unit),
+          builder: (_, __) => page,
         );
       }).toList()),
       _NavSection(items: _data!.functionCards.map((card) {

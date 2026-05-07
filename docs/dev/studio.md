@@ -23,17 +23,17 @@ PanoramaLoader.load(tenant)  ← 读文件 → 解析 JSON → PanoramaData（te
 QtConsultLoader.load(tenant) ← 读文件 → 解析 JSON → QtConsultData
 ```
 
-`_loadData()` 在 `initState` 中并行加载三个数据源：
+`_loadData()` 在 `initState` 中并行加载：
 
 ```dart
 final results = await Future.wait([
-  PanoramaLoader.load(tenant: TenantType.internal),     // 创始人全景图
-  PanoramaLoader.load(tenant: TenantType.customer),     // 公司全景图
-  QtConsultLoader.load(tenant: TenantType.customer),    // 量潮咨询数据
+  PanoramaLoader.load(tenant: TenantType.internal),
+  PanoramaLoader.load(tenant: TenantType.customer),
+  QtConsultLoader.load(tenant: TenantType.customer),
 ]);
 ```
 
-两个租户各有独立全景图，咨询数据共用一份。
+每个租户有独立的全景图 fixture，因此导航栏可以完全不同。
 
 ## 导航数据模型
 
@@ -43,39 +43,32 @@ _NavSection       — 导航分组：一组 _NavItem
 _TenantConfig     — 租户配置：名称、图标
 ```
 
-构建方法 `_buildSections()` 无分支，直接遍历当前 `_data`：
+`_buildSections()` 通过 `BusinessUnitData.screenType` 分发到不同的页面：
 
 ```dart
-void _buildSections() {
-  _sections = [
-    // 1. 全景图
-    _NavSection(items: [_NavItem(icon: today, label: '全景图', builder: ...)]),
-    // 2. 业务线：遍历 businessUnits，screenType 决定页面类型
-    _NavSection(items: _data!.businessUnits.map((u) => _NavItem(
-      label: u.name,
-      builder: u.isConsulting ? (_, __) => QtConsultScreen(data: _consultData!) : (_, __) => BusinessDetailScreen(unit: u),
-    ))),
-    // 3. 职能线：遍历 functionCards
-    _NavSection(items: _data!.functionCards.map((c) => _NavItem(label: c.name, ...))),
-  ];
+switch (unit.screenType) {
+  case 'thinking':   return ThinkingScreen();
+  case 'writing':    return Center(child: Text('即将上线'));
+  case 'consulting': return QtConsultScreen(data: _consultData!);
+  default:           return BusinessDetailScreen(unit: unit);
 }
 ```
 
-| screenType | 页面 |
-|-----------|------|
-| `detail`（默认） | `BusinessDetailScreen` |
-| `consulting` | `QtConsultScreen(company/qtconsult.json)` — 量潮咨询 |
-
-创始人全景图 `businessUnits` 为空，故导航栏无业务线区域，仅显示全景图和职能线。
+| screenType | 用途 | 页面 |
+|-----------|------|------|
+| `detail`（默认） | 常规业务线 | `BusinessDetailScreen` |
+| `consulting` | 咨询模块（量潮咨询） | `QtConsultScreen` |
+| `thinking` | 创始人的思考空间 | `ThinkingScreen` |
+| `writing` | 创始人的写作空间 | 占位 |
 
 ## 侧栏渲染
 
-`_buildSidebar` 遍历 `_sections`，flat index 跟踪选中项，每个区域前渲染分隔线。空 section 自动跳过不分隔。
+`_buildSidebar` 遍历 `_sections`，flat index 跟踪选中项，每个区域前渲染分隔线。空 section 自动跳过。
 
 ## 页面切换
 
-`_buildPage` 展开 sections 为 flat list，按 `_selectedIndex` 调用 builder。`PanoramaScreen` 的租户名称由 `_currentTenant.name` 传入。
+`_buildPage` 展开 sections 为 flat list，按 `_selectedIndex` 调用 builder。
 
 ## 图标映射
 
-`_iconForName` 集中管理所有业务线和职能线的图标。新增名称必须在此添加映射。
+`_iconForName` 集中管理所有导航项图标，包括业务线和个性工具。

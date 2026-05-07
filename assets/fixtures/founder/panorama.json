@@ -1,49 +1,19 @@
 {
-  "businessUnits": [],
-  "functionCards": [
+  "businessUnits": [
     {
-      "name": "人力资源",
-      "metrics": [
-        { "label": "团队", "value": "8人" },
-        { "label": "出勤", "value": "全员" },
-        { "label": "待审批", "value": "0" }
-      ],
-      "trend": { "text": "无异常", "direction": "flat" }
+      "name": "思考",
+      "tag": "",
+      "isPrimary": true,
+      "screenType": "thinking",
+      "decisions": []
     },
     {
-      "name": "财务管理",
-      "metrics": [
-        { "label": "本月回款", "value": "¥84k/120k" },
-        { "label": "现金流", "value": "健康" }
-      ],
-      "trend": { "text": "无预警", "direction": "flat" }
-    },
-    {
-      "name": "组织管理",
-      "isWarning": true,
-      "metrics": [
-        { "label": "决策委托率", "value": "42%" },
-        { "label": "标准化率", "value": "60%" },
-        { "label": "去中心化度", "value": "40%" }
-      ],
-      "trend": { "text": "↓5% 比上月", "direction": "down" },
-      "warning": "连续2月下降"
-    },
-    {
-      "name": "战略管理",
-      "metrics": [
-        { "label": "季度OKR", "value": "推进中" },
-        { "label": "量潮云", "value": "报告下周出" }
-      ],
-      "trend": { "text": "无阻塞", "direction": "flat" }
-    },
-    {
-      "name": "新媒体",
-      "metrics": [
-        { "label": "公众号", "value": "按时" },
-        { "label": "知乎", "value": "3篇/周" }
-      ],
-      "trend": { "text": "稳定", "direction": "flat" }
+      "name": "写作",
+      "tag": "",
+      "isPrimary": true,
+      "screenType": "writing",
+      "decisions": []
     }
-  ]
+  ],
+  "functionCards": []
 }
