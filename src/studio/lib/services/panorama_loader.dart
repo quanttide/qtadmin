@@ -1,21 +1,22 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:qtadmin_studio/models/panorama.dart';
+import 'package:qtadmin_studio/models/qtconsult.dart';
 import 'package:qtadmin_studio/services/fixture_config.dart';
 
 class PanoramaLoader {
-  static PanoramaData? _cached;
+  static final Map<TenantType, PanoramaData> _cache = {};
 
-  static Future<PanoramaData> load() async {
-    if (_cached != null) return _cached!;
-    final file = File(FixtureConfig.panoramaPath());
+  static Future<PanoramaData> load({TenantType tenant = TenantType.customer}) async {
+    if (_cache.containsKey(tenant)) return _cache[tenant]!;
+    final file = File(FixtureConfig.panoramaPath(tenant));
     final jsonStr = await file.readAsString();
     final data = PanoramaData.fromJson(json.decode(jsonStr) as Map<String, dynamic>);
-    _cached = data;
+    _cache[tenant] = data;
     return data;
   }
 
   static void clearCache() {
-    _cached = null;
+    _cache.clear();
   }
 }

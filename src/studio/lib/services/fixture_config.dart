@@ -14,7 +14,14 @@ class FixtureConfig {
     return path;
   }
 
-  static String panoramaPath() => '$_basePath/company/panorama.json';
+  static String panoramaPath(TenantType tenant) {
+    switch (tenant) {
+      case TenantType.internal:
+        return '$_basePath/founder/panorama.json';
+      case TenantType.customer:
+        return '$_basePath/company/panorama.json';
+    }
+  }
 
   static String qtconsultPath(TenantType tenant) {
     switch (tenant) {

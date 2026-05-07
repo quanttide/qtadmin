@@ -79,6 +79,27 @@
       "isPrimary": false,
       "decisions": [],
       "emptyMessage": "暂无待决策事项\n市场调研进行中"
+    },
+    {
+      "name": "自身观察",
+      "tag": "主营",
+      "isPrimary": true,
+      "screenType": "consulting",
+      "consultSource": "internal",
+      "decisions": [
+        {
+          "fromPerson": "系统",
+          "deadline": "本周内",
+          "title": "4月决策复盘 · 委托率持续下降",
+          "context": "组织管理委托率连续2月下降，需审视当前决策链路是否过度集中。",
+          "teamAdvice": "建议：提升中层授权额度，降低创始人审批负担",
+          "isUrgent": false,
+          "actions": [
+            { "label": "同意调整授权", "isPrimary": true },
+            { "label": "暂缓，再观察一个月", "isPrimary": false }
+          ]
+        }
+      ]
     }
   ],
   "functionCards": [
