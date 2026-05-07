@@ -50,17 +50,18 @@ void _buildSections() {
   _sections = [
     // 1. 全景图
     _NavSection(items: [_NavItem(icon: today, label: '全景图', builder: ...)]),
-    // 2. 业务线：遍历 businessUnits
-    _NavSection(items: _data!.businessUnits.map((u) => _NavItem(label: u.name, ...))),
+    // 2. 业务线：遍历 businessUnits，screenType 决定页面类型
+    _NavSection(items: _data!.businessUnits.map((u) => _NavItem(
+      label: u.name,
+      builder: u.isConsulting ? _buildConsult : (_, __) => BusinessDetailScreen(unit: u),
+    ))),
     // 3. 职能线：遍历 functionCards
     _NavSection(items: _data!.functionCards.map((c) => _NavItem(label: c.name, ...))),
-    // 4. 咨询模块（标签为空，渲染时从当前租户配置读取）
-    _NavSection(items: [_NavItem(label: '', builder: _buildConsult)]),
   ];
 }
 ```
 
-咨询模块的标签在渲染时从 `_currentTenant.consultLabel` 读取，页面数据按当前租户选取：
+咨询页面数据按当前租户选取：
 
 ```dart
 Widget _buildConsult(...) {
@@ -68,6 +69,12 @@ Widget _buildConsult(...) {
   return QtConsultScreen(data: consult);
 }
 ```
+
+业务单元通过 `BusinessUnitData.screenType` 控制页面类型：
+- `"detail"`（默认）→ `BusinessDetailScreen`
+- `"consulting"` → `QtConsultScreen`
+
+新增咨询类业务只需在 fixture JSON 中标注 `"screenType": "consulting"`。
 
 ## 侧栏渲染
 
