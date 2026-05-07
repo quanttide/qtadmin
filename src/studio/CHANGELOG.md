@@ -1,5 +1,18 @@
 # Changelog
 
+## v0.0.4
+
+### 新增
+- 根 `metadata.json` 全局注册表：租户清单 + 段定义（dividerBefore 规则）
+- `NavSidebar` 独立组件，封装侧边栏全部布局逻辑
+- 数据规范文档目录（`docs/drd/`）：metadata schema + qtconsult schema
+
+### 优化
+- 导航组件从 `main.dart` 私有类提取为公开组件（NavIcon / TenantSwitcher / NavSidebar）
+- `lib/widgets/` → `lib/views/`，widget test 直接 import 公开组件，不再重复定义
+- 新增租户只需写 fixture 文件，不再改 Dart 代码
+- 文档结构重组：主仓库 dev / ADD / DRD / 子模块 doc 分工明确
+
 ## v0.0.3
 
 ### 新增
