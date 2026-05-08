@@ -27,8 +27,10 @@ class DashboardRoute extends AppRoute { ... }
 
 方向：将 `ConsultBloc` 提升到 `AppBloc` 级别或使用 `BlocProvider` 的 `lazy` 管理。
 
-## P3 统一路由入口
+## P3 统一路由入口 ✓
 
-加载态由外层 MaterialApp 控制，路由态由 GoRouter 控制。当前 `Router(routerDelegate, routeInformationParser)` 不是标准写法。
-
-方向：等 URL 需求固化后重构为纯 GoRouter 方案，AppBloc 加载完成后再初始化 GoRouter。
+已重构为纯 GoRouter 方案。GoRouter 统管所有 AppState：
+- `/loading` → AppInitial/AppLoading
+- `/error` → AppError  
+- `/workspace/:workspace/:page` → AppLoaded
+- `_AppStateNotifier` 桥接 AppBloc stream 触发路由重定向
