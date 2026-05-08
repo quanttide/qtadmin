@@ -1,0 +1,16 @@
+#!/bin/bash
+# pre-commit hook: quick check for studio
+# Full test suite runs in CI (.github/workflows/studio.yml)
+
+STUDIO="src/studio"
+if ! git diff --cached --name-only | grep -q "^$STUDIO/"; then
+  exit 0
+fi
+
+(cd "$STUDIO" && dart analyze lib/ test/)
+rc=$?
+if [ $rc -ne 0 ]; then
+  echo "✗ dart analyze 失败，提交终止"
+  exit 1
+fi
+echo "✓ dart analyze 通过"

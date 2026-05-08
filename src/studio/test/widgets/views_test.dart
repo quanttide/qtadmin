@@ -30,7 +30,7 @@ void main() {
   });
 
   group('DecisionCardWidget', () {
-    Decision _decision({bool urgent = false}) => Decision(
+    Decision decision({bool urgent = false}) => Decision(
           fromPerson: '张三',
           deadline: '5月10日',
           title: '是否投入',
@@ -44,7 +44,7 @@ void main() {
         );
 
     testWidgets('renders pending decision', (tester) async {
-      await tester.pumpWidget(_wrap(DecisionCardWidget(data: _decision())));
+      await tester.pumpWidget(_wrap(DecisionCardWidget(data: decision())));
       expect(find.text('是否投入'), findsOneWidget);
       expect(find.text('张三'), findsOneWidget);
       expect(find.text('5月10日'), findsOneWidget);
@@ -53,14 +53,14 @@ void main() {
     });
 
     testWidgets('tapping action resolves decision', (tester) async {
-      await tester.pumpWidget(_wrap(DecisionCardWidget(data: _decision())));
+      await tester.pumpWidget(_wrap(DecisionCardWidget(data: decision())));
       await tester.tap(find.text('批准'));
       await tester.pumpAndSettle();
       expect(find.textContaining('已批准'), findsOneWidget);
     });
 
     testWidgets('shows urgent border for urgent decisions', (tester) async {
-      await tester.pumpWidget(_wrap(DecisionCardWidget(data: _decision(urgent: true))));
+      await tester.pumpWidget(_wrap(DecisionCardWidget(data: decision(urgent: true))));
       expect(find.text('是否投入'), findsOneWidget);
     });
   });
