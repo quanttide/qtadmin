@@ -141,56 +141,66 @@ class _ErrorScreen extends StatelessWidget {
   }
 }
 
-class _SidebarShell extends StatelessWidget {
+class _SidebarShell extends StatefulWidget {
   final Widget child;
 
   const _SidebarShell({required this.child});
 
   @override
-  Widget build(BuildContext context) {
-    final data = (context.read<AppBloc>().state as AppLoaded).data;
-    final currentPage =
-        GoRouterState.of(context).pathParameters['page'] ?? 'dashboard';
-    final currentDir =
-        GoRouterState.of(context).pathParameters['workspace'] ??
-            data.workspaces[0].dir;
-    final nav = data.navData[currentDir]!;
+  State<_SidebarShell> createState() => _SidebarShellState();
+}
 
-    final flatRouteIds = <String>[];
-    final sections = nav.sections.map((section) {
+class _SidebarShellState extends State<_SidebarShell> {
+  String _cachedDir = '';
+  List<NavSection> _sections = [];
+  List<String> _flatRouteIds = [];
+
+  void _rebuildSections(AppData data, String dir) {
+    if (dir == _cachedDir && _sections.isNotEmpty) return;
+    _cachedDir = dir;
+    final nav = data.navData[dir]!;
+
+    _flatRouteIds = [];
+    _sections = nav.sections.map((section) {
       return NavSection(
-        dividerBefore:
-            data.sectionDefs[section.id]?.dividerBefore ?? true,
+        dividerBefore: data.sectionDefs[section.id]?.dividerBefore ?? true,
         items: section.items.map((item) {
-          flatRouteIds.add(item.name);
+          _flatRouteIds.add(item.name);
           final route = RouteConfig.find(item.name);
-          return NavItem(
-              routeId: item.name, icon: route.icon, label: route.label);
+          return NavItem(routeId: item.name, icon: route.icon, label: route.label);
         }).toList(),
       );
     }).toList();
+  }
 
-    final selectedIndex = flatRouteIds.indexOf(currentPage);
+  @override
+  Widget build(BuildContext context) {
+    final data = (context.read<AppBloc>().state as AppLoaded).data;
+    final currentPage = GoRouterState.of(context).pathParameters['page'] ?? 'dashboard';
+    final currentDir = GoRouterState.of(context).pathParameters['workspace'] ?? data.workspaces[0].dir;
+
+    _rebuildSections(data, currentDir);
+
+    final selectedIndex = _flatRouteIds.indexOf(currentPage);
 
     return Scaffold(
       body: Row(
         children: [
           NavSidebar(
             workspaces: data.workspaces,
-            selectedWorkspace:
-                data.workspaces.indexWhere((w) => w.dir == currentDir),
+            selectedWorkspace: data.workspaces.indexWhere((w) => w.dir == currentDir),
             onWorkspaceChanged: (index) {
               final newDir = data.workspaces[index].dir;
               context.go('/workspace/$newDir/$currentPage');
             },
-            sections: sections,
+            sections: _sections,
             selectedIndex: selectedIndex >= 0 ? selectedIndex : 0,
             onItemTap: (index) {
-              context.go('/workspace/$currentDir/${flatRouteIds[index]}');
+              context.go('/workspace/$currentDir/${_flatRouteIds[index]}');
             },
           ),
           const VerticalDivider(thickness: 1, width: 1),
-          Expanded(child: child),
+          Expanded(child: widget.child),
         ],
       ),
     );
