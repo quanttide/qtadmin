@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:qtadmin_studio/models/dashboard.dart';
 
 class FuncCardWidget extends StatelessWidget {
-  final FuncCardData data;
+  final FuncCard data;
 
   const FuncCardWidget({super.key, required this.data});
 

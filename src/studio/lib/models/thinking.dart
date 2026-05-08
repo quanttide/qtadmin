@@ -1,133 +1,91 @@
 import 'package:flutter/material.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'app_colors.dart';
 
-class ThinkingEmotion {
-  final String label;
-  final String value;
-  final int colorValue;
+part 'thinking.freezed.dart';
+part 'thinking.g.dart';
 
-  const ThinkingEmotion({
-    required this.label,
-    required this.value,
-    required this.colorValue,
-  });
+@freezed
+abstract class ThinkingEmotion with _$ThinkingEmotion {
+  const factory ThinkingEmotion({
+    required String label,
+    required String value,
+    @JsonKey(name: 'color', fromJson: parseHexColor) required int colorValue,
+  }) = _ThinkingEmotion;
 
-  factory ThinkingEmotion.fromJson(Map<String, dynamic> json) {
-    return ThinkingEmotion(
-      label: json['label'] as String,
-      value: json['value'] as String,
-      colorValue: parseHexColor(json['color'] as String),
-    );
-  }
+  const ThinkingEmotion._();
+
+  factory ThinkingEmotion.fromJson(Map<String, dynamic> json) =>
+      _$ThinkingEmotionFromJson(json);
 
   Color get color => Color(colorValue);
 }
 
-class ThinkingStage {
-  final String iconName;
-  final String title;
-  final String subtitle;
-  final List<String> points;
-  final int colorValue;
+@freezed
+abstract class ThinkingStage with _$ThinkingStage {
+  const factory ThinkingStage({
+    @JsonKey(name: 'icon') required String iconName,
+    required String title,
+    required String subtitle,
+    required List<String> points,
+    @JsonKey(name: 'color', fromJson: parseHexColor) required int colorValue,
+  }) = _ThinkingStage;
 
-  const ThinkingStage({
-    required this.iconName,
-    required this.title,
-    required this.subtitle,
-    required this.points,
-    required this.colorValue,
-  });
+  const ThinkingStage._();
 
-  factory ThinkingStage.fromJson(Map<String, dynamic> json) {
-    return ThinkingStage(
-      iconName: json['icon'] as String,
-      title: json['title'] as String,
-      subtitle: json['subtitle'] as String,
-      points: (json['points'] as List<dynamic>).cast<String>(),
-      colorValue: parseHexColor(json['color'] as String),
-    );
-  }
+  factory ThinkingStage.fromJson(Map<String, dynamic> json) =>
+      _$ThinkingStageFromJson(json);
 
   Color get color => Color(colorValue);
 }
 
-class ThinkingInsight {
-  final String iconName;
-  final String title;
-  final String description;
+@freezed
+abstract class ThinkingInsight with _$ThinkingInsight {
+  const factory ThinkingInsight({
+    @JsonKey(name: 'icon') required String iconName,
+    required String title,
+    required String description,
+  }) = _ThinkingInsight;
 
-  const ThinkingInsight({
-    required this.iconName,
-    required this.title,
-    required this.description,
-  });
-
-  factory ThinkingInsight.fromJson(Map<String, dynamic> json) {
-    return ThinkingInsight(
-      iconName: json['icon'] as String,
-      title: json['title'] as String,
-      description: json['description'] as String,
-    );
-  }
+  factory ThinkingInsight.fromJson(Map<String, dynamic> json) =>
+      _$ThinkingInsightFromJson(json);
 }
 
-class ThinkingClosing {
-  final String title;
-  final String description;
-  final String quote;
+@freezed
+abstract class ThinkingClosing with _$ThinkingClosing {
+  const factory ThinkingClosing({
+    required String title,
+    required String description,
+    required String quote,
+  }) = _ThinkingClosing;
 
-  const ThinkingClosing({
-    required this.title,
-    required this.description,
-    required this.quote,
-  });
-
-  factory ThinkingClosing.fromJson(Map<String, dynamic> json) {
-    return ThinkingClosing(
-      title: json['title'] as String,
-      description: json['description'] as String,
-      quote: json['quote'] as String,
-    );
-  }
+  factory ThinkingClosing.fromJson(Map<String, dynamic> json) =>
+      _$ThinkingClosingFromJson(json);
 }
 
-class ThinkingData {
-  final String title;
-  final String subtitle;
-  final String period;
-  final List<ThinkingStage> stages;
-  final List<ThinkingEmotion> emotions;
-  final String emotionNote;
-  final String awarenessSectionLabel;
-  final String awarenessSectionIcon;
-  final int awarenessSectionColor;
-  final List<ThinkingInsight> insights;
-  final String insightSectionLabel;
-  final String insightSectionIcon;
-  final int insightSectionColor;
-  final ThinkingClosing closing;
+@freezed
+abstract class Thinking with _$Thinking {
+  const factory Thinking({
+    required String title,
+    required String subtitle,
+    required String period,
+    required List<ThinkingStage> stages,
+    required List<ThinkingEmotion> emotions,
+    required String emotionNote,
+    required String awarenessSectionLabel,
+    required String awarenessSectionIcon,
+    required int awarenessSectionColor,
+    required List<ThinkingInsight> insights,
+    required String insightSectionLabel,
+    required String insightSectionIcon,
+    required int insightSectionColor,
+    required ThinkingClosing closing,
+  }) = _Thinking;
 
-  const ThinkingData({
-    required this.title,
-    required this.subtitle,
-    required this.period,
-    required this.stages,
-    required this.emotions,
-    required this.emotionNote,
-    required this.awarenessSectionLabel,
-    required this.awarenessSectionIcon,
-    required this.awarenessSectionColor,
-    required this.insights,
-    required this.insightSectionLabel,
-    required this.insightSectionIcon,
-    required this.insightSectionColor,
-    required this.closing,
-  });
-
-  factory ThinkingData.fromJson(Map<String, dynamic> json) {
+  factory Thinking.fromJson(Map<String, dynamic> json) {
     final awareness = json['awarenessSection'] as Map<String, dynamic>;
     final insightSection = json['insightSection'] as Map<String, dynamic>;
-    return ThinkingData(
+    return Thinking(
       title: json['title'] as String,
       subtitle: json['subtitle'] as String,
       period: json['period'] as String,
@@ -147,12 +105,11 @@ class ThinkingData {
       insightSectionLabel: insightSection['label'] as String,
       insightSectionIcon: insightSection['icon'] as String,
       insightSectionColor: parseHexColor(insightSection['color'] as String),
-      closing: ThinkingClosing.fromJson(json['closing'] as Map<String, dynamic>),
+      closing:
+          ThinkingClosing.fromJson(json['closing'] as Map<String, dynamic>),
     );
   }
 }
-
-
 
 IconData resolveThinkingIcon(String name) {
   const icons = {

@@ -3,7 +3,7 @@ import 'package:qtadmin_studio/models/qtclass.dart';
 import 'package:qtadmin_studio/views/stat_item.dart';
 
 class QtClassScreen extends StatelessWidget {
-  final QtClassData data;
+  final QtClass data;
 
   const QtClassScreen({super.key, required this.data});
 
@@ -93,7 +93,7 @@ class QtClassScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildComponentCard(QtClassComponentData component) {
+  Widget _buildComponentCard(QtClassComponent component) {
     final color = qtClassComponentColor(component.type);
     return Container(
       decoration: BoxDecoration(

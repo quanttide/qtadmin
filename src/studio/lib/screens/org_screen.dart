@@ -3,7 +3,7 @@ import 'package:qtadmin_studio/models/org.dart';
 import 'package:qtadmin_studio/views/stat_item.dart';
 
 class OrgScreen extends StatefulWidget {
-  final OrgDashboardData data;
+  final OrgDashboard data;
 
   const OrgScreen({super.key, required this.data});
 
@@ -135,7 +135,7 @@ class _OrgScreenState extends State<OrgScreen> {
     );
   }
 
-  Widget _buildInstitutionCard(OrgInstitutionData inst) {
+  Widget _buildInstitutionCard(OrgInstitution inst) {
     final (statusLabel, statusColor, statusBg) = switch (inst.status) {
       InstitutionStatus.normal => ('正常', const Color(0xFF1A7F37), const Color(0xFFE8F5E9)),
       InstitutionStatus.warning => ('即将到期', const Color(0xFFC8690A), const Color(0xFFFFF3E0)),
@@ -242,7 +242,7 @@ class _OrgScreenState extends State<OrgScreen> {
     );
   }
 
-  Widget _buildRepCard(OrgRepresentativeData rep) {
+  Widget _buildRepCard(OrgRepresentative rep) {
     final instNames = widget.data.institutions
         .where((i) => rep.institutionIds.contains(i.id))
         .map((i) => i.name)

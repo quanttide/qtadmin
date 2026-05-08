@@ -3,7 +3,7 @@ import 'package:qtadmin_studio/models/dashboard.dart';
 import 'package:qtadmin_studio/views/decision_card_widget.dart';
 
 class BizUnitWidget extends StatelessWidget {
-  final BusinessUnitData data;
+  final BusinessUnit data;
 
   const BizUnitWidget({super.key, required this.data});
 

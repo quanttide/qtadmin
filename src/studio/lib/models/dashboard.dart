@@ -1,170 +1,113 @@
+import 'package:freezed_annotation/freezed_annotation.dart';
 
+part 'dashboard.freezed.dart';
+part 'dashboard.g.dart';
 
-class DecisionAction {
-  final String label;
-  final bool isPrimary;
+@freezed
+abstract class DecisionAction with _$DecisionAction {
+  const factory DecisionAction({
+    required String label,
+    @Default(false) bool isPrimary,
+  }) = _DecisionAction;
 
-  const DecisionAction({required this.label, this.isPrimary = false});
-
-  factory DecisionAction.fromJson(Map<String, dynamic> json) {
-    return DecisionAction(
-      label: json['label'] as String,
-      isPrimary: json['isPrimary'] as bool? ?? false,
-    );
-  }
+  factory DecisionAction.fromJson(Map<String, dynamic> json) =>
+      _$DecisionActionFromJson(json);
 }
 
-class DecisionData {
-  final String fromPerson;
-  final String deadline;
-  final String title;
-  final String context;
-  final String teamAdvice;
-  final bool isUrgent;
-  final List<DecisionAction> actions;
+@freezed
+abstract class Decision with _$Decision {
+  const factory Decision({
+    required String fromPerson,
+    required String deadline,
+    required String title,
+    required String context,
+    required String teamAdvice,
+    @Default(false) bool isUrgent,
+    required List<DecisionAction> actions,
+  }) = _Decision;
 
-  DecisionData({
-    required this.fromPerson,
-    required this.deadline,
-    required this.title,
-    required this.context,
-    required this.teamAdvice,
-    this.isUrgent = false,
-    required this.actions,
-  });
-
-  factory DecisionData.fromJson(Map<String, dynamic> json) {
-    return DecisionData(
-      fromPerson: json['fromPerson'] as String,
-      deadline: json['deadline'] as String,
-      title: json['title'] as String,
-      context: json['context'] as String,
-      teamAdvice: json['teamAdvice'] as String,
-      isUrgent: json['isUrgent'] as bool? ?? false,
-      actions: (json['actions'] as List<dynamic>)
-          .map((a) => DecisionAction.fromJson(a as Map<String, dynamic>))
-          .toList(),
-    );
-  }
+  factory Decision.fromJson(Map<String, dynamic> json) =>
+      _$DecisionFromJson(json);
 }
 
-class BusinessUnitData {
-  final String name;
-  final String tag;
-  final bool isPrimary;
-  final String screenType;
-  final String? consultSource;
-  final List<DecisionData> decisions;
-  final String? emptyMessage;
+@freezed
+abstract class BusinessUnit with _$BusinessUnit {
+  const factory BusinessUnit({
+    required String name,
+    required String tag,
+    @Default(true) bool isPrimary,
+    @Default('detail') String screenType,
+    String? consultSource,
+    @Default([]) List<Decision> decisions,
+    String? emptyMessage,
+  }) = _BusinessUnit;
 
-  BusinessUnitData({
-    required this.name,
-    required this.tag,
-    this.isPrimary = true,
-    this.screenType = 'detail',
-    this.consultSource,
-    this.decisions = const [],
-    this.emptyMessage,
-  });
+  factory BusinessUnit.fromJson(Map<String, dynamic> json) =>
+      _$BusinessUnitFromJson(json);
+}
 
-  factory BusinessUnitData.fromJson(Map<String, dynamic> json) {
-    return BusinessUnitData(
-      name: json['name'] as String,
-      tag: json['tag'] as String,
-      isPrimary: json['isPrimary'] as bool? ?? true,
-      screenType: json['screenType'] as String? ?? 'detail',
-      consultSource: json['consultSource'] as String?,
-      decisions: (json['decisions'] as List<dynamic>?)
-              ?.map((d) => DecisionData.fromJson(d as Map<String, dynamic>))
-              .toList() ??
-          [],
-      emptyMessage: json['emptyMessage'] as String?,
-    );
-  }
-
+extension BusinessUnitX on BusinessUnit {
   bool get isEmpty => decisions.isEmpty;
   bool get isConsulting => screenType == 'consulting';
 }
 
-class MetricData {
-  final String label;
-  final String value;
+@freezed
+abstract class Metric with _$Metric {
+  const factory Metric({
+    required String label,
+    required String value,
+  }) = _Metric;
 
-  const MetricData({required this.label, required this.value});
-
-  factory MetricData.fromJson(Map<String, dynamic> json) {
-    return MetricData(
-      label: json['label'] as String,
-      value: json['value'] as String,
-    );
-  }
+  factory Metric.fromJson(Map<String, dynamic> json) =>
+      _$MetricFromJson(json);
 }
 
 enum TrendDirection { up, down, flat }
 
-class TrendData {
-  final String text;
-  final TrendDirection direction;
-
-  const TrendData({required this.text, this.direction = TrendDirection.flat});
-
-  factory TrendData.fromJson(Map<String, dynamic> json) {
-    return TrendData(
-      text: json['text'] as String,
-      direction: switch (json['direction'] as String?) {
-        'up' => TrendDirection.up,
-        'down' => TrendDirection.down,
-        _ => TrendDirection.flat,
-      },
-    );
+TrendDirection _parseDirection(dynamic value) {
+  switch (value as String?) {
+    case 'up':
+      return TrendDirection.up;
+    case 'down':
+      return TrendDirection.down;
+    default:
+      return TrendDirection.flat;
   }
 }
 
-class FuncCardData {
-  final String name;
-  final List<MetricData> metrics;
-  final TrendData? trend;
-  final String? warning;
-  final bool isWarning;
+@freezed
+abstract class Trend with _$Trend {
+  const factory Trend({
+    required String text,
+    @JsonKey(fromJson: _parseDirection) @Default(TrendDirection.flat)
+    TrendDirection direction,
+  }) = _Trend;
 
-  FuncCardData({
-    required this.name,
-    required this.metrics,
-    this.trend,
-    this.warning,
-    this.isWarning = false,
-  });
-
-  factory FuncCardData.fromJson(Map<String, dynamic> json) {
-    return FuncCardData(
-      name: json['name'] as String,
-      metrics: (json['metrics'] as List<dynamic>)
-          .map((m) => MetricData.fromJson(m as Map<String, dynamic>))
-          .toList(),
-      trend: json['trend'] != null
-          ? TrendData.fromJson(json['trend'] as Map<String, dynamic>)
-          : null,
-      warning: json['warning'] as String?,
-      isWarning: json['isWarning'] as bool? ?? false,
-    );
-  }
+  factory Trend.fromJson(Map<String, dynamic> json) =>
+      _$TrendFromJson(json);
 }
 
-class DashboardData {
-  final List<BusinessUnitData> businessUnits;
-  final List<FuncCardData> functionCards;
+@freezed
+abstract class FuncCard with _$FuncCard {
+  const factory FuncCard({
+    required String name,
+    required List<Metric> metrics,
+    Trend? trend,
+    String? warning,
+    @Default(false) bool isWarning,
+  }) = _FuncCard;
 
-  DashboardData({required this.businessUnits, required this.functionCards});
-
-  factory DashboardData.fromJson(Map<String, dynamic> json) {
-    return DashboardData(
-      businessUnits: (json['businessUnits'] as List<dynamic>)
-          .map((b) => BusinessUnitData.fromJson(b as Map<String, dynamic>))
-          .toList(),
-      functionCards: (json['functionCards'] as List<dynamic>)
-          .map((f) => FuncCardData.fromJson(f as Map<String, dynamic>))
-          .toList(),
-    );
-  }
+  factory FuncCard.fromJson(Map<String, dynamic> json) =>
+      _$FuncCardFromJson(json);
 }
 
+@freezed
+abstract class Dashboard with _$Dashboard {
+  const factory Dashboard({
+    required List<BusinessUnit> businessUnits,
+    required List<FuncCard> functionCards,
+  }) = _Dashboard;
+
+  factory Dashboard.fromJson(Map<String, dynamic> json) =>
+      _$DashboardFromJson(json);
+}

@@ -1,48 +1,40 @@
 import 'package:flutter/material.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-class NavItemData {
+part 'metadata.freezed.dart';
+part 'metadata.g.dart';
+
+class NavEntry {
   final String name;
-
-  const NavItemData({required this.name});
-
-  factory NavItemData.fromJson(String name) => NavItemData(name: name);
+  const NavEntry({required this.name});
+  factory NavEntry.fromJson(String name) => NavEntry(name: name);
+  String toJson() => name;
 }
 
-class NavSectionData {
-  final String id;
-  final List<NavItemData> items;
+@freezed
+abstract class NavSectionDef with _$NavSectionDef {
+  const factory NavSectionDef({
+    required String id,
+    required List<NavEntry> items,
+  }) = _NavSectionDef;
 
-  const NavSectionData({required this.id, required this.items});
-
-  factory NavSectionData.fromJson(Map<String, dynamic> json) {
-    return NavSectionData(
-      id: json['id'] as String,
-      items: (json['items'] as List<dynamic>)
-          .map((i) => NavItemData.fromJson(i as String))
-          .toList(),
-    );
-  }
+  factory NavSectionDef.fromJson(Map<String, dynamic> json) =>
+      _$NavSectionDefFromJson(json);
 }
 
-class WorkspaceInfo {
-  final String name;
-  final String icon;
-  final String dir;
+@freezed
+abstract class WorkspaceInfo with _$WorkspaceInfo {
+  const factory WorkspaceInfo({
+    required String name,
+    required String icon,
+    required String dir,
+  }) = _WorkspaceInfo;
 
-  const WorkspaceInfo({
-    required this.name,
-    required this.icon,
-    required this.dir,
-  });
+  factory WorkspaceInfo.fromJson(Map<String, dynamic> json) =>
+      _$WorkspaceInfoFromJson(json);
+}
 
-  factory WorkspaceInfo.fromJson(Map<String, dynamic> json) {
-    return WorkspaceInfo(
-      name: json['name'] as String,
-      icon: json['icon'] as String,
-      dir: json['dir'] as String,
-    );
-  }
-
+extension WorkspaceInfoX on WorkspaceInfo {
   IconData resolveIcon() {
     const icons = {
       'person_outline': Icons.person_outline,
@@ -52,58 +44,45 @@ class WorkspaceInfo {
   }
 }
 
-class NavMetadata {
-  final List<NavSectionData> sections;
+@freezed
+abstract class NavMetadata with _$NavMetadata {
+  const factory NavMetadata({
+    required List<NavSectionDef> sections,
+  }) = _NavMetadata;
 
-  const NavMetadata({required this.sections});
-
-  factory NavMetadata.fromJson(Map<String, dynamic> json) {
-    return NavMetadata(
-      sections: (json['sections'] as List<dynamic>)
-          .map((s) => NavSectionData.fromJson(s as Map<String, dynamic>))
-          .toList(),
-    );
-  }
-
-  List<NavItemData> get allItems => sections.expand((s) => s.items).toList();
+  factory NavMetadata.fromJson(Map<String, dynamic> json) =>
+      _$NavMetadataFromJson(json);
 }
 
-class SectionDef {
-  final String id;
-  final bool dividerBefore;
-
-  const SectionDef({required this.id, required this.dividerBefore});
-
-  factory SectionDef.fromJson(Map<String, dynamic> json) {
-    return SectionDef(
-      id: json['id'] as String,
-      dividerBefore: json['dividerBefore'] as bool,
-    );
-  }
+extension NavMetadataX on NavMetadata {
+  List<NavEntry> get allItems => sections.expand((s) => s.items).toList();
 }
 
-class RootMetadata {
-  final List<WorkspaceInfo> workspaces;
-  final List<SectionDef> sections;
+@freezed
+abstract class SectionDef with _$SectionDef {
+  const factory SectionDef({
+    required String id,
+    required bool dividerBefore,
+  }) = _SectionDef;
 
-  const RootMetadata({required this.workspaces, required this.sections});
+  factory SectionDef.fromJson(Map<String, dynamic> json) =>
+      _$SectionDefFromJson(json);
+}
 
-  factory RootMetadata.fromJson(Map<String, dynamic> json) {
-    return RootMetadata(
-      workspaces: (json['workspaces'] as List<dynamic>)
-          .map((t) => WorkspaceInfo.fromJson(t as Map<String, dynamic>))
-          .toList(),
-      sections: (json['sections'] as List<dynamic>)
-          .map((s) => SectionDef.fromJson(s as Map<String, dynamic>))
-          .toList(),
-    );
-  }
+@freezed
+abstract class RootMetadata with _$RootMetadata {
+  const factory RootMetadata({
+    required List<WorkspaceInfo> workspaces,
+    required List<SectionDef> sections,
+  }) = _RootMetadata;
 
-  WorkspaceInfo workspaceById(String id) {
-    return workspaces.firstWhere((t) => t.dir == id);
-  }
+  factory RootMetadata.fromJson(Map<String, dynamic> json) =>
+      _$RootMetadataFromJson(json);
+}
 
-  SectionDef sectionById(String id) {
-    return sections.firstWhere((s) => s.id == id);
-  }
+extension RootMetadataX on RootMetadata {
+  WorkspaceInfo workspaceById(String id) =>
+      workspaces.firstWhere((t) => t.dir == id);
+  SectionDef sectionById(String id) =>
+      sections.firstWhere((s) => s.id == id);
 }

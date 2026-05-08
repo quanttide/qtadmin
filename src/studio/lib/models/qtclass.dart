@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
+
+part 'qtclass.freezed.dart';
+part 'qtclass.g.dart';
 
 enum QtClassComponentType {
   schoolEnterprise,
@@ -7,53 +11,31 @@ enum QtClassComponentType {
   oneOnOne,
 }
 
-class QtClassComponentData {
-  final QtClassComponentType type;
-  final String name;
-  final String description;
-  final String status;
-  final int studentCount;
-  final int projectCount;
-  final String? deadline;
-  final List<String> highlights;
+@freezed
+abstract class QtClassComponent with _$QtClassComponent {
+  const factory QtClassComponent({
+    required QtClassComponentType type,
+    required String name,
+    required String description,
+    required String status,
+    required int studentCount,
+    required int projectCount,
+    String? deadline,
+    required List<String> highlights,
+  }) = _QtClassComponent;
 
-  const QtClassComponentData({
-    required this.type,
-    required this.name,
-    required this.description,
-    required this.status,
-    required this.studentCount,
-    required this.projectCount,
-    this.deadline,
-    required this.highlights,
-  });
-
-  factory QtClassComponentData.fromJson(Map<String, dynamic> json) {
-    return QtClassComponentData(
-      type: QtClassComponentType.values.byName(json['type'] as String),
-      name: json['name'] as String,
-      description: json['description'] as String,
-      status: json['status'] as String,
-      studentCount: json['studentCount'] as int,
-      projectCount: json['projectCount'] as int,
-      deadline: json['deadline'] as String?,
-      highlights: (json['highlights'] as List<dynamic>).cast<String>(),
-    );
-  }
+  factory QtClassComponent.fromJson(Map<String, dynamic> json) =>
+      _$QtClassComponentFromJson(json);
 }
 
-class QtClassData {
-  final List<QtClassComponentData> components;
+@freezed
+abstract class QtClass with _$QtClass {
+  const factory QtClass({
+    required List<QtClassComponent> components,
+  }) = _QtClass;
 
-  const QtClassData({required this.components});
-
-  factory QtClassData.fromJson(Map<String, dynamic> json) {
-    return QtClassData(
-      components: (json['components'] as List<dynamic>)
-          .map((c) => QtClassComponentData.fromJson(c as Map<String, dynamic>))
-          .toList(),
-    );
-  }
+  factory QtClass.fromJson(Map<String, dynamic> json) =>
+      _$QtClassFromJson(json);
 }
 
 String qtClassComponentLabel(QtClassComponentType type) {

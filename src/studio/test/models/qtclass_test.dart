@@ -12,7 +12,7 @@ void main() {
     });
   });
 
-  group('QtClassComponentData', () {
+  group('QtClassComponent', () {
     test('fromJson parses correctly', () {
       final json = {
         'type': 'schoolEnterprise',
@@ -24,7 +24,7 @@ void main() {
         'deadline': '2026-Q2',
         'highlights': ['杭电Python实训项目进行中', '浙大数据科学课程共建已签约'],
       };
-      final component = QtClassComponentData.fromJson(json);
+      final component = QtClassComponent.fromJson(json);
 
       expect(component.type, QtClassComponentType.schoolEnterprise);
       expect(component.name, '校企合作');
@@ -47,7 +47,7 @@ void main() {
         'projectCount': 12,
         'highlights': ['数据分析实训营第4期即将开营'],
       };
-      final component = QtClassComponentData.fromJson(json);
+      final component = QtClassComponent.fromJson(json);
 
       expect(component.deadline, isNull);
       expect(component.type, QtClassComponentType.trainingBase);
@@ -66,13 +66,13 @@ void main() {
           'projectCount': 0,
           'highlights': <String>[],
         };
-        final component = QtClassComponentData.fromJson(json);
+        final component = QtClassComponent.fromJson(json);
         expect(QtClassComponentType.values.byName(type), component.type);
       }
     });
   });
 
-  group('QtClassData', () {
+  group('QtClass', () {
     test('fromJson parses full class data', () {
       final json = {
         'components': [
@@ -97,7 +97,7 @@ void main() {
           },
         ],
       };
-      final data = QtClassData.fromJson(json);
+      final data = QtClass.fromJson(json);
 
       expect(data.components.length, 2);
       expect(data.components[0].type, QtClassComponentType.schoolEnterprise);
@@ -108,7 +108,7 @@ void main() {
       final json = {
         'components': <Map<String, dynamic>>[],
       };
-      final data = QtClassData.fromJson(json);
+      final data = QtClass.fromJson(json);
 
       expect(data.components, isEmpty);
     });

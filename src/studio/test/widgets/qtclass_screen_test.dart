@@ -3,10 +3,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:qtadmin_studio/models/qtclass.dart';
 import 'package:qtadmin_studio/screens/qtclass_screen.dart';
 
-QtClassData _createTestData() {
-  return QtClassData(
+QtClass _createTestData() {
+  return QtClass(
     components: [
-      QtClassComponentData(
+      QtClassComponent(
         type: QtClassComponentType.schoolEnterprise,
         name: '校企合作',
         description: '与高校合作开展人才培养',
@@ -16,7 +16,7 @@ QtClassData _createTestData() {
         deadline: '2026-Q2',
         highlights: ['杭电Python实训项目进行中', '浙大数据科学课程共建已签约'],
       ),
-      QtClassComponentData(
+      QtClassComponent(
         type: QtClassComponentType.trainingBase,
         name: '实训基地',
         description: '提供实战化技能训练',
@@ -138,9 +138,9 @@ void main() {
 
   group('QtClassScreen with 4 components', () {
     testWidgets('renders all 4 components from fixture-like data', (tester) async {
-      final fullData = QtClassData(
+      final fullData = QtClass(
         components: [
-          QtClassComponentData(
+          QtClassComponent(
             type: QtClassComponentType.schoolEnterprise,
             name: '校企合作',
             description: '与高校合作',
@@ -149,7 +149,7 @@ void main() {
             projectCount: 6,
             highlights: [],
           ),
-          QtClassComponentData(
+          QtClassComponent(
             type: QtClassComponentType.trainingBase,
             name: '实训基地',
             description: '实战训练',
@@ -158,7 +158,7 @@ void main() {
             projectCount: 12,
             highlights: [],
           ),
-          QtClassComponentData(
+          QtClassComponent(
             type: QtClassComponentType.internalTeaching,
             name: '内部教学',
             description: '知识分享',
@@ -167,7 +167,7 @@ void main() {
             projectCount: 4,
             highlights: [],
           ),
-          QtClassComponentData(
+          QtClassComponent(
             type: QtClassComponentType.oneOnOne,
             name: '一对一',
             description: '个性化辅导',

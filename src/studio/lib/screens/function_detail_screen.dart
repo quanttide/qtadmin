@@ -3,7 +3,7 @@ import 'package:qtadmin_studio/models/dashboard.dart';
 import 'package:qtadmin_studio/views/func_card_widget.dart';
 
 class FuncDetailScreen extends StatelessWidget {
-  final FuncCardData card;
+  final FuncCard card;
 
   const FuncDetailScreen({super.key, required this.card});
 

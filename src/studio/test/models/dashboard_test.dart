@@ -22,7 +22,7 @@ void main() {
     });
   });
 
-  group('DecisionData', () {
+  group('Decision', () {
     test('fromJson parses correctly with actions', () {
       final json = {
         'fromPerson': '陈小明',
@@ -36,7 +36,7 @@ void main() {
           {'label': '驳回', 'isPrimary': false},
         ],
       };
-      final decision = DecisionData.fromJson(json);
+      final decision = Decision.fromJson(json);
 
       expect(decision.fromPerson, '陈小明');
       expect(decision.title, '华为数据清洗');
@@ -55,20 +55,20 @@ void main() {
         'teamAdvice': '测试建议',
         'actions': [],
       };
-      final decision = DecisionData.fromJson(json);
+      final decision = Decision.fromJson(json);
 
       expect(decision.isUrgent, false);
     });
   });
 
-  group('BusinessUnitData', () {
+  group('BusinessUnit', () {
     test('fromJson parses default business unit', () {
       final json = {
         'name': '量潮数据',
         'tag': '主营',
         'isPrimary': true,
       };
-      final unit = BusinessUnitData.fromJson(json);
+      final unit = BusinessUnit.fromJson(json);
 
       expect(unit.name, '量潮数据');
       expect(unit.tag, '主营');
@@ -87,7 +87,7 @@ void main() {
         'consultSource': 'customer',
         'decisions': [],
       };
-      final unit = BusinessUnitData.fromJson(json);
+      final unit = BusinessUnit.fromJson(json);
 
       expect(unit.screenType, 'consulting');
       expect(unit.consultSource, 'customer');
@@ -102,7 +102,7 @@ void main() {
         'decisions': [],
         'emptyMessage': '暂无待决策事项',
       };
-      final unit = BusinessUnitData.fromJson(json);
+      final unit = BusinessUnit.fromJson(json);
 
       expect(unit.isPrimary, false);
       expect(unit.isEmpty, true);
@@ -110,7 +110,7 @@ void main() {
     });
 
     test('isEmpty returns true when decisions is empty', () {
-      final unit = BusinessUnitData(
+      final unit = BusinessUnit(
         name: '测试',
         tag: '',
         decisions: [],
@@ -119,11 +119,11 @@ void main() {
     });
 
     test('isEmpty returns false when decisions is not empty', () {
-      final unit = BusinessUnitData(
+      final unit = BusinessUnit(
         name: '测试',
         tag: '',
         decisions: [
-          DecisionData(
+          Decision(
             fromPerson: '某人',
             deadline: '本周',
             title: '测试',
@@ -137,20 +137,20 @@ void main() {
     });
   });
 
-  group('MetricData', () {
+  group('Metric', () {
     test('fromJson parses correctly', () {
       final json = {'label': '团队', 'value': '8人'};
-      final metric = MetricData.fromJson(json);
+      final metric = Metric.fromJson(json);
 
       expect(metric.label, '团队');
       expect(metric.value, '8人');
     });
   });
 
-  group('TrendData', () {
+  group('Trend', () {
     test('fromJson parses up direction', () {
       final json = {'text': '↑5%', 'direction': 'up'};
-      final trend = TrendData.fromJson(json);
+      final trend = Trend.fromJson(json);
 
       expect(trend.text, '↑5%');
       expect(trend.direction, TrendDirection.up);
@@ -158,27 +158,27 @@ void main() {
 
     test('fromJson parses down direction', () {
       final json = {'text': '↓5%', 'direction': 'down'};
-      final trend = TrendData.fromJson(json);
+      final trend = Trend.fromJson(json);
 
       expect(trend.direction, TrendDirection.down);
     });
 
     test('fromJson defaults to flat for unknown direction', () {
       final json = {'text': '稳定', 'direction': 'unknown'};
-      final trend = TrendData.fromJson(json);
+      final trend = Trend.fromJson(json);
 
       expect(trend.direction, TrendDirection.flat);
     });
 
     test('fromJson defaults to flat when direction is null', () {
       final json = {'text': '稳定'};
-      final trend = TrendData.fromJson(json);
+      final trend = Trend.fromJson(json);
 
       expect(trend.direction, TrendDirection.flat);
     });
   });
 
-  group('FuncCardData', () {
+  group('FuncCard', () {
     test('fromJson parses basic card', () {
       final json = {
         'name': '人力资源',
@@ -186,7 +186,7 @@ void main() {
           {'label': '团队', 'value': '8人'},
         ],
       };
-      final card = FuncCardData.fromJson(json);
+      final card = FuncCard.fromJson(json);
 
       expect(card.name, '人力资源');
       expect(card.metrics.length, 1);
@@ -205,7 +205,7 @@ void main() {
         'trend': {'text': '↓5%', 'direction': 'down'},
         'warning': '连续2月下降',
       };
-      final card = FuncCardData.fromJson(json);
+      final card = FuncCard.fromJson(json);
 
       expect(card.isWarning, true);
       expect(card.warning, '连续2月下降');
@@ -213,7 +213,7 @@ void main() {
     });
   });
 
-  group('DashboardData', () {
+  group('Dashboard', () {
     test('fromJson parses complete dashboard', () {
       final json = {
         'businessUnits': [
@@ -225,7 +225,7 @@ void main() {
           {'name': '财务管理', 'metrics': []},
         ],
       };
-      final data = DashboardData.fromJson(json);
+      final data = Dashboard.fromJson(json);
 
       expect(data.businessUnits.length, 2);
       expect(data.functionCards.length, 2);
@@ -242,7 +242,7 @@ void main() {
         ],
         'functionCards': [],
       };
-      final data = DashboardData.fromJson(json);
+      final data = Dashboard.fromJson(json);
 
       expect(data.businessUnits.length, 2);
       expect(data.functionCards, isEmpty);

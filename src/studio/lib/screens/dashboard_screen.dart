@@ -4,7 +4,7 @@ import 'package:qtadmin_studio/views/business_section_widget.dart';
 import 'package:qtadmin_studio/views/function_section_widget.dart';
 
 class DashboardScreen extends StatelessWidget {
-  final DashboardData data;
+  final Dashboard data;
   final String workspaceName;
 
   const DashboardScreen({super.key, required this.data, this.workspaceName = '量潮科技'});

@@ -18,7 +18,7 @@ void main() {
     });
   });
 
-  group('OrgInstitutionData', () {
+  group('OrgInstitution', () {
     test('fromJson parses correctly', () {
       final json = {
         'id': 'exec',
@@ -32,7 +32,7 @@ void main() {
         'memberIds': ['p1', 'p2'],
         'pendingProposalCount': 2,
       };
-      final inst = OrgInstitutionData.fromJson(json);
+      final inst = OrgInstitution.fromJson(json);
 
       expect(inst.id, 'exec');
       expect(inst.name, '执行委员会');
@@ -54,7 +54,7 @@ void main() {
         'status': 'normal',
         'expectedFrequency': '每月一次',
       };
-      final inst = OrgInstitutionData.fromJson(json);
+      final inst = OrgInstitution.fromJson(json);
 
       expect(inst.parentId, '');
       expect(inst.memberIds, isEmpty);
@@ -62,7 +62,7 @@ void main() {
     });
   });
 
-  group('OrgMeetingData', () {
+  group('OrgMeeting', () {
     test('fromJson parses correctly', () {
       final json = {
         'id': 'm1',
@@ -73,7 +73,7 @@ void main() {
         'attendeeCount': 9,
         'totalMemberCount': 10,
       };
-      final meeting = OrgMeetingData.fromJson(json);
+      final meeting = OrgMeeting.fromJson(json);
 
       expect(meeting.id, 'm1');
       expect(meeting.title, '预算审批会议');
@@ -88,14 +88,14 @@ void main() {
         'date': '2026-04-29',
         'title': '周例会',
       };
-      final meeting = OrgMeetingData.fromJson(json);
+      final meeting = OrgMeeting.fromJson(json);
 
       expect(meeting.agendaItems, isEmpty);
       expect(meeting.attendeeCount, 0);
     });
   });
 
-  group('OrgRepresentativeData', () {
+  group('OrgRepresentative', () {
     test('fromJson parses correctly', () {
       final json = {
         'id': 'p1',
@@ -120,7 +120,7 @@ void main() {
           },
         ],
       };
-      final rep = OrgRepresentativeData.fromJson(json);
+      final rep = OrgRepresentative.fromJson(json);
 
       expect(rep.id, 'p1');
       expect(rep.name, '张三');
@@ -141,7 +141,7 @@ void main() {
         'term': '2026Q1-Q2',
         'tier': 'yellow',
       };
-      final rep = OrgRepresentativeData.fromJson(json);
+      final rep = OrgRepresentative.fromJson(json);
 
       expect(rep.recentVotes, isEmpty);
       expect(rep.attendanceRate, 0);
@@ -149,14 +149,14 @@ void main() {
     });
   });
 
-  group('OrgRankData', () {
+  group('OrgRank', () {
     test('fromJson parses correctly', () {
       final json = {
         'name': 'M1',
         'isManagement': true,
         'headCount': 2,
       };
-      final rank = OrgRankData.fromJson(json);
+      final rank = OrgRank.fromJson(json);
 
       expect(rank.name, 'M1');
       expect(rank.isManagement, true);
@@ -168,14 +168,14 @@ void main() {
         'name': '专业序列',
         'headCount': 5,
       };
-      final rank = OrgRankData.fromJson(json);
+      final rank = OrgRank.fromJson(json);
 
       expect(rank.isManagement, false);
       expect(rank.headCount, 5);
     });
   });
 
-  group('OrgPromotionData', () {
+  group('OrgPromotion', () {
     test('fromJson parses correctly', () {
       final json = {
         'id': 'pr1',
@@ -185,7 +185,7 @@ void main() {
         'date': '2026-04-01',
         'isCrossTrack': true,
       };
-      final prom = OrgPromotionData.fromJson(json);
+      final prom = OrgPromotion.fromJson(json);
 
       expect(prom.id, 'pr1');
       expect(prom.personName, '王五');
@@ -202,13 +202,13 @@ void main() {
         'toRank': 'M2',
         'date': '2026-05-01',
       };
-      final prom = OrgPromotionData.fromJson(json);
+      final prom = OrgPromotion.fromJson(json);
 
       expect(prom.isCrossTrack, false);
     });
   });
 
-  group('OrgDashboardData', () {
+  group('OrgDashboard', () {
     test('fromJson parses full org dashboard data', () {
       final json = {
         'institutions': [
@@ -244,7 +244,7 @@ void main() {
           },
         ],
       };
-      final data = OrgDashboardData.fromJson(json);
+      final data = OrgDashboard.fromJson(json);
 
       expect(data.institutions.length, 1);
       expect(data.representatives.length, 1);

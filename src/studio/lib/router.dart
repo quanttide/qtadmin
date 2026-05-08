@@ -15,11 +15,11 @@ import 'package:qtadmin_studio/screens/business_detail_screen.dart';
 import 'package:qtadmin_studio/screens/function_detail_screen.dart';
 
 class AppRouter {
-  final DashboardData Function() data;
-  final ThinkingData? thinkingData;
-  final QtConsultData? consultData;
-  final QtClassData? classData;
-  final OrgDashboardData? orgData;
+  final Dashboard Function() data;
+  final Thinking? thinkingData;
+  final QtConsult? consultData;
+  final QtClass? classData;
+  final OrgDashboard? orgData;
   final List<WorkspaceInfo> workspaces;
   final int selectedWorkspace;
 
@@ -33,7 +33,7 @@ class AppRouter {
     this.selectedWorkspace = 0,
   });
 
-  DashboardData? get _dashboard => data();
+  Dashboard? get _dashboard => data();
 
   Widget buildScreen(RouteConfig route) {
     switch (route.screenType) {

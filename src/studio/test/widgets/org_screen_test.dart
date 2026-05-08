@@ -3,10 +3,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:qtadmin_studio/models/org.dart';
 import 'package:qtadmin_studio/screens/org_screen.dart';
 
-OrgDashboardData _createTestData() {
-  return OrgDashboardData(
+OrgDashboard _createTestData() {
+  return OrgDashboard(
     institutions: [
-      OrgInstitutionData(
+      OrgInstitution(
         id: 'shareholders',
         name: '股东代表大会',
         parentId: '',
@@ -17,7 +17,7 @@ OrgDashboardData _createTestData() {
         nextMeetingDate: '75天后',
         pendingProposalCount: 0,
       ),
-      OrgInstitutionData(
+      OrgInstitution(
         id: 'partner',
         name: '合伙人委员会',
         parentId: 'shareholders',
@@ -28,7 +28,7 @@ OrgDashboardData _createTestData() {
         nextMeetingDate: '28天后',
         pendingProposalCount: 0,
       ),
-      OrgInstitutionData(
+      OrgInstitution(
         id: 'assembly',
         name: '公司代表大会',
         parentId: '',
@@ -39,7 +39,7 @@ OrgDashboardData _createTestData() {
         nextMeetingDate: '25天后',
         pendingProposalCount: 1,
       ),
-      OrgInstitutionData(
+      OrgInstitution(
         id: 'tech',
         name: '技术委员会',
         parentId: 'assembly',
@@ -52,7 +52,7 @@ OrgDashboardData _createTestData() {
       ),
     ],
     representatives: [
-      OrgRepresentativeData(
+      OrgRepresentative(
         id: 'p1',
         name: '张三',
         institutionIds: ['partner'],
@@ -64,7 +64,7 @@ OrgDashboardData _createTestData() {
         objectionCount: 1,
         tier: RepPerformanceTier.green,
         recentVotes: [
-          OrgMeetingData(
+          OrgMeeting(
             id: 'm1',
             institutionId: 'partner',
             date: '2026-05-06',
@@ -75,7 +75,7 @@ OrgDashboardData _createTestData() {
           ),
         ],
       ),
-      OrgRepresentativeData(
+      OrgRepresentative(
         id: 'p2',
         name: '李四',
         institutionIds: ['tech'],
@@ -90,11 +90,11 @@ OrgDashboardData _createTestData() {
       ),
     ],
     ranks: [
-      OrgRankData(name: '专业序列', isManagement: false, headCount: 5),
-      OrgRankData(name: 'M1', isManagement: true, headCount: 2),
+      OrgRank(name: '专业序列', isManagement: false, headCount: 5),
+      OrgRank(name: 'M1', isManagement: true, headCount: 2),
     ],
     promotions: [
-      OrgPromotionData(
+      OrgPromotion(
         id: 'pr1',
         personName: '王五',
         fromRank: '专业序列',
