@@ -1,6 +1,6 @@
 # Changelog
 
-## v0.0.7
+## v0.0.6
 
 ### Refactor
 - 重命名 租户(Tenant) → Workspace工作空间(Workspace)：中文文档、Dart 代码标识符、JSON fixture 键全量替换

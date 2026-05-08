@@ -4,6 +4,34 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/).
 
+## [0.0.7] - 2026-05-08
+
+### Added
+
+- `docs/dev/pmd.md`：问题管理文档（业务问题 + 技术问题双维度记录）
+- `.agents/skills/`：技能系统（从 quanttide-platform 同步）
+
+### Changed
+
+- `src/studio/` 租户(Tenant) → Workspace工作空间(Workspace) 全量重命名
+  - `TenantType` → `WorkspaceType`，`TenantInfo` → `WorkspaceInfo`，`TenantSwitcher` → `WorkspaceSwitcher`
+  - 所有相关字段/参数/变量同步更新
+- `src/studio/` 文档、Dart 代码标识符、JSON fixture 键全量替换
+
+### Fixed
+
+- `src/studio/` 修复数据加载完成前侧边栏空 `workspaces` 列表导致的 `RangeError`
+- `src/studio/` 修复 web 平台 fixture 加载（改用 HTTP asset loader）
+- `src/studio/` 修复 Aliyun OSS 部署配置
+
+### Docs
+
+- `ROADMAP.md`：项目路线规划文档
+
+### Studio
+
+独立发布 `v0.0.6`，详见 [src/studio/CHANGELOG.md](src/studio/CHANGELOG.md)。
+
 ## [0.0.6] - 2026-05-08
 
 ### Added
@@ -56,6 +84,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0
   - `docs/myst.yml` 同步更新目录结构
 
 
+## [0.0.4] - 2026-05-06
+
 ### Added
 
 - `docs/`: 咨询业务线全套文档
@@ -75,6 +105,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0
 
 - `src/studio/` 导航重构：`_workspaces` 改为实例字段，支持动态页面加载
 - `src/studio/pubspec.yaml` 注册 `qtconsult.json` asset
+
+### Studio
+
+独立发布 `v0.0.3`，详见 [src/studio/CHANGELOG.md](src/studio/CHANGELOG.md)。
 
 ## [0.0.3] - 2026-05-06
 
