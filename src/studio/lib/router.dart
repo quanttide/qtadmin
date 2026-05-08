@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:qtadmin_studio/blocs/consult_bloc.dart';
 import 'package:qtadmin_studio/models/metadata.dart';
 import 'package:qtadmin_studio/models/dashboard.dart';
 import 'package:qtadmin_studio/models/qtconsult.dart';
@@ -82,7 +84,10 @@ class AppRouter {
       case 'writing':
         return const Center(child: Text('即将上线'));
       case 'consulting':
-        return QtConsultScreen(data: consultData!);
+        return BlocProvider(
+          create: (_) => ConsultBloc(ConsultState(data: consultData!)),
+          child: const QtConsultScreen(),
+        );
       case 'classroom':
         return QtClassScreen(data: classData!);
       case 'org':
