@@ -63,18 +63,18 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
                 final dir = state.pathParameters['workspace']!;
                 final page = state.pathParameters['page']!;
                 final wsIndex = data.workspaces.indexWhere((w) => w.dir == dir);
-                return buildScreen(
-                  dir: dir,
-                  page: page,
-                  founderDashboard: data.founderDashboard,
-                  companyDashboard: data.companyDashboard,
+                final dashboard = dir == 'founder' ? data.founderDashboard : data.companyDashboard;
+                final route = RouteConfig.find(page);
+                final ctx = ScreenContext(
+                  dashboard: dashboard,
+                  workspaceName: data.workspaces[wsIndex >= 0 ? wsIndex : 0].name,
+                  selectedWorkspace: wsIndex >= 0 ? wsIndex : 0,
                   thinkingData: data.thinkingData,
                   consultData: data.consultData,
                   classData: data.classData,
                   orgData: data.orgData,
-                  workspaceNames: data.workspaces.map((w) => w.name).toList(),
-                  selectedWorkspace: wsIndex >= 0 ? wsIndex : 0,
                 );
+                return route.builder(ctx);
               },
             ),
           ],
