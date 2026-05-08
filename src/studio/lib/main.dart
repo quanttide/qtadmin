@@ -1,23 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:qtadmin_studio/models/metadata.dart';
 import 'package:qtadmin_studio/models/dashboard.dart';
-import 'package:qtadmin_studio/models/qtclass.dart';
 import 'package:qtadmin_studio/models/qtconsult.dart';
+import 'package:qtadmin_studio/models/qtclass.dart';
 import 'package:qtadmin_studio/models/thinking.dart';
 import 'package:qtadmin_studio/models/org.dart';
-import 'package:qtadmin_studio/screens/business_detail_screen.dart';
-import 'package:qtadmin_studio/screens/org_screen.dart';
-import 'package:qtadmin_studio/services/org_loader.dart';
-import 'package:qtadmin_studio/screens/function_detail_screen.dart';
-import 'package:qtadmin_studio/screens/dashboard_screen.dart';
-import 'package:qtadmin_studio/screens/qtclass_screen.dart';
-import 'package:qtadmin_studio/screens/qtconsult_screen.dart';
-import 'package:qtadmin_studio/screens/thinking_screen.dart';
+import 'package:qtadmin_studio/router.dart';
 import 'package:qtadmin_studio/services/metadata_loader.dart';
 import 'package:qtadmin_studio/services/dashboard_loader.dart';
 import 'package:qtadmin_studio/services/qtclass_loader.dart';
 import 'package:qtadmin_studio/services/qtconsult_loader.dart';
 import 'package:qtadmin_studio/services/thinking_loader.dart';
+import 'package:qtadmin_studio/services/org_loader.dart';
 import 'package:qtadmin_studio/views/navigation.dart';
 
 void main() async {
@@ -49,42 +43,22 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
   DashboardData? get _data =>
       _selectedWorkspace == 0 ? _founderDashboard : _companyDashboard;
 
-  Widget _buildScreenForItem(NavItemData item) {
-    switch (item.pageType) {
-      case 'dashboard':
-        return DashboardScreen(data: _data!, workspaceName: _workspaces[_selectedWorkspace].name);
-      case 'thinking':
-        return ThinkingScreen(data: _thinkingData!);
-      case 'writing':
-        return const Center(child: Text('即将上线'));
-      case 'consulting':
-        return QtConsultScreen(data: _consultData!);
-      case 'classroom':
-        return QtClassScreen(data: _classData!);
-      case 'org':
-        return OrgScreen(data: _orgData!);
-      case 'business_detail': {
-        final unit = _data!.businessUnits.firstWhere(
-          (u) => u.name == item.label,
-          orElse: () => throw StateError('未找到业务单元: ${item.label}'),
-        );
-        return BusinessDetailScreen(unit: unit);
-      }
-      case 'function_detail': {
-        final card = _data!.functionCards.firstWhere(
-          (c) => c.name == item.label,
-          orElse: () => throw StateError('未找到职能卡: ${item.label}'),
-        );
-        return FuncDetailScreen(card: card);
-      }
-      default:
-        return const SizedBox.shrink();
-    }
-  }
+  late final AppRouter _router;
 
   void _buildSections() {
     final dir = _workspaces[_selectedWorkspace].dir;
     final nav = _navData[dir]!;
+    _router = AppRouter(
+      data: () => _data!,
+      founderDashboard: _founderDashboard,
+      companyDashboard: _companyDashboard,
+      thinkingData: _thinkingData,
+      consultData: _consultData,
+      classData: _classData,
+      orgData: _orgData,
+      workspaces: _workspaces,
+      selectedWorkspace: _selectedWorkspace,
+    );
     _sections = nav.sections.map((section) {
       return NavSection(
         dividerBefore: _sectionDefs[section.id]?.dividerBefore ?? true,
@@ -92,7 +66,7 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
           return NavItem(
             icon: item.resolveIcon(),
             label: item.label,
-            builder: () => _buildScreenForItem(item),
+            builder: () => _router.buildScreen(item),
           );
         }).toList(),
       );
