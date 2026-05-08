@@ -1,5 +1,29 @@
 # Changelog
 
+## v0.1.0
+
+### Refactor
+
+- 路由系统迁移：纯 GoRouter 替代 AppRouter 字符串派发，redirect 统一管理 AppLifecycle
+- P0 路由表合并：`Map<String, RouteConfig>` 自包含，消除 routeId→screen 双重映射
+- P1 Section 缓存：`_SidebarShell` StatefulWidget 缓存子树，workspace 不变时减少 50%+ 无谓重建
+- P2 ConsultBloc 生命周期提升至 ShellRoute，跨页面保持咨询状态
+- 全模型 `XxxData` → `Xxx` 重命名（Dashboard、BusinessUnit、Thinking 等 20+ 模型）
+- `NavItem` 构造参数 `builder` → `routeId`，与路由表解耦
+
+### Added
+
+- 166 测试全覆盖：sources（DataLoader/DataResult）、blocs（ConsultBloc）、screens（dashboard/business_detail/function_detail/qtconsult）、views（全部 7 个 widget 组件）
+- `DataSource` 抽象 + `DataResult` sealed class + `DataLoader` 泛型类
+
+### Fixed
+
+- 切换工作空间 `_router` 重新赋值报错（`late final` → `late`）
+
+### Chore
+
+- pre-commit 仅 `dart analyze`，`flutter test` 由 CI 覆盖
+
 ## v0.0.7
 
 ### Docs
