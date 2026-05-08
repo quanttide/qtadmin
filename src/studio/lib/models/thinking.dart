@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
+import 'dart:ui' show Color;
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'app_colors.dart';
+import '../utils/app_colors.dart';
 
 part 'thinking.freezed.dart';
 part 'thinking.g.dart';
@@ -109,19 +109,4 @@ abstract class Thinking with _$Thinking {
           ThinkingClosing.fromJson(json['closing'] as Map<String, dynamic>),
     );
   }
-}
-
-IconData resolveThinkingIcon(String name) {
-  const icons = {
-    'explore_outlined': Icons.explore_outlined,
-    'construction_outlined': Icons.construction_outlined,
-    'auto_awesome_outlined': Icons.auto_awesome_outlined,
-    'rocket_launch_outlined': Icons.rocket_launch_outlined,
-    'psychology_outlined': Icons.psychology_outlined,
-    'chat_outlined': Icons.chat_outlined,
-    'transform_outlined': Icons.transform_outlined,
-    'touch_app_outlined': Icons.touch_app_outlined,
-    'short_text_outlined': Icons.short_text_outlined,
-  };
-  return icons[name] ?? Icons.circle_outlined;
 }
