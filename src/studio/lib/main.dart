@@ -6,13 +6,20 @@ import 'package:qtadmin_studio/models/qtclass.dart';
 import 'package:qtadmin_studio/models/thinking.dart';
 import 'package:qtadmin_studio/models/org.dart';
 import 'package:qtadmin_studio/router.dart';
-import 'package:qtadmin_studio/services/metadata_loader.dart';
-import 'package:qtadmin_studio/services/dashboard_loader.dart';
-import 'package:qtadmin_studio/services/qtclass_loader.dart';
-import 'package:qtadmin_studio/services/qtconsult_loader.dart';
-import 'package:qtadmin_studio/services/thinking_loader.dart';
-import 'package:qtadmin_studio/services/org_loader.dart';
+import 'package:qtadmin_studio/sources/data_source.dart';
 import 'package:qtadmin_studio/views/navigation.dart';
+
+final _source = const FileSource();
+
+final _founderMetaLoader = DataLoader<NavMetadata>(_source, 'data/founder/metadata.json', NavMetadata.fromJson);
+final _companyMetaLoader = DataLoader<NavMetadata>(_source, 'data/company/metadata.json', NavMetadata.fromJson);
+final _rootMetaLoader = DataLoader<RootMetadata>(_source, 'data/metadata.json', RootMetadata.fromJson);
+final _founderDashLoader = DataLoader<Dashboard>(_source, 'data/founder/dashboard.json', Dashboard.fromJson);
+final _companyDashLoader = DataLoader<Dashboard>(_source, 'data/company/dashboard.json', Dashboard.fromJson);
+final _consultLoader = DataLoader<QtConsult>(_source, 'data/company/qtconsult.json', QtConsult.fromJson);
+final _classLoader = DataLoader<QtClass>(_source, 'data/company/qtclass.json', QtClass.fromJson);
+final _thinkingLoader = DataLoader<Thinking>(_source, 'data/founder/thinking.json', Thinking.fromJson);
+final _orgLoader = DataLoader<OrgDashboard>(_source, 'data/company/org.json', OrgDashboard.fromJson);
 
 void main() async {
   runApp(const QtAdminStudio());
@@ -79,34 +86,34 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
   }
 
   Future<void> _loadData() async {
-    final root = await MetadataLoader.loadRoot();
     final results = await Future.wait([
-      MetadataLoader.load(root.workspaces[0].dir),
-      MetadataLoader.load(root.workspaces[1].dir),
-      DashboardLoader.load(workspace: WorkspaceType.internal),
-      DashboardLoader.load(workspace: WorkspaceType.customer),
-      QtConsultLoader.load(workspace: WorkspaceType.customer),
-      QtClassLoader.load(),
-      ThinkingLoader.load(),
-      OrgLoader.load(),
+      _rootMetaLoader.load(),
+      _founderMetaLoader.load(),
+      _companyMetaLoader.load(),
+      _founderDashLoader.load(),
+      _companyDashLoader.load(),
+      _consultLoader.load(),
+      _classLoader.load(),
+      _thinkingLoader.load(),
+      _orgLoader.load(),
     ]);
-    if (mounted) {
-      setState(() {
-        _workspaces = root.workspaces;
-        for (final section in root.sections) {
-          _sectionDefs[section.id] = section;
-        }
-        _navData[root.workspaces[0].dir] = results[0] as NavMetadata;
-        _navData[root.workspaces[1].dir] = results[1] as NavMetadata;
-        _founderDashboard = results[2] as Dashboard;
-        _companyDashboard = results[3] as Dashboard;
-        _consultData = results[4] as QtConsult;
-        _classData = results[5] as QtClass;
-        _thinkingData = results[6] as Thinking;
-        _orgData = results[7] as OrgDashboard;
-        _buildSections();
-      });
-    }
+    if (!mounted) return;
+    setState(() {
+      final root = (results[0] as DataSuccess<RootMetadata>).data;
+      _workspaces = root.workspaces;
+      for (final section in root.sections) {
+        _sectionDefs[section.id] = section;
+      }
+      _navData['founder'] = (results[1] as DataSuccess<NavMetadata>).data;
+      _navData['company'] = (results[2] as DataSuccess<NavMetadata>).data;
+      _founderDashboard = (results[3] as DataSuccess<Dashboard>).data;
+      _companyDashboard = (results[4] as DataSuccess<Dashboard>).data;
+      _consultData = (results[5] as DataSuccess<QtConsult>).data;
+      _classData = (results[6] as DataSuccess<QtClass>).data;
+      _thinkingData = (results[7] as DataSuccess<Thinking>).data;
+      _orgData = (results[8] as DataSuccess<OrgDashboard>).data;
+      _buildSections();
+    });
   }
 
   @override
