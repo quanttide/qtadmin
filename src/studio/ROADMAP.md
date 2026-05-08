@@ -1,23 +1,23 @@
 # ROADMAP
 
-## P0 加载失败防护
+评级 **中**，上限来自测试覆盖（低）。以下按优先级排列。
 
-`main.dart` 对 `DataResult` 强制 unwrap，任一加载器失败整个应用白屏。
+## P0 补齐 screens 测试
 
-- 在 `AppBloc._onLoad` 中检查每个 `DataResult`，遇到 `DataError` 提前 `emit(AppError(...))` 而不是继续 unwrap
+screens 当前 57%（4/7），缺失：
 
-## P1 Web 兼容验证
+- `dashboard_screen_test`（读取 AppData，验证两个 workspace 视图）
+- `business_detail_screen_test`（验证业务单元详情渲染）
+- `function_detail_screen_test`（验证职能卡片详情渲染）
 
-`BundleSource` 已定义但未在 Chrome 实测。
+## P1 补齐 views 测试
 
-- pubspec assets 注册所有 `data/` JSON 文件
-- `flutter run -d chrome` 编译通过
-- 确认数据加载正常
+views 当前 13%（1/8），策略：每个 view 文件至少一个渲染测试。
 
-## P2 screens 测试覆盖
+- `biz_unit_widget`、`business_section_widget`、`decision_card_widget`
+- `func_card_widget`、`function_section_widget`、`section_header`、`stat_item`
 
-当前 screens 43%（3/7），views 13%（1/8）。
+## P2 CI 接入
 
-- 补 `qtconsult_screen` 测试（BI 最高，已有 ConsultBloc 支撑）
-- 补 `thinking_screen` 测试
-- 补 `qtclass_screen` 测试
+- 增加 GitHub Actions 或类似 CI，`flutter test` + `dart analyze` 必过
+- 可选：`flutter build web` 验证 assets 完整性
