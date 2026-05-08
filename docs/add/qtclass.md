@@ -29,7 +29,7 @@ Program:
 │                  课程领域                          │
 │  (教什么、怎么教、谁来教)                           │
 │                                                   │
-│  Course ──has──▶ Class ──has──▶ Session           │
+│  Course ──has──▶ Class ──has──▶ Lesson          │
 │    │              │                                │
 │    └── syllabus   └── teacher, schedule            │
 └────────────────────┬──────────────────────────────┘
