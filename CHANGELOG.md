@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/).
 
+## [0.0.8] - 2026-05-08
+
+### Studio
+
+独立发布 `v0.0.6`，详见 [src/studio/CHANGELOG.md](src/studio/CHANGELOG.md)。
+
 ## [0.0.7] - 2026-05-08
 
 ### Added
