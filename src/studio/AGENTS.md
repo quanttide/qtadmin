@@ -43,3 +43,7 @@ pre-commit 快跑 `dart analyze`，CI 跑完整 `flutter test`。两层的原因
 ### 10. 结构服从调用方
 
 `lib/theme.dart` 和 `lib/constants.dart` 拍平到根目录，调用方少敲一层路径。`sources/` 按来源类型分（base/file/bundle），不按模型分。
+
+### 11. go_router 的引入条件是 URL
+
+不是 string switch 的问题。`screenType` 字符串派发确实不安全，但 go_router 解决的是路径匹配，不是类型安全。如果需求已明确 URL 路由即将到来，提前引入是对的；如果只是为了消灭 switch，sealed class 更轻。
