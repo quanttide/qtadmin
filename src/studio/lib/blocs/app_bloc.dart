@@ -6,9 +6,9 @@ import 'package:qtadmin_studio/models/qtclass.dart';
 import 'package:qtadmin_studio/models/thinking.dart';
 import 'package:qtadmin_studio/models/org.dart';
 import 'package:qtadmin_studio/sources/base.dart';
-import 'package:qtadmin_studio/sources/file_source.dart';
+import 'package:qtadmin_studio/sources/bundle_source.dart';
 
-final _source = const FileSource();
+final _source = const BundleSource();
 
 final _rootMetaLoader =
     DataLoader<RootMetadata>(_source, 'data/metadata.json', RootMetadata.fromJson);
@@ -93,35 +93,39 @@ class AppBloc extends Bloc<AppEvent, AppState> {
 
   Future<void> _onLoad(AppLoad event, Emitter<AppState> emit) async {
     emit(const AppLoading());
-    try {
-      final results = await Future.wait([
-        _rootMetaLoader.load(),
-        _founderMetaLoader.load(),
-        _companyMetaLoader.load(),
-        _founderDashLoader.load(),
-        _companyDashLoader.load(),
-        _consultLoader.load(),
-        _classLoader.load(),
-        _thinkingLoader.load(),
-        _orgLoader.load(),
-      ]);
-      final root = (results[0] as DataSuccess<RootMetadata>).data;
-      emit(AppLoaded(AppData(
-        workspaces: root.workspaces,
-        sectionDefs: {for (final s in root.sections) s.id: s},
-        navData: {
-          'founder': (results[1] as DataSuccess<NavMetadata>).data,
-          'company': (results[2] as DataSuccess<NavMetadata>).data,
-        },
-        founderDashboard: (results[3] as DataSuccess<Dashboard>).data,
-        companyDashboard: (results[4] as DataSuccess<Dashboard>).data,
-        consultData: (results[5] as DataSuccess<QtConsult>).data,
-        classData: (results[6] as DataSuccess<QtClass>).data,
-        thinkingData: (results[7] as DataSuccess<Thinking>).data,
-        orgData: (results[8] as DataSuccess<OrgDashboard>).data,
-      )));
-    } catch (e) {
-      emit(AppError('$e'));
+    final results = await Future.wait([
+      _rootMetaLoader.load(),
+      _founderMetaLoader.load(),
+      _companyMetaLoader.load(),
+      _founderDashLoader.load(),
+      _companyDashLoader.load(),
+      _consultLoader.load(),
+      _classLoader.load(),
+      _thinkingLoader.load(),
+      _orgLoader.load(),
+    ]);
+
+    for (final r in results) {
+      if (r case DataError(:final message)) {
+        emit(AppError(message));
+        return;
+      }
     }
+
+    final root = (results[0] as DataSuccess<RootMetadata>).data;
+    emit(AppLoaded(AppData(
+      workspaces: root.workspaces,
+      sectionDefs: {for (final s in root.sections) s.id: s},
+      navData: {
+        'founder': (results[1] as DataSuccess<NavMetadata>).data,
+        'company': (results[2] as DataSuccess<NavMetadata>).data,
+      },
+      founderDashboard: (results[3] as DataSuccess<Dashboard>).data,
+      companyDashboard: (results[4] as DataSuccess<Dashboard>).data,
+      consultData: (results[5] as DataSuccess<QtConsult>).data,
+      classData: (results[6] as DataSuccess<QtClass>).data,
+      thinkingData: (results[7] as DataSuccess<Thinking>).data,
+      orgData: (results[8] as DataSuccess<OrgDashboard>).data,
+    )));
   }
 }
