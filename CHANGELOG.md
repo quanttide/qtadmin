@@ -4,6 +4,33 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/).
 
+## [0.0.6] - 2026-05-08
+
+### Added
+
+- `docs/add/qtclass.md`：量潮课堂架构设计文档（课程域/组织域分离）
+- `docs/drd/dashboard.md`：仪表盘数据模型 schema
+- `docs/drd/qtclass.md`：量潮课堂数据模型 schema
+- `docs/drd/thinking.md`：思考页面数据模型 schema
+
+### Changed
+
+- `src/studio/` 全景图→仪表盘全面重命名（`panorama` → `dashboard`）
+  - 侧边栏导航项"全景图"→"仪表盘"
+  - 数据模型 `PanoramaData` → `DashboardData`，路由类型 `panorama` → `dashboard`
+  - 所有 import、变量名、fixture 文件同步更新
+- `src/studio/` 量潮课堂从通用业务详情页改为独立页面（`pageType: classroom`）
+  - 新增 `QtClassScreen`：四个组成部分（校企合作/实训基地/内部教学/一对一）卡片展示
+- `src/studio/` 思考页面数据抽取为 fixture 驱动
+  - 新增 `ThinkingData` 模型 + `thinking.json` fixture
+  - `ThinkingScreen` 从硬编码改为接收数据参数
+- `src/studio/` 版本发布 v0.0.5
+- `docs/drd/metadata.md`：路由表更新（`dashboard`/`classroom` 新增，`thinking` 数据源补充）
+
+### Studio
+
+独立发布 `v0.0.5`，详见 [src/studio/CHANGELOG.md](src/studio/CHANGELOG.md)。
+
 ## [0.0.5] - 2026-05-08
 
 ### Added
