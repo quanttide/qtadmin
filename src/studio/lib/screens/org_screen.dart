@@ -269,10 +269,10 @@ class _OrgScreenState extends State<OrgScreen> {
   }
 
   Widget _buildRepCard(OrgRepresentativeData rep) {
-    final instName = widget.data.institutions
-        .where((i) => i.id == rep.institutionId)
+    final instNames = widget.data.institutions
+        .where((i) => rep.institutionIds.contains(i.id))
         .map((i) => i.name)
-        .firstOrNull ?? '';
+        .join('、');
     final (tierIcon, tierLabel) = switch (rep.tier) {
       RepPerformanceTier.green => ('🟢', '绿标'),
       RepPerformanceTier.yellow => ('🟡', '黄标'),
@@ -341,7 +341,7 @@ class _OrgScreenState extends State<OrgScreen> {
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          '$instName · $tierLabel · ${rep.attendanceRate.round()}%参会',
+                          '$instNames · $tierLabel · ${rep.attendanceRate.round()}%参会',
                           style: const TextStyle(
                             fontSize: 11,
                             color: Color(0xFF999999),

@@ -7,10 +7,21 @@ OrgDashboardData _createTestData() {
   return OrgDashboardData(
     institutions: [
       OrgInstitutionData(
-        id: 'partner',
-        name: '合伙人委员会',
+        id: 'shareholders',
+        name: '股东代表大会',
         parentId: '',
         level: 0,
+        status: InstitutionStatus.normal,
+        expectedFrequency: '每季一次',
+        lastMeetingDate: '15天前',
+        nextMeetingDate: '75天后',
+        pendingProposalCount: 0,
+      ),
+      OrgInstitutionData(
+        id: 'partner',
+        name: '合伙人委员会',
+        parentId: 'shareholders',
+        level: 1,
         status: InstitutionStatus.normal,
         expectedFrequency: '每月一次',
         lastMeetingDate: '3天前',
@@ -18,10 +29,21 @@ OrgDashboardData _createTestData() {
         pendingProposalCount: 0,
       ),
       OrgInstitutionData(
+        id: 'assembly',
+        name: '公司代表大会',
+        parentId: '',
+        level: 0,
+        status: InstitutionStatus.normal,
+        expectedFrequency: '每月一次',
+        lastMeetingDate: '5天前',
+        nextMeetingDate: '25天后',
+        pendingProposalCount: 1,
+      ),
+      OrgInstitutionData(
         id: 'tech',
         name: '技术委员会',
         parentId: 'assembly',
-        level: 2,
+        level: 1,
         status: InstitutionStatus.overdue,
         expectedFrequency: '每周一次',
         lastMeetingDate: '12天前',
@@ -33,7 +55,7 @@ OrgDashboardData _createTestData() {
       OrgRepresentativeData(
         id: 'p1',
         name: '张三',
-        institutionId: 'partner',
+        institutionIds: ['partner'],
         rank: 'M1',
         term: '2026Q1-Q2',
         attendanceRate: 100,
@@ -56,7 +78,7 @@ OrgDashboardData _createTestData() {
       OrgRepresentativeData(
         id: 'p2',
         name: '李四',
-        institutionId: 'tech',
+        institutionIds: ['tech'],
         rank: 'M2',
         term: '2026Q1-Q2',
         attendanceRate: 60,
@@ -105,7 +127,7 @@ void main() {
       );
 
       expect(find.text('机构'), findsOneWidget);
-      expect(find.text('2'), findsWidgets);
+      expect(find.text('4'), findsOneWidget);
       expect(find.text('代表'), findsOneWidget);
       expect(find.text('2'), findsWidgets);
       expect(find.text('职级'), findsOneWidget);
@@ -122,7 +144,7 @@ void main() {
 
       expect(find.text('合伙人委员会'), findsOneWidget);
       expect(find.text('技术委员会'), findsOneWidget);
-      expect(find.text('正常'), findsOneWidget);
+      expect(find.text('正常'), findsWidgets);
       expect(find.text('逾期'), findsWidgets);
     });
 
@@ -133,8 +155,8 @@ void main() {
         ),
       );
 
-      expect(find.text('每月一次'), findsOneWidget);
-      expect(find.text('每周一次'), findsOneWidget);
+      expect(find.text('每月一次'), findsWidgets);
+      expect(find.text('每周一次'), findsWidgets);
       expect(find.text('3 条'), findsOneWidget);
     });
 
@@ -209,7 +231,7 @@ void main() {
       );
 
       expect(find.text('机构看板'), findsOneWidget);
-      expect(find.text('2 个机构'), findsOneWidget);
+      expect(find.text('4 个机构'), findsOneWidget);
       expect(find.text('代表履职'), findsOneWidget);
       expect(find.text('2 位代表'), findsOneWidget);
       expect(find.text('职级流动'), findsOneWidget);

@@ -84,7 +84,7 @@ class OrgMeetingData {
 class OrgRepresentativeData {
   final String id;
   final String name;
-  final String institutionId;
+  final List<String> institutionIds;
   final String rank;
   final String term;
   final double attendanceRate;
@@ -97,7 +97,7 @@ class OrgRepresentativeData {
   const OrgRepresentativeData({
     required this.id,
     required this.name,
-    required this.institutionId,
+    required this.institutionIds,
     required this.rank,
     required this.term,
     this.attendanceRate = 0,
@@ -112,7 +112,9 @@ class OrgRepresentativeData {
     return OrgRepresentativeData(
       id: json['id'] as String,
       name: json['name'] as String,
-      institutionId: json['institutionId'] as String,
+      institutionIds: (json['institutionIds'] as List<dynamic>)
+          .map((e) => e as String)
+          .toList(),
       rank: json['rank'] as String,
       term: json['term'] as String? ?? '',
       attendanceRate: (json['attendanceRate'] as num?)?.toDouble() ?? 0,

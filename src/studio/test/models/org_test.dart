@@ -100,7 +100,7 @@ void main() {
       final json = {
         'id': 'p1',
         'name': '张三',
-        'institutionId': 'secretary',
+        'institutionIds': ['secretary', 'exec'],
         'rank': 'M1',
         'term': '2026Q1-Q2',
         'attendanceRate': 100,
@@ -124,6 +124,7 @@ void main() {
 
       expect(rep.id, 'p1');
       expect(rep.name, '张三');
+      expect(rep.institutionIds, ['secretary', 'exec']);
       expect(rep.rank, 'M1');
       expect(rep.tier, RepPerformanceTier.green);
       expect(rep.attendanceRate, 100);
@@ -135,7 +136,7 @@ void main() {
       final json = {
         'id': 'p2',
         'name': '李四',
-        'institutionId': 'exec',
+        'institutionIds': ['exec'],
         'rank': 'M2',
         'term': '2026Q1-Q2',
         'tier': 'yellow',
@@ -224,7 +225,7 @@ void main() {
           {
             'id': 'p1',
             'name': '张三',
-            'institutionId': 'secretary',
+            'institutionIds': ['secretary'],
             'rank': 'M1',
             'term': '2026Q1-Q2',
             'tier': 'green',
