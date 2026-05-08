@@ -15,8 +15,8 @@
 ## 待做
 
 ### 测试
-- `sources/` 单元测试（DataResult + DataSource + DataLoader）
-- `consult_bloc` 单元测试
+- `sources/` 单元测试（DataResult + DataLoader）✓
+- `consult_bloc` 单元测试 ✓
 
 ### 架构
 - `bundle_source.dart` Web 兼容验证（`flutter run -d chrome`）
