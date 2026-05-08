@@ -3,7 +3,7 @@ import 'package:qtadmin_studio/models/dashboard.dart';
 import 'package:qtadmin_studio/views/biz_unit_widget.dart';
 
 class BusinessDetailScreen extends StatelessWidget {
-  final BusinessUnitData unit;
+  final BusinessUnit unit;
 
   const BusinessDetailScreen({super.key, required this.unit});
 

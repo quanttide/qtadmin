@@ -4,7 +4,7 @@ import 'package:qtadmin_studio/views/biz_unit_widget.dart';
 import 'package:qtadmin_studio/views/section_header.dart';
 
 class BusinessSectionWidget extends StatelessWidget {
-  final List<BusinessUnitData> units;
+  final List<BusinessUnit> units;
   final bool isMobile;
   final bool showHeader;
 

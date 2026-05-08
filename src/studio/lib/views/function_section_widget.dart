@@ -4,7 +4,7 @@ import 'package:qtadmin_studio/views/func_card_widget.dart';
 import 'package:qtadmin_studio/views/section_header.dart';
 
 class FunctionSectionWidget extends StatefulWidget {
-  final List<FuncCardData> cards;
+  final List<FuncCard> cards;
   final bool isMobile;
   final bool showHeader;
 

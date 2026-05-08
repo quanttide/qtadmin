@@ -1,41 +1,51 @@
-# 客户端
+# 客户端整体重构方案
 
-## 技术债务
+## 当前风险
 
-使用 SQFD 框架评估。评级：**高**。（2026-05-08 更新：4 项快速修复已执行，见下方）
+- 6 个加载器无 try/catch，缺文件直接白屏崩溃
+- `qtconsult_screen.dart` 951 行 God 类
+- 加载器全部使用 `dart:io`，无法编译 Web
+- 主模块 14 字段 God State 集中加载
+- 6 个加载器复制粘贴无抽象
+- 服务层零测试
 
-### 评估维度
+## 已完成
 
-| 维度 | 权重 | 评级 | 要点 |
-|:-----|:----:|:----:|:-----|
-| 测试覆盖 | 25% | 高 | 服务层 0%，屏幕层 43%，视图层 14%，整体 33% |
-| 架构耦合 | 25% | 中 | `qtconsult_screen.dart` 951 行 God 类仍存；重复模式已消除 |
-| 错误韧性 | 20% | 高 | 所有加载器无 try/catch，缺文件直接崩 |
-| 工具链一致 | 10% | 低 | 已清理：移除了 6 个未用依赖，44 个间接依赖 |
-| 可移植性 | 10% | 高 | `dart:io` 堵死 Web 编译 |
-| 可维护性 | 10% | 中 | 新建模块需改 6 处，但无编译器保护 |
+- 模型类 `XxxData` → `Xxx` 重命名（全仓库）
+- 全部 7 个模型文件迁移为 freezed（含 `fromJson` / `copyWith` / `==` / `hashCode` 自动生成）
+- `build_runner` + `freezed` + `json_serializable` 配置就绪
+- 字段默认值改用 `@Default`，枚举 fallback 用自定义 `@JsonKey(fromJson:)`
+- 自定义方法从 freezed 类移至 extension（避免 `._()` 构造器 + `implements` 问题）
 
-评级规则：取最高分维度而非平均。测试覆盖 + 错误韧性 + 可移植性维持「高」。
+## 工作分解
 
-### 关键风险
+### 1. 数据层抽象（8）
 
-- 服务层零测试 + 无错误处理：任何 JSON 缺失或损坏都导致白屏崩溃
-- `qtconsult_screen.dart` God 类：UI、状态、业务逻辑未分离，修改脆弱
-- 加载器全部使用 `dart:io`，无法编译 Web 目标
+| 子任务 | SP |
+|--------|----|
+| 1a. `DataResult<T>` sealed class + `DataSource` 接口 | 2 |
+| 1b. `FileDataSource` 实现 + `rootBundle` 兼容开关 | 2 |
+| 1c. 通用 `loadData()` + 每个 model 挂 `static load/inject` | 3 |
+| 1d. `main.dart` 改调 `Model.load()` 并处理 `DataError` | 1 |
 
-### 已执行
+### 2. 补加载器测试（5）
 
-- 删除 `fixture_config.dart` 死代码（2026-05-08）
-- 清理 pubspec 未用依赖：`provider`/`freezed_annotation`/`flutter_dotenv`/`mockito`/`freezed`/`build_runner`（2026-05-08）
-- 提取 `StatItem` 共享组件，消除 3 处 `_statItem` 重复（2026-05-08）
-- 合并 `hexColor`/`_parseHexColor` 到 `app_colors.dart`（2026-05-08）
-- 移除 `main.dart` 未使用 `theme` 变量（2026-05-08）
-- 优化模型层 import：`dashboard.dart` 移除 `flutter/material.dart`，`qtconsult.dart` 改用 `dart:ui`
+| 子任务 | SP |
+|--------|----|
+| 2a. `DataResult` + `DataSource` 单元测试 | 2 |
+| 2b. 用 `inject()` 为每个 model 写加载测试（正常 / 坏 JSON） | 3 |
 
-### 结构性修复（待做）
+### 3. BLoC 迁移（8/屏幕，可选）
 
-1. 加载器加 try/catch + inject 测试（2-3 小时）
-2. 抽象数据源接口，支持 `File` 和 `rootBundle` 双实现（1-2 天）
-3. 拆分 `qtconsult_screen.dart` 为 ViewModel + UI（2-3 天）
-4. 迁移 `main.dart` God State 到 ChangeNotifier 拆分（1-2 天）
-5. 添加 `DataResult<T>` 错误处理层（3-4 天）
+| 子任务 | SP |
+|--------|----|
+| 3a. 引入 `flutter_bloc`，配置 `MultiBlocProvider` | 2 |
+| 3b. 拆分 `main.dart` God State 为 6 个 `ScreenBloc` | 3 |
+| 3c. 迁移 `qtconsult_screen` 为 Bloc + Event + State | 3 |
+
+### 4. Web 兼容验证（3）
+
+| 子任务 | SP |
+|--------|----|
+| 4a. 确认数据文件在 pubspec assets 注册 | 1 |
+| 4b. `flutter run -d chrome` 编译通过 | 2 |

@@ -68,7 +68,7 @@ void main() {
     });
   });
 
-  group('ThinkingData', () {
+  group('Thinking', () {
     test('fromJson parses full thinking data', () {
       final json = {
         'title': '认知建构与思维演进',
@@ -110,7 +110,7 @@ void main() {
           'quote': '最宝贵的资产',
         },
       };
-      final data = ThinkingData.fromJson(json);
+      final data = Thinking.fromJson(json);
 
       expect(data.title, '认知建构与思维演进');
       expect(data.stages.length, 1);

@@ -10,7 +10,7 @@ void main() {
     });
   });
 
-  group('DiscoveryData', () {
+  group('Discovery', () {
     test('fromJson parses correctly', () {
       final json = {
         'id': 'd1',
@@ -21,7 +21,7 @@ void main() {
         'date': '5月7日',
         'linkedToStrategy': true,
       };
-      final discovery = DiscoveryData.fromJson(json);
+      final discovery = Discovery.fromJson(json);
 
       expect(discovery.id, 'd1');
       expect(discovery.text, '团队产能利用率不足60%');
@@ -39,13 +39,13 @@ void main() {
         'source': '测试',
         'date': '5月1日',
       };
-      final discovery = DiscoveryData.fromJson(json);
+      final discovery = Discovery.fromJson(json);
 
       expect(discovery.linkedToStrategy, false);
     });
 
     test('copyWith creates updated copy', () {
-      final original = DiscoveryData(
+      final original = Discovery(
         id: 'd1',
         text: '测试',
         type: DiscoveryType.risk,
@@ -66,7 +66,7 @@ void main() {
     });
   });
 
-  group('CommunicationData', () {
+  group('Communication', () {
     test('fromJson parses correctly', () {
       final json = {
         'id': 'c1',
@@ -74,7 +74,7 @@ void main() {
         'date': '5月14日',
         'summary': '与CEO进行了2小时的需求调研',
       };
-      final comm = CommunicationData.fromJson(json);
+      final comm = Communication.fromJson(json);
 
       expect(comm.id, 'c1');
       expect(comm.title, '需求调研会');
@@ -82,7 +82,7 @@ void main() {
     });
   });
 
-  group('StakeholderData', () {
+  group('Stakeholder', () {
     test('fromJson parses correctly', () {
       final json = {
         'id': 's1',
@@ -92,7 +92,7 @@ void main() {
         'concern': '关注降本增效',
         'detail': '项目发起人',
       };
-      final stakeholder = StakeholderData.fromJson(json);
+      final stakeholder = Stakeholder.fromJson(json);
 
       expect(stakeholder.name, 'CEO 张总');
       expect(stakeholder.stance, StakeStance.support);
@@ -101,21 +101,21 @@ void main() {
 
     test('stanceLabel returns correct Chinese labels', () {
       expect(
-        StakeholderData(id: 's1', name: '', role: '', stance: StakeStance.support, concern: '', detail: '').stanceLabel,
+        Stakeholder(id: 's1', name: '', role: '', stance: StakeStance.support, concern: '', detail: '').stanceLabel,
         '支持',
       );
       expect(
-        StakeholderData(id: 's2', name: '', role: '', stance: StakeStance.neutral, concern: '', detail: '').stanceLabel,
+        Stakeholder(id: 's2', name: '', role: '', stance: StakeStance.neutral, concern: '', detail: '').stanceLabel,
         '中立',
       );
       expect(
-        StakeholderData(id: 's3', name: '', role: '', stance: StakeStance.oppose, concern: '', detail: '').stanceLabel,
+        Stakeholder(id: 's3', name: '', role: '', stance: StakeStance.oppose, concern: '', detail: '').stanceLabel,
         '反对',
       );
     });
   });
 
-  group('StrategyRevisionData', () {
+  group('StrategyRevision', () {
     test('fromJson parses correctly', () {
       final json = {
         'id': 'r1',
@@ -124,7 +124,7 @@ void main() {
         'relatedDiscoveryId': 'd1',
         'isReviewed': true,
       };
-      final revision = StrategyRevisionData.fromJson(json);
+      final revision = StrategyRevision.fromJson(json);
 
       expect(revision.id, 'r1');
       expect(revision.reason, '发现产能利用率低');
@@ -137,14 +137,14 @@ void main() {
         'date': '5月7日',
         'reason': '测试',
       };
-      final revision = StrategyRevisionData.fromJson(json);
+      final revision = StrategyRevision.fromJson(json);
 
       expect(revision.isReviewed, false);
       expect(revision.relatedDiscoveryId, isNull);
     });
 
     test('copyWith creates updated copy', () {
-      final original = StrategyRevisionData(
+      final original = StrategyRevision(
         id: 'r1',
         date: '5月7日',
         reason: '原因',
@@ -157,7 +157,7 @@ void main() {
     });
 
     test('copyWith keeps original values when not specified', () {
-      final original = StrategyRevisionData(
+      final original = StrategyRevision(
         id: 'r1',
         date: '5月7日',
         reason: '原因',
@@ -172,7 +172,7 @@ void main() {
     });
   });
 
-  group('QtConsultData', () {
+  group('QtConsult', () {
     test('fromJson parses full consult data', () {
       final json = {
         'workspace': 'customer',
@@ -223,7 +223,7 @@ void main() {
           },
         ],
       };
-      final data = QtConsultData.fromJson(json);
+      final data = QtConsult.fromJson(json);
 
       expect(data.workspace, WorkspaceType.customer);
       expect(data.projectName, '某制造企业数字化项目');
@@ -249,7 +249,7 @@ void main() {
         'revisions': [],
         'stakeholders': [],
       };
-      final data = QtConsultData.fromJson(json);
+      final data = QtConsult.fromJson(json);
 
       expect(data.workspace, WorkspaceType.customer);
     });
@@ -269,13 +269,13 @@ void main() {
         'revisions': [],
         'stakeholders': [],
       };
-      final data = QtConsultData.fromJson(json);
+      final data = QtConsult.fromJson(json);
 
       expect(data.communications, isEmpty);
     });
 
     test('isInternal returns true for internal workspace', () {
-      final data = QtConsultData(
+      final data = QtConsult(
         workspace: WorkspaceType.internal,
         projectName: '',
         phase: '',

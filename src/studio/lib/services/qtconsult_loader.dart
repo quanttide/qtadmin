@@ -3,19 +3,19 @@ import 'dart:io';
 import 'package:qtadmin_studio/models/qtconsult.dart';
 
 class QtConsultLoader {
-  static final Map<WorkspaceType, QtConsultData?> _cache = {};
+  static final Map<WorkspaceType, QtConsult?> _cache = {};
 
-  static Future<QtConsultData> load({WorkspaceType workspace = WorkspaceType.customer}) async {
+  static Future<QtConsult> load({WorkspaceType workspace = WorkspaceType.customer}) async {
     if (_cache[workspace] != null) return _cache[workspace]!;
     final jsonStr = await File(
       'data/${_workspaceDir(workspace)}/qtconsult.json',
     ).readAsString();
-    final data = QtConsultData.fromJson(json.decode(jsonStr) as Map<String, dynamic>);
+    final data = QtConsult.fromJson(json.decode(jsonStr) as Map<String, dynamic>);
     _cache[workspace] = data;
     return data;
   }
 
-  static void inject(WorkspaceType workspace, QtConsultData data) {
+  static void inject(WorkspaceType workspace, QtConsult data) {
     _cache[workspace] = data;
   }
 

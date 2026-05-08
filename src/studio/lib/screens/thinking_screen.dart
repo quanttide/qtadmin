@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:qtadmin_studio/models/thinking.dart';
 
 class ThinkingScreen extends StatelessWidget {
-  final ThinkingData data;
+  final Thinking data;
 
   const ThinkingScreen({super.key, required this.data});
 

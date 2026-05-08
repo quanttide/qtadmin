@@ -3,8 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:qtadmin_studio/models/thinking.dart';
 import 'package:qtadmin_studio/screens/thinking_screen.dart';
 
-ThinkingData _createTestData() {
-  return ThinkingData(
+Thinking _createTestData() {
+  return Thinking(
     title: '认知建构与思维演进',
     subtitle: '基于日志的分析报告',
     period: '46天的心智旅程。',

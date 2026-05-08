@@ -5,7 +5,7 @@ import 'package:qtadmin_studio/models/qtconsult.dart';
 import 'package:qtadmin_studio/views/stat_item.dart';
 
 class QtConsultScreen extends StatefulWidget {
-  final QtConsultData data;
+  final QtConsult data;
 
   const QtConsultScreen({super.key, required this.data});
 
@@ -14,8 +14,8 @@ class QtConsultScreen extends StatefulWidget {
 }
 
 class _QtConsultScreenState extends State<QtConsultScreen> {
-  late List<DiscoveryData> _discoveries;
-  late List<StrategyRevisionData> _revisions;
+  late List<Discovery> _discoveries;
+  late List<StrategyRevision> _revisions;
   final Set<String> _expandedComms = {};
   final Set<String> _expandedStakeholders = {};
 
@@ -54,7 +54,7 @@ class _QtConsultScreenState extends State<QtConsultScreen> {
     final isRiskOrConcern =
         type == DiscoveryType.risk || type == DiscoveryType.concern;
 
-    final discovery = DiscoveryData(
+    final discovery = Discovery(
       id: _generateId(),
       text: text,
       type: type,
@@ -67,7 +67,7 @@ class _QtConsultScreenState extends State<QtConsultScreen> {
       if (isRiskOrConcern) {
         _revisions.insert(
           0,
-          StrategyRevisionData(
+          StrategyRevision(
             id: _generateId(),
             date: dateStr,
             reason: '新发现${type == DiscoveryType.risk ? '（高风险）' : ''}：$text → 策略待审视',
@@ -505,7 +505,7 @@ class _QtConsultScreenState extends State<QtConsultScreen> {
     );
   }
 
-  Widget _buildDiscoveryItem(DiscoveryData d) {
+  Widget _buildDiscoveryItem(Discovery d) {
     final dotColor = discoveryDotColor(d.type);
     final statusLabel = switch (d.status) {
       DiscoveryStatus.confirmed => '已确认',
@@ -614,7 +614,7 @@ class _QtConsultScreenState extends State<QtConsultScreen> {
     );
   }
 
-  Widget _buildCommItem(CommunicationData c) {
+  Widget _buildCommItem(Communication c) {
     final isExpanded = _expandedComms.contains(c.id);
     return Column(
       children: [
@@ -814,7 +814,7 @@ class _QtConsultScreenState extends State<QtConsultScreen> {
     );
   }
 
-  Widget _buildStakeholderItem(StakeholderData s) {
+  Widget _buildStakeholderItem(Stakeholder s) {
     final isExpanded = _expandedStakeholders.contains(s.id);
     return InkWell(
       onTap: () {
@@ -872,7 +872,7 @@ class _QtConsultScreenState extends State<QtConsultScreen> {
     );
   }
 
-  Widget _buildRevisionItem(StrategyRevisionData r) {
+  Widget _buildRevisionItem(StrategyRevision r) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
       decoration: BoxDecoration(

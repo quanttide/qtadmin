@@ -33,15 +33,15 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
   List<WorkspaceInfo> _workspaces = [];
   final Map<String, NavMetadata> _navData = {};
   final Map<String, SectionDef> _sectionDefs = {};
-  DashboardData? _founderDashboard;
-  DashboardData? _companyDashboard;
-  QtConsultData? _consultData;
-  QtClassData? _classData;
-  ThinkingData? _thinkingData;
-  OrgDashboardData? _orgData;
+  Dashboard? _founderDashboard;
+  Dashboard? _companyDashboard;
+  QtConsult? _consultData;
+  QtClass? _classData;
+  Thinking? _thinkingData;
+  OrgDashboard? _orgData;
   List<NavSection> _sections = [];
 
-  DashboardData? get _data =>
+  Dashboard? get _data =>
       _selectedWorkspace == 0 ? _founderDashboard : _companyDashboard;
 
   late AppRouter _router;
@@ -99,12 +99,12 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
         }
         _navData[root.workspaces[0].dir] = results[0] as NavMetadata;
         _navData[root.workspaces[1].dir] = results[1] as NavMetadata;
-        _founderDashboard = results[2] as DashboardData;
-        _companyDashboard = results[3] as DashboardData;
-        _consultData = results[4] as QtConsultData;
-        _classData = results[5] as QtClassData;
-        _thinkingData = results[6] as ThinkingData;
-        _orgData = results[7] as OrgDashboardData;
+        _founderDashboard = results[2] as Dashboard;
+        _companyDashboard = results[3] as Dashboard;
+        _consultData = results[4] as QtConsult;
+        _classData = results[5] as QtClass;
+        _thinkingData = results[6] as Thinking;
+        _orgData = results[7] as OrgDashboard;
         _buildSections();
       });
     }

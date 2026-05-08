@@ -3,21 +3,21 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:qtadmin_studio/models/metadata.dart';
 
 void main() {
-  group('NavItemData', () {
+  group('NavEntry', () {
     test('fromJson parses string name correctly', () {
-      final item = NavItemData.fromJson('dashboard');
+      final item = NavEntry.fromJson('dashboard');
 
       expect(item.name, 'dashboard');
     });
   });
 
-  group('NavSectionData', () {
+  group('NavSectionDef', () {
     test('fromJson parses id and string items correctly', () {
       final json = {
         'id': 'dashboard',
         'items': ['dashboard', 'thinking'],
       };
-      final section = NavSectionData.fromJson(json);
+      final section = NavSectionDef.fromJson(json);
 
       expect(section.id, 'dashboard');
       expect(section.items.length, 2);
@@ -27,7 +27,7 @@ void main() {
 
     test('fromJson handles empty items', () {
       final json = {'id': 'business', 'items': <dynamic>[]};
-      final section = NavSectionData.fromJson(json);
+      final section = NavSectionDef.fromJson(json);
       expect(section.items, isEmpty);
     });
   });
