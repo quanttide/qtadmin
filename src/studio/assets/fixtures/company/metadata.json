@@ -20,7 +20,7 @@
       "items": [
         { "label": "人力资源", "icon": "people_outline", "pageType": "function_detail" },
         { "label": "财务管理", "icon": "account_balance_outlined", "pageType": "function_detail" },
-        { "label": "组织管理", "icon": "account_tree_outlined", "pageType": "function_detail" },
+        { "label": "组织管理", "icon": "account_tree_outlined", "pageType": "org" },
         { "label": "战略管理", "icon": "track_changes_outlined", "pageType": "function_detail" },
         { "label": "新媒体", "icon": "campaign_outlined", "pageType": "function_detail" }
       ]
