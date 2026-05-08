@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.0.6
+
+### Refactor
+- 重命名 租户(Tenant) → Workspace工作空间(Workspace)：中文文档、Dart 代码标识符、JSON fixture 键全量替换
+  - `TenantType` → `WorkspaceType`，`TenantInfo` → `WorkspaceInfo`，`TenantSwitcher` → `WorkspaceSwitcher`
+  - 所有相关字段/参数/变量同步更新
+
+### Fixed
+- 修复数据加载完成前侧边栏空 `workspaces` 列表导致的 `RangeError`（预存 bug）
+
 ## v0.0.5
 
 ### 新增
