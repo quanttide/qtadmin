@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:qtadmin_studio/blocs/app_bloc.dart';
+import 'package:qtadmin_studio/blocs/consult_bloc.dart';
 import 'package:qtadmin_studio/router.dart';
 import 'package:qtadmin_studio/views/navigation.dart';
 
@@ -54,7 +55,13 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
           ),
         ),
         ShellRoute(
-          builder: (context, state, child) => _SidebarShell(child: child),
+          builder: (context, state, child) {
+            final data = (context.read<AppBloc>().state as AppLoaded).data;
+            return BlocProvider(
+              create: (_) => ConsultBloc(ConsultState(data: data.consultData)),
+              child: _SidebarShell(child: child),
+            );
+          },
           routes: [
             GoRoute(
               path: '/workspace/:workspace/:page',

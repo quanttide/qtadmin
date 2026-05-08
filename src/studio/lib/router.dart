@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:qtadmin_studio/blocs/consult_bloc.dart';
 import 'package:qtadmin_studio/models/dashboard.dart';
 import 'package:qtadmin_studio/models/qtconsult.dart';
 import 'package:qtadmin_studio/models/qtclass.dart';
@@ -62,10 +60,7 @@ class RouteConfig {
     ),
     'consulting': RouteConfig(
       id: 'consulting', label: '量潮咨询', icon: Icons.support_agent_outlined,
-      builder: (ctx) => BlocProvider(
-        create: (_) => ConsultBloc(ConsultState(data: ctx.consultData!)),
-        child: const QtConsultScreen(),
-      ),
+      builder: (ctx) => const QtConsultScreen(),
     ),
     'classroom': RouteConfig(
       id: 'classroom', label: '量潮课堂', icon: Icons.school_outlined,
