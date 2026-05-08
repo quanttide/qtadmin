@@ -1,5 +1,24 @@
 # Changelog
 
+## v0.0.5
+
+### 新增
+- `QtClassScreen`：量潮课堂独立页面，展示四个组成部分（校企合作/实训基地/内部教学/一对一）
+- `QtClassData` 数据模型 + `qtclass.json` fixture + loader
+- `ThinkingData` 数据模型 + `thinking.json` fixture + loader，思考页面数据抽取为 fixture 驱动
+- 数据规范文档：`qtclass.md`、`thinking.md`、`dashboard.md`
+
+### 重命名
+- 全景图→仪表盘，全线英文 `panorama` → `dashboard`
+  - `PanoramaScreen` → `DashboardScreen`，`PanoramaData` → `DashboardData`
+  - `panorama_loader.dart` → `dashboard_loader.dart`，`panoramaPath` → `dashboardPath`
+  - fixture 文件同步重命名，所有 import/变量名更新
+
+### 测试
+- 新增 `thinking_test.dart`、`thinking_screen_test.dart`（模型 + widget）
+- 新增 `qtclass_test.dart`、`qtclass_screen_test.dart`（模型 + widget）
+- 全部 94 个测试通过
+
 ## v0.0.4
 
 ### 新增
