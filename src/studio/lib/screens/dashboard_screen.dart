@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:qtadmin_studio/models/panorama.dart';
+import 'package:qtadmin_studio/models/dashboard.dart';
 import 'package:qtadmin_studio/views/business_section_widget.dart';
 import 'package:qtadmin_studio/views/function_section_widget.dart';
 
-class PanoramaScreen extends StatelessWidget {
-  final PanoramaData data;
+class DashboardScreen extends StatelessWidget {
+  final DashboardData data;
   final String tenantName;
 
-  const PanoramaScreen({super.key, required this.data, this.tenantName = '量潮科技'});
+  const DashboardScreen({super.key, required this.data, this.tenantName = '量潮科技'});
 
   String _dateString() {
     final now = DateTime.now();

@@ -8,13 +8,13 @@ void main() {
       final json = {
         'label': '全景图',
         'icon': 'today_outlined',
-        'pageType': 'panorama',
+        'pageType': 'dashboard',
       };
       final item = NavItemData.fromJson(json);
 
       expect(item.label, '全景图');
       expect(item.icon, 'today_outlined');
-      expect(item.pageType, 'panorama');
+      expect(item.pageType, 'dashboard');
     });
 
     test('resolveIcon returns correct IconData for known icon', () {
@@ -56,15 +56,15 @@ void main() {
   group('NavSectionData', () {
     test('fromJson parses id and items correctly', () {
       final json = {
-        'id': 'panorama',
+        'id': 'dashboard',
         'items': [
-          {'label': '全景图', 'icon': 'today_outlined', 'pageType': 'panorama'},
+          {'label': '全景图', 'icon': 'today_outlined', 'pageType': 'dashboard'},
           {'label': '思考', 'icon': 'psychology_outlined', 'pageType': 'thinking'},
         ],
       };
       final section = NavSectionData.fromJson(json);
 
-      expect(section.id, 'panorama');
+      expect(section.id, 'dashboard');
       expect(section.items.length, 2);
       expect(section.items[0].label, '全景图');
       expect(section.items[1].label, '思考');
@@ -109,9 +109,9 @@ void main() {
       final json = {
         'sections': [
           {
-            'id': 'panorama',
+            'id': 'dashboard',
             'items': [
-              {'label': '全景图', 'icon': 'today_outlined', 'pageType': 'panorama'},
+              {'label': '全景图', 'icon': 'today_outlined', 'pageType': 'dashboard'},
             ],
           },
           {
@@ -126,7 +126,7 @@ void main() {
       final metadata = NavMetadata.fromJson(json);
 
       expect(metadata.sections.length, 2);
-      expect(metadata.sections[0].id, 'panorama');
+      expect(metadata.sections[0].id, 'dashboard');
       expect(metadata.sections[0].items.length, 1);
       expect(metadata.sections[1].id, 'business');
       expect(metadata.sections[1].items.length, 2);
@@ -136,9 +136,9 @@ void main() {
       final json = {
         'sections': [
           {
-            'id': 'panorama',
+            'id': 'dashboard',
             'items': [
-              {'label': '全景图', 'icon': 'today_outlined', 'pageType': 'panorama'},
+              {'label': '全景图', 'icon': 'today_outlined', 'pageType': 'dashboard'},
             ],
           },
           {
@@ -172,7 +172,7 @@ void main() {
     test('allItems flattens all items across sections', () {
       final json = {
         'sections': [
-          {'id': 'a', 'items': [{'label': 'A', 'icon': 'today_outlined', 'pageType': 'panorama'}]},
+          {'id': 'a', 'items': [{'label': 'A', 'icon': 'today_outlined', 'pageType': 'dashboard'}]},
           {'id': 'b', 'items': [{'label': 'B', 'icon': 'psychology_outlined', 'pageType': 'thinking'}, {'label': 'C', 'icon': 'edit_outlined', 'pageType': 'writing'}]},
           {'id': 'c', 'items': [{'label': 'D', 'icon': 'people_outline', 'pageType': 'function_detail'}]},
         ],
@@ -186,10 +186,10 @@ void main() {
 
   group('SectionDef', () {
     test('fromJson parses correctly', () {
-      final json = {'id': 'panorama', 'dividerBefore': false};
+      final json = {'id': 'dashboard', 'dividerBefore': false};
       final def = SectionDef.fromJson(json);
 
-      expect(def.id, 'panorama');
+      expect(def.id, 'dashboard');
       expect(def.dividerBefore, false);
     });
   });
@@ -202,7 +202,7 @@ void main() {
           {'name': '量潮科技', 'icon': 'business_outlined', 'dir': 'company'},
         ],
         'sections': [
-          {'id': 'panorama', 'dividerBefore': false},
+          {'id': 'dashboard', 'dividerBefore': false},
           {'id': 'business', 'dividerBefore': true},
           {'id': 'function', 'dividerBefore': true},
         ],
@@ -233,7 +233,7 @@ void main() {
       final root = RootMetadata(
         tenants: [TenantInfo(name: 'A', icon: 'person_outline', dir: 'a')],
         sections: [
-          SectionDef(id: 'panorama', dividerBefore: false),
+          SectionDef(id: 'dashboard', dividerBefore: false),
           SectionDef(id: 'business', dividerBefore: true),
         ],
       );
