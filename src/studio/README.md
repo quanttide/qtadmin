@@ -16,3 +16,11 @@ lib/
 ├── main.dart
 └── router.dart   # RouteConfig + AppRouter
 ```
+
+## 开发
+
+```bash
+git config core.hooksPath .githooks   # 激活 pre-commit 检查（dart analyze）
+flutter test                           # 运行全部 166 个测试
+dart analyze lib/ test/               # 静态检查
+```
