@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:qtadmin_studio/models/qtclass.dart';
+import 'package:qtadmin_studio/views/stat_item.dart';
 
 class QtClassScreen extends StatelessWidget {
   final QtClassData data;
@@ -66,33 +67,13 @@ class QtClassScreen extends StatelessWidget {
       ),
       child: Row(
         children: [
-          _statItem(const Color(0xFF1565C0), '总学员', totalStudents.toString()),
+          StatItem(dotColor: Color(0xFF1565C0), label: '总学员', value: totalStudents.toString()),
           const SizedBox(width: 24),
-          _statItem(const Color(0xFF2E7D32), '总项目', totalProjects.toString()),
+          StatItem(dotColor: Color(0xFF2E7D32), label: '总项目', value: totalProjects.toString()),
           const SizedBox(width: 24),
-          _statItem(const Color(0xFF6A1B9A), '组成部分', data.components.length.toString()),
+          StatItem(dotColor: Color(0xFF6A1B9A), label: '组成部分', value: data.components.length.toString()),
         ],
       ),
-    );
-  }
-
-  Widget _statItem(Color dotColor, String label, String value) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Container(
-          width: 7,
-          height: 7,
-          decoration: BoxDecoration(color: dotColor, shape: BoxShape.circle),
-        ),
-        const SizedBox(width: 5),
-        Text(label, style: const TextStyle(fontSize: 11, color: Color(0xFF888888))),
-        const SizedBox(width: 4),
-        Text(
-          value,
-          style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Color(0xFF222222)),
-        ),
-      ],
     );
   }
 
