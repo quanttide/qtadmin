@@ -44,6 +44,12 @@ pre-commit 快跑 `dart analyze`，CI 跑完整 `flutter test`。两层的原因
 
 `lib/theme.dart` 和 `lib/constants.dart` 拍平到根目录，调用方少敲一层路径。`sources/` 按来源类型分（base/file/bundle），不按模型分。
 
-### 11. go_router 的引入条件是 URL
+### 11. 框架就是约束，约束就是设计
 
-不是 string switch 的问题。`screenType` 字符串派发确实不安全，但 go_router 解决的是路径匹配，不是类型安全。如果需求已明确 URL 路由即将到来，提前引入是对的；如果只是为了消灭 switch，sealed class 更轻。
+引入 freezed、BLoC、go_router 不只是为了功能。是把 ad-hoc 的手写设计放进工业标准框子——框子卡住的地方，就是技术债的真实位置。
+
+- freezed 暴露了 `fromJson` 不安全强制转换
+- BLoC 暴露了 God 类的 UI/逻辑耦合
+- go_router 暴露了路由表双份维护、ConsultBloc 生命期、双 MaterialApp
+
+不要评价框架「现阶段有没有用」。框架的意义是让设计缺陷提前暴露，而不是等 URL 需求落地那天集中爆发。
