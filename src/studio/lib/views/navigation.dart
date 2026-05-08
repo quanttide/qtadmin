@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:qtadmin_studio/models/metadata.dart';
 
 class NavItem {
+  final String routeId;
   final IconData icon;
   final String label;
-  final Widget Function() builder;
 
   const NavItem({
+    required this.routeId,
     required this.icon,
     required this.label,
-    required this.builder,
   });
 }
 

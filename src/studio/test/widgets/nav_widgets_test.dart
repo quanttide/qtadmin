@@ -126,14 +126,14 @@ void main() {
         NavSection(
           dividerBefore: false,
           items: [
-            NavItem(icon: Icons.today_outlined, label: '仪表盘', builder: () => const SizedBox()),
+            NavItem(routeId: 'dashboard', icon: Icons.today_outlined, label: '仪表盘'),
           ],
         ),
         NavSection(
           dividerBefore: true,
           items: [
-            NavItem(icon: Icons.storage_outlined, label: '量潮数据', builder: () => const SizedBox()),
-            NavItem(icon: Icons.school_outlined, label: '量潮课堂', builder: () => const SizedBox()),
+            NavItem(routeId: 'data', icon: Icons.storage_outlined, label: '量潮数据'),
+            NavItem(routeId: 'classroom', icon: Icons.school_outlined, label: '量潮课堂'),
           ],
         ),
       ];
@@ -171,8 +171,8 @@ void main() {
         NavSection(
           dividerBefore: false,
           items: [
-            NavItem(icon: Icons.today_outlined, label: '仪表盘', builder: () => const SizedBox()),
-            NavItem(icon: Icons.storage_outlined, label: '数据', builder: () => const SizedBox()),
+            NavItem(routeId: 'dashboard', icon: Icons.today_outlined, label: '仪表盘'),
+            NavItem(routeId: 'data', icon: Icons.storage_outlined, label: '数据'),
           ],
         ),
       ];
