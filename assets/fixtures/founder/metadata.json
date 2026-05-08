@@ -1,9 +1,9 @@
 {
   "sections": [
     {
-      "id": "panorama",
+      "id": "dashboard",
       "items": [
-        { "label": "全景图", "icon": "today_outlined", "pageType": "panorama" }
+        { "label": "仪表盘", "icon": "today_outlined", "pageType": "dashboard" }
       ]
     },
     {

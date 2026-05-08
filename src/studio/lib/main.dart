@@ -1,16 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:qtadmin_studio/models/metadata.dart';
-import 'package:qtadmin_studio/models/panorama.dart';
+import 'package:qtadmin_studio/models/dashboard.dart';
+import 'package:qtadmin_studio/models/qtclass.dart';
 import 'package:qtadmin_studio/models/qtconsult.dart';
+import 'package:qtadmin_studio/models/thinking.dart';
 import 'package:qtadmin_studio/screens/business_detail_screen.dart';
 import 'package:qtadmin_studio/screens/function_detail_screen.dart';
-import 'package:qtadmin_studio/screens/panorama_screen.dart';
+import 'package:qtadmin_studio/screens/dashboard_screen.dart';
+import 'package:qtadmin_studio/screens/qtclass_screen.dart';
 import 'package:qtadmin_studio/screens/qtconsult_screen.dart';
 import 'package:qtadmin_studio/screens/thinking_screen.dart';
 import 'package:qtadmin_studio/services/metadata_loader.dart';
-import 'package:qtadmin_studio/services/panorama_loader.dart';
+import 'package:qtadmin_studio/services/dashboard_loader.dart';
+import 'package:qtadmin_studio/services/qtclass_loader.dart';
 import 'package:qtadmin_studio/services/qtconsult_loader.dart';
+import 'package:qtadmin_studio/services/thinking_loader.dart';
 import 'package:qtadmin_studio/views/navigation.dart';
 
 void main() async {
@@ -32,24 +37,28 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
   List<TenantInfo> _tenants = [];
   final Map<String, NavMetadata> _navData = {};
   final Map<String, SectionDef> _sectionDefs = {};
-  PanoramaData? _founderPanorama;
-  PanoramaData? _companyPanorama;
+  DashboardData? _founderDashboard;
+  DashboardData? _companyDashboard;
   QtConsultData? _consultData;
+  QtClassData? _classData;
+  ThinkingData? _thinkingData;
   List<NavSection> _sections = [];
 
-  PanoramaData? get _data =>
-      _selectedTenant == 0 ? _founderPanorama : _companyPanorama;
+  DashboardData? get _data =>
+      _selectedTenant == 0 ? _founderDashboard : _companyDashboard;
 
   Widget _buildScreenForItem(NavItemData item) {
     switch (item.pageType) {
-      case 'panorama':
-        return PanoramaScreen(data: _data!, tenantName: _tenants[_selectedTenant].name);
+      case 'dashboard':
+        return DashboardScreen(data: _data!, tenantName: _tenants[_selectedTenant].name);
       case 'thinking':
-        return const ThinkingScreen();
+        return ThinkingScreen(data: _thinkingData!);
       case 'writing':
         return const Center(child: Text('即将上线'));
       case 'consulting':
         return QtConsultScreen(data: _consultData!);
+      case 'classroom':
+        return QtClassScreen(data: _classData!);
       case 'business_detail': {
         final unit = _data!.businessUnits.firstWhere(
           (u) => u.name == item.label,
@@ -97,9 +106,11 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
     final results = await Future.wait([
       MetadataLoader.load(root.tenants[0].dir),
       MetadataLoader.load(root.tenants[1].dir),
-      PanoramaLoader.load(tenant: TenantType.internal),
-      PanoramaLoader.load(tenant: TenantType.customer),
+      DashboardLoader.load(tenant: TenantType.internal),
+      DashboardLoader.load(tenant: TenantType.customer),
       QtConsultLoader.load(tenant: TenantType.customer),
+      QtClassLoader.load(),
+      ThinkingLoader.load(),
     ]);
     if (mounted) {
       setState(() {
@@ -109,9 +120,11 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
         }
         _navData[root.tenants[0].dir] = results[0] as NavMetadata;
         _navData[root.tenants[1].dir] = results[1] as NavMetadata;
-        _founderPanorama = results[2] as PanoramaData;
-        _companyPanorama = results[3] as PanoramaData;
+        _founderDashboard = results[2] as DashboardData;
+        _companyDashboard = results[3] as DashboardData;
         _consultData = results[4] as QtConsultData;
+        _classData = results[5] as QtClassData;
+        _thinkingData = results[6] as ThinkingData;
         _buildSections();
       });
     }

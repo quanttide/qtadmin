@@ -1,16 +1,16 @@
 {
   "sections": [
     {
-      "id": "panorama",
+      "id": "dashboard",
       "items": [
-        { "label": "全景图", "icon": "today_outlined", "pageType": "panorama" }
+        { "label": "仪表盘", "icon": "today_outlined", "pageType": "dashboard" }
       ]
     },
     {
       "id": "business",
       "items": [
         { "label": "量潮数据", "icon": "storage_outlined", "pageType": "business_detail" },
-        { "label": "量潮课堂", "icon": "school_outlined", "pageType": "business_detail" },
+        { "label": "量潮课堂", "icon": "school_outlined", "pageType": "classroom" },
         { "label": "量潮咨询", "icon": "support_agent_outlined", "pageType": "consulting" },
         { "label": "量潮云", "icon": "cloud_outlined", "pageType": "business_detail" }
       ]

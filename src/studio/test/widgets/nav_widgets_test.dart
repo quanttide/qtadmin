@@ -12,7 +12,7 @@ void main() {
           home: Scaffold(
             body: NavIcon(
               icon: Icons.today_outlined,
-              label: '全景图',
+              label: '仪表盘',
               selected: false,
               onTap: () {},
             ),
@@ -20,7 +20,7 @@ void main() {
         ),
       );
 
-      expect(find.text('全景图'), findsOneWidget);
+      expect(find.text('仪表盘'), findsOneWidget);
       expect(find.byIcon(Icons.today_outlined), findsOneWidget);
     });
 
@@ -126,7 +126,7 @@ void main() {
         NavSection(
           dividerBefore: false,
           items: [
-            NavItem(icon: Icons.today_outlined, label: '全景图', builder: () => const SizedBox()),
+            NavItem(icon: Icons.today_outlined, label: '仪表盘', builder: () => const SizedBox()),
           ],
         ),
         NavSection(
@@ -154,7 +154,7 @@ void main() {
       );
 
       expect(find.text('量潮创始人'), findsOneWidget);
-      expect(find.text('全景图'), findsOneWidget);
+      expect(find.text('仪表盘'), findsOneWidget);
       expect(find.text('量潮数据'), findsOneWidget);
       expect(find.text('量潮课堂'), findsOneWidget);
       expect(find.byIcon(tenants[0].resolveIcon()), findsOneWidget);
@@ -171,7 +171,7 @@ void main() {
         NavSection(
           dividerBefore: false,
           items: [
-            NavItem(icon: Icons.today_outlined, label: '全景图', builder: () => const SizedBox()),
+            NavItem(icon: Icons.today_outlined, label: '仪表盘', builder: () => const SizedBox()),
             NavItem(icon: Icons.storage_outlined, label: '数据', builder: () => const SizedBox()),
           ],
         ),

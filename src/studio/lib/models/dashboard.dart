@@ -150,14 +150,14 @@ class FuncCardData {
   }
 }
 
-class PanoramaData {
+class DashboardData {
   final List<BusinessUnitData> businessUnits;
   final List<FuncCardData> functionCards;
 
-  PanoramaData({required this.businessUnits, required this.functionCards});
+  DashboardData({required this.businessUnits, required this.functionCards});
 
-  factory PanoramaData.fromJson(Map<String, dynamic> json) {
-    return PanoramaData(
+  factory DashboardData.fromJson(Map<String, dynamic> json) {
+    return DashboardData(
       businessUnits: (json['businessUnits'] as List<dynamic>)
           .map((b) => BusinessUnitData.fromJson(b as Map<String, dynamic>))
           .toList(),

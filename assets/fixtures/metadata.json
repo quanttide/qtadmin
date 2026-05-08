@@ -4,7 +4,7 @@
     { "id": "customer", "name": "量潮科技", "icon": "business_outlined", "dir": "company" }
   ],
   "sections": [
-    { "id": "panorama",  "dividerBefore": false },
+    { "id": "dashboard",  "dividerBefore": false },
     { "id": "business",  "dividerBefore": true },
     { "id": "function",  "dividerBefore": true }
   ]

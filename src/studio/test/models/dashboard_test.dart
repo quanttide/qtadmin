@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:qtadmin_studio/models/panorama.dart';
+import 'package:qtadmin_studio/models/dashboard.dart';
 
 void main() {
   group('DecisionAction', () {
@@ -212,8 +212,8 @@ void main() {
     });
   });
 
-  group('PanoramaData', () {
-    test('fromJson parses complete panorama', () {
+  group('DashboardData', () {
+    test('fromJson parses complete dashboard', () {
       final json = {
         'businessUnits': [
           {'name': '量潮数据', 'tag': '主营'},
@@ -224,7 +224,7 @@ void main() {
           {'name': '财务管理', 'metrics': []},
         ],
       };
-      final data = PanoramaData.fromJson(json);
+      final data = DashboardData.fromJson(json);
 
       expect(data.businessUnits.length, 2);
       expect(data.functionCards.length, 2);
@@ -233,7 +233,7 @@ void main() {
       expect(data.functionCards[0].name, '人力资源');
     });
 
-    test('fromJson parses founder panorama with empty functionCards', () {
+    test('fromJson parses founder dashboard with empty functionCards', () {
       final json = {
         'businessUnits': [
           {'name': '思考', 'tag': '', 'screenType': 'thinking'},
@@ -241,7 +241,7 @@ void main() {
         ],
         'functionCards': [],
       };
-      final data = PanoramaData.fromJson(json);
+      final data = DashboardData.fromJson(json);
 
       expect(data.businessUnits.length, 2);
       expect(data.functionCards, isEmpty);

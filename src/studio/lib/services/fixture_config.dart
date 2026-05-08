@@ -18,14 +18,18 @@ class FixtureConfig {
 
   static String metadataPath(String dir) => '$_basePath/$dir/metadata.json';
 
-  static String panoramaPath(TenantType tenant) {
+  static String dashboardPath(TenantType tenant) {
     switch (tenant) {
       case TenantType.internal:
-        return '$_basePath/founder/panorama.json';
+        return '$_basePath/founder/dashboard.json';
       case TenantType.customer:
-        return '$_basePath/company/panorama.json';
+        return '$_basePath/company/dashboard.json';
     }
   }
+
+  static String get qtclassPath => '$_basePath/company/qtclass.json';
+
+  static String get thinkingPath => '$_basePath/founder/thinking.json';
 
   static String qtconsultPath(TenantType tenant) {
     switch (tenant) {

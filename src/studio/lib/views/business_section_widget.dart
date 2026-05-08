@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:qtadmin_studio/models/panorama.dart';
+import 'package:qtadmin_studio/models/dashboard.dart';
 import 'package:qtadmin_studio/views/biz_unit_widget.dart';
 import 'package:qtadmin_studio/views/section_header.dart';
 
