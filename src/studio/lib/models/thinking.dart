@@ -1,6 +1,6 @@
 import 'dart:ui' show Color;
 import 'package:freezed_annotation/freezed_annotation.dart';
-import '../utils/app_colors.dart';
+import '../theme/app_colors.dart';
 
 part 'thinking.freezed.dart';
 part 'thinking.g.dart';

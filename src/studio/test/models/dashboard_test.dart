@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:qtadmin_studio/utils/app_colors.dart';
+import 'package:qtadmin_studio/theme/app_colors.dart';
 import 'package:qtadmin_studio/models/dashboard.dart';
 
 void main() {

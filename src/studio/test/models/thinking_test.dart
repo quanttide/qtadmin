@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:qtadmin_studio/models/thinking.dart';
-import 'package:qtadmin_studio/utils/thinking_icons.dart';
+import 'package:qtadmin_studio/constants/app_constants.dart';
 
 void main() {
   group('ThinkingEmotion', () {

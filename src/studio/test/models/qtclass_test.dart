@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:qtadmin_studio/models/qtclass.dart';
-import 'package:qtadmin_studio/utils/qtclass_helpers.dart';
+import 'package:qtadmin_studio/constants/app_constants.dart';
 
 void main() {
   group('QtClassComponentType', () {
