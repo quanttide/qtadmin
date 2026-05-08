@@ -5,7 +5,6 @@ import 'package:qtadmin_studio/models/qtconsult.dart';
 import 'package:qtadmin_studio/models/qtclass.dart';
 import 'package:qtadmin_studio/models/thinking.dart';
 import 'package:qtadmin_studio/models/org.dart';
-import 'package:qtadmin_studio/route_config.dart';
 import 'package:qtadmin_studio/router.dart';
 import 'package:qtadmin_studio/services/metadata_loader.dart';
 import 'package:qtadmin_studio/services/dashboard_loader.dart';
