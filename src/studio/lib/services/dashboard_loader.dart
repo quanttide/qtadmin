@@ -4,23 +4,23 @@ import 'package:qtadmin_studio/models/dashboard.dart';
 import 'package:qtadmin_studio/models/qtconsult.dart';
 
 class DashboardLoader {
-  static final Map<TenantType, DashboardData> _cache = {};
+  static final Map<WorkspaceType, DashboardData> _cache = {};
 
-  static Future<DashboardData> load({TenantType tenant = TenantType.customer}) async {
-    if (_cache.containsKey(tenant)) return _cache[tenant]!;
+  static Future<DashboardData> load({WorkspaceType workspace = WorkspaceType.customer}) async {
+    if (_cache.containsKey(workspace)) return _cache[workspace]!;
     final jsonStr = await rootBundle.loadString(
-      'assets/fixtures/${_tenantDir(tenant)}/dashboard.json',
+      'assets/fixtures/${_workspaceDir(workspace)}/dashboard.json',
     );
     final data = DashboardData.fromJson(json.decode(jsonStr) as Map<String, dynamic>);
-    _cache[tenant] = data;
+    _cache[workspace] = data;
     return data;
   }
 
-  static String _tenantDir(TenantType tenant) {
-    switch (tenant) {
-      case TenantType.internal:
+  static String _workspaceDir(WorkspaceType workspace) {
+    switch (workspace) {
+      case WorkspaceType.internal:
         return 'founder';
-      case TenantType.customer:
+      case WorkspaceType.customer:
         return 'company';
     }
   }

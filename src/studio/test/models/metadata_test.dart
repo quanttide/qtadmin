@@ -78,10 +78,10 @@ void main() {
     });
   });
 
-  group('TenantInfo', () {
+  group('WorkspaceInfo', () {
     test('fromJson parses correctly with dir', () {
       final json = {'name': '量潮科技', 'icon': 'business_outlined', 'dir': 'company'};
-      final info = TenantInfo.fromJson(json);
+      final info = WorkspaceInfo.fromJson(json);
 
       expect(info.name, '量潮科技');
       expect(info.icon, 'business_outlined');
@@ -89,17 +89,17 @@ void main() {
     });
 
     test('resolveIcon returns correct IconData for person_outline', () {
-      final info = TenantInfo(name: '量潮创始人', icon: 'person_outline', dir: 'founder');
+      final info = WorkspaceInfo(name: '量潮创始人', icon: 'person_outline', dir: 'founder');
       expect(info.resolveIcon(), Icons.person_outline);
     });
 
     test('resolveIcon returns correct IconData for business_outlined', () {
-      final info = TenantInfo(name: '量潮科技', icon: 'business_outlined', dir: 'company');
+      final info = WorkspaceInfo(name: '量潮科技', icon: 'business_outlined', dir: 'company');
       expect(info.resolveIcon(), Icons.business_outlined);
     });
 
     test('resolveIcon returns circle_outlined for unknown icon', () {
-      final info = TenantInfo(name: '测试', icon: 'unknown', dir: 'test');
+      final info = WorkspaceInfo(name: '测试', icon: 'unknown', dir: 'test');
       expect(info.resolveIcon(), Icons.circle_outlined);
     });
   });
@@ -195,9 +195,9 @@ void main() {
   });
 
   group('RootMetadata', () {
-    test('fromJson parses tenants and sections', () {
+    test('fromJson parses workspaces and sections', () {
       final json = {
-        'tenants': [
+        'workspaces': [
           {'name': '量潮创始人', 'icon': 'person_outline', 'dir': 'founder'},
           {'name': '量潮科技', 'icon': 'business_outlined', 'dir': 'company'},
         ],
@@ -209,29 +209,29 @@ void main() {
       };
       final root = RootMetadata.fromJson(json);
 
-      expect(root.tenants.length, 2);
-      expect(root.tenants[0].name, '量潮创始人');
-      expect(root.tenants[1].dir, 'company');
+      expect(root.workspaces.length, 2);
+      expect(root.workspaces[0].name, '量潮创始人');
+      expect(root.workspaces[1].dir, 'company');
       expect(root.sections.length, 3);
       expect(root.sections[0].dividerBefore, false);
       expect(root.sections[2].id, 'function');
     });
 
-    test('tenantById finds tenant by dir', () {
+    test('workspaceById finds workspace by dir', () {
       final root = RootMetadata(
-        tenants: [
-          TenantInfo(name: 'A', icon: 'person_outline', dir: 'founder'),
-          TenantInfo(name: 'B', icon: 'business_outlined', dir: 'company'),
+        workspaces: [
+          WorkspaceInfo(name: 'A', icon: 'person_outline', dir: 'founder'),
+          WorkspaceInfo(name: 'B', icon: 'business_outlined', dir: 'company'),
         ],
         sections: [],
       );
 
-      expect(root.tenantById('company').name, 'B');
+      expect(root.workspaceById('company').name, 'B');
     });
 
     test('sectionById finds section by id', () {
       final root = RootMetadata(
-        tenants: [TenantInfo(name: 'A', icon: 'person_outline', dir: 'a')],
+        workspaces: [WorkspaceInfo(name: 'A', icon: 'person_outline', dir: 'a')],
         sections: [
           SectionDef(id: 'dashboard', dividerBefore: false),
           SectionDef(id: 'business', dividerBefore: true),

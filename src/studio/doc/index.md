@@ -16,31 +16,31 @@
 FixtureConfig              ← 读取环境变量，拼接 JSON 文件路径
   ├── rootMetadataPath         → metadata.json
   ├── metadataPath(dir)        → {dir}/metadata.json
-  ├── panoramaPath(tenant)     → founder|company/panorama.json
-  └── qtconsultPath(tenant)    → founder|company/qtconsult.json
+  ├── panoramaPath(workspace)     → founder|company/panorama.json
+  └── qtconsultPath(workspace)    → founder|company/qtconsult.json
         │
         ▼
 MetadataLoader            ← fixture JSON → Dart 模型
   ├── loadRoot()              → RootMetadata
   └── load(dir)               → NavMetadata（按目录缓存）
-PanoramaLoader.load(tenant)   → PanoramaData
-QtConsultLoader.load(tenant)  → QtConsultData
+PanoramaLoader.load(workspace)   → PanoramaData
+QtConsultLoader.load(workspace)  → QtConsultData
 ```
 
 `_loadData()` 在 `initState` 中执行：
 
-1. `MetadataLoader.loadRoot()` — 获取租户清单 + 段定义
-2. 并行加载每个租户的 metadata + panorama + consult
-3. 合并 sections（根段定义 + 租户项内容）
+1. `MetadataLoader.loadRoot()` — 获取Workspace工作空间清单 + 段定义
+2. 并行加载每个Workspace工作空间的 metadata + panorama + consult
+3. 合并 sections（根段定义 + Workspace工作空间项内容）
 
 ```dart
 final root = await MetadataLoader.loadRoot();
 final results = await Future.wait([
-  MetadataLoader.load(root.tenants[0].dir),
-  MetadataLoader.load(root.tenants[1].dir),
-  PanoramaLoader.load(tenant: TenantType.internal),
-  PanoramaLoader.load(tenant: TenantType.customer),
-  QtConsultLoader.load(tenant: TenantType.customer),
+  MetadataLoader.load(root.workspaces[0].dir),
+  MetadataLoader.load(root.workspaces[1].dir),
+  PanoramaLoader.load(workspace: WorkspaceType.internal),
+  PanoramaLoader.load(workspace: WorkspaceType.customer),
+  QtConsultLoader.load(workspace: WorkspaceType.customer),
 ]);
 ```
 
@@ -48,14 +48,14 @@ final results = await Future.wait([
 
 | 类 | 字段 | 来源 |
 |---|---|---|
-| `RootMetadata` | `tenants`, `sections` | 根 `metadata.json` |
-| `TenantInfo` | `name`, `icon`, `dir` | 根 `tenants[]` |
+| `RootMetadata` | `workspaces`, `sections` | 根 `metadata.json` |
+| `WorkspaceInfo` | `name`, `icon`, `dir` | 根 `workspaces[]` |
 | `SectionDef` | `id`, `dividerBefore` | 根 `sections[]` |
-| `NavMetadata` | `sections` | 每租户 `metadata.json` |
-| `NavSectionData` | `id`, `items` | 每租户 `sections[]` |
-| `NavItemData` | `label`, `icon`, `pageType` | 每租户 `items[]` |
+| `NavMetadata` | `sections` | 每Workspace工作空间 `metadata.json` |
+| `NavSectionData` | `id`, `items` | 每Workspace工作空间 `sections[]` |
+| `NavItemData` | `label`, `icon`, `pageType` | 每Workspace工作空间 `items[]` |
 
-`TenantInfo` 的 `dir` 字段连接到 fixture 子目录（`founder` / `company`），解耦租户 ID 和路径。
+`WorkspaceInfo` 的 `dir` 字段连接到 fixture 子目录（`founder` / `company`），解耦Workspace工作空间 ID 和路径。
 
 `NavSectionData.id` 引用根的 `SectionDef.id`，匹配后拿到 `dividerBefore` 规则。
 
@@ -63,8 +63,8 @@ final results = await Future.wait([
 
 | 组件 | 说明 |
 |---|---|
-| `NavSidebar` | 完整侧边栏，props-driven：tenants/sections + 回调 |
-| `TenantSwitcher` | 租户切换下拉菜单，`NavSidebar` 内部使用 |
+| `NavSidebar` | 完整侧边栏，props-driven：workspaces/sections + 回调 |
+| `WorkspaceSwitcher` | Workspace工作空间切换下拉菜单，`NavSidebar` 内部使用 |
 | `NavIcon` | 图标按钮，`NavSidebar` 内部使用 |
 | `NavItem` | 运行时导航项数据类（IconData + label + builder） |
 | `NavSection` | 运行时导航段数据类（items + dividerBefore） |

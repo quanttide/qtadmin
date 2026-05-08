@@ -29,10 +29,10 @@ class QtAdminStudio extends StatefulWidget {
 }
 
 class _QtAdminStudioState extends State<QtAdminStudio> {
-  int _selectedTenant = 0;
+  int _selectedWorkspace = 0;
   int _selectedIndex = 0;
 
-  List<TenantInfo> _tenants = [];
+  List<WorkspaceInfo> _workspaces = [];
   final Map<String, NavMetadata> _navData = {};
   final Map<String, SectionDef> _sectionDefs = {};
   DashboardData? _founderDashboard;
@@ -43,12 +43,12 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
   List<NavSection> _sections = [];
 
   DashboardData? get _data =>
-      _selectedTenant == 0 ? _founderDashboard : _companyDashboard;
+      _selectedWorkspace == 0 ? _founderDashboard : _companyDashboard;
 
   Widget _buildScreenForItem(NavItemData item) {
     switch (item.pageType) {
       case 'dashboard':
-        return DashboardScreen(data: _data!, tenantName: _tenants[_selectedTenant].name);
+        return DashboardScreen(data: _data!, workspaceName: _workspaces[_selectedWorkspace].name);
       case 'thinking':
         return ThinkingScreen(data: _thinkingData!);
       case 'writing':
@@ -77,7 +77,7 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
   }
 
   void _buildSections() {
-    final dir = _tenants[_selectedTenant].dir;
+    final dir = _workspaces[_selectedWorkspace].dir;
     final nav = _navData[dir]!;
     _sections = nav.sections.map((section) {
       return NavSection(
@@ -102,22 +102,22 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
   Future<void> _loadData() async {
     final root = await MetadataLoader.loadRoot();
     final results = await Future.wait([
-      MetadataLoader.load(root.tenants[0].dir),
-      MetadataLoader.load(root.tenants[1].dir),
-      DashboardLoader.load(tenant: TenantType.internal),
-      DashboardLoader.load(tenant: TenantType.customer),
-      QtConsultLoader.load(tenant: TenantType.customer),
+      MetadataLoader.load(root.workspaces[0].dir),
+      MetadataLoader.load(root.workspaces[1].dir),
+      DashboardLoader.load(workspace: WorkspaceType.internal),
+      DashboardLoader.load(workspace: WorkspaceType.customer),
+      QtConsultLoader.load(workspace: WorkspaceType.customer),
       QtClassLoader.load(),
       ThinkingLoader.load(),
     ]);
     if (mounted) {
       setState(() {
-        _tenants = root.tenants;
+        _workspaces = root.workspaces;
         for (final section in root.sections) {
           _sectionDefs[section.id] = section;
         }
-        _navData[root.tenants[0].dir] = results[0] as NavMetadata;
-        _navData[root.tenants[1].dir] = results[1] as NavMetadata;
+        _navData[root.workspaces[0].dir] = results[0] as NavMetadata;
+        _navData[root.workspaces[1].dir] = results[1] as NavMetadata;
         _founderDashboard = results[2] as DashboardData;
         _companyDashboard = results[3] as DashboardData;
         _consultData = results[4] as QtConsultData;
@@ -146,11 +146,11 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
         body: Row(
           children: [
             NavSidebar(
-              tenants: _tenants,
-              selectedTenant: _selectedTenant,
-              onTenantChanged: (index) {
+              workspaces: _workspaces,
+              selectedWorkspace: _selectedWorkspace,
+              onWorkspaceChanged: (index) {
                 setState(() {
-                  _selectedTenant = index;
+                  _selectedWorkspace = index;
                   _selectedIndex = 0;
                   _buildSections();
                 });

@@ -56,19 +56,19 @@ class NavSectionData {
   }
 }
 
-class TenantInfo {
+class WorkspaceInfo {
   final String name;
   final String icon;
   final String dir;
 
-  const TenantInfo({
+  const WorkspaceInfo({
     required this.name,
     required this.icon,
     required this.dir,
   });
 
-  factory TenantInfo.fromJson(Map<String, dynamic> json) {
-    return TenantInfo(
+  factory WorkspaceInfo.fromJson(Map<String, dynamic> json) {
+    return WorkspaceInfo(
       name: json['name'] as String,
       icon: json['icon'] as String,
       dir: json['dir'] as String,
@@ -115,15 +115,15 @@ class SectionDef {
 }
 
 class RootMetadata {
-  final List<TenantInfo> tenants;
+  final List<WorkspaceInfo> workspaces;
   final List<SectionDef> sections;
 
-  const RootMetadata({required this.tenants, required this.sections});
+  const RootMetadata({required this.workspaces, required this.sections});
 
   factory RootMetadata.fromJson(Map<String, dynamic> json) {
     return RootMetadata(
-      tenants: (json['tenants'] as List<dynamic>)
-          .map((t) => TenantInfo.fromJson(t as Map<String, dynamic>))
+      workspaces: (json['workspaces'] as List<dynamic>)
+          .map((t) => WorkspaceInfo.fromJson(t as Map<String, dynamic>))
           .toList(),
       sections: (json['sections'] as List<dynamic>)
           .map((s) => SectionDef.fromJson(s as Map<String, dynamic>))
@@ -131,8 +131,8 @@ class RootMetadata {
     );
   }
 
-  TenantInfo tenantById(String id) {
-    return tenants.firstWhere((t) => t.dir == id);
+  WorkspaceInfo workspaceById(String id) {
+    return workspaces.firstWhere((t) => t.dir == id);
   }
 
   SectionDef sectionById(String id) {

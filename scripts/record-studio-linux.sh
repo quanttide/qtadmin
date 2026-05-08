@@ -59,7 +59,7 @@ xdotool windowraise "$WID"
 sleep 0.5
 
 # === Precise layout (window-relative from source code) ===
-# SizedBox(4) + TenantSwitcher(h=60) -> center at y=34
+# SizedBox(4) + WorkspaceSwitcher(h=60) -> center at y=34
 # Divider: Padding(v=4) + Divider(h=1) + Padding(v=4) -> h=9 total
 # NavIcon: h=64 each, centers at y=105, 169, 233, 297, 361, 425, 489
 SIDEBAR_CX=36
@@ -86,8 +86,8 @@ click_win "$SIDEBAR_CX" "$NAV2_Y" 2   # 思考
 click_win "$SIDEBAR_CX" "$NAV3_Y" 2   # 写作(placeholder)
 click_win "$SIDEBAR_CX" "$NAV1_Y" 2   # 回全景图
 
-# 切换租户: PopupMenu offset(0,48), trigger bottom at 64, menu starts at 112
-click_win "$SIDEBAR_CX" "$TS_Y" 1     # 点击租户切换
+# 切换Workspace工作空间: PopupMenu offset(0,48), trigger bottom at 64, menu starts at 112
+click_win "$SIDEBAR_CX" "$TS_Y" 1     # 点击Workspace工作空间切换
 click_win 80 184 2                     # 菜单项2: 量潮科技(约112-160+48)
 
 # --- 量潮科技 ---

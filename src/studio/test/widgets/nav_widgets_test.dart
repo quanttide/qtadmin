@@ -44,17 +44,17 @@ void main() {
     });
   });
 
-  group('TenantSwitcher rendering', () {
-    testWidgets('renders current tenant name and icon', (tester) async {
-      final tenants = [
-        TenantInfo(name: '量潮创始人', icon: 'person_outline', dir: 'founder'),
-        TenantInfo(name: '量潮科技', icon: 'business_outlined', dir: 'company'),
+  group('WorkspaceSwitcher rendering', () {
+    testWidgets('renders current workspace name and icon', (tester) async {
+      final workspaces = [
+        WorkspaceInfo(name: '量潮创始人', icon: 'person_outline', dir: 'founder'),
+        WorkspaceInfo(name: '量潮科技', icon: 'business_outlined', dir: 'company'),
       ];
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
-            body: TenantSwitcher(
-              tenants: tenants,
+            body: WorkspaceSwitcher(
+              workspaces: workspaces,
               selectedIndex: 0,
               onChanged: (_) {},
             ),
@@ -63,19 +63,19 @@ void main() {
       );
 
       expect(find.text('量潮创始人'), findsOneWidget);
-      expect(find.byIcon(tenants[0].resolveIcon()), findsOneWidget);
+      expect(find.byIcon(workspaces[0].resolveIcon()), findsOneWidget);
     });
 
     testWidgets('opens popup menu on tap', (tester) async {
-      final tenants = [
-        TenantInfo(name: '量潮创始人', icon: 'person_outline', dir: 'founder'),
-        TenantInfo(name: '量潮科技', icon: 'business_outlined', dir: 'company'),
+      final workspaces = [
+        WorkspaceInfo(name: '量潮创始人', icon: 'person_outline', dir: 'founder'),
+        WorkspaceInfo(name: '量潮科技', icon: 'business_outlined', dir: 'company'),
       ];
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
-            body: TenantSwitcher(
-              tenants: tenants,
+            body: WorkspaceSwitcher(
+              workspaces: workspaces,
               selectedIndex: 0,
               onChanged: (_) {},
             ),
@@ -89,17 +89,17 @@ void main() {
       expect(find.text('量潮科技'), findsOneWidget);
     });
 
-    testWidgets('fires onChanged when a tenant is selected in popup', (tester) async {
+    testWidgets('fires onChanged when a workspace is selected in popup', (tester) async {
       int selectedIndex = -1;
-      final tenants = [
-        TenantInfo(name: '量潮创始人', icon: 'person_outline', dir: 'founder'),
-        TenantInfo(name: '量潮科技', icon: 'business_outlined', dir: 'company'),
+      final workspaces = [
+        WorkspaceInfo(name: '量潮创始人', icon: 'person_outline', dir: 'founder'),
+        WorkspaceInfo(name: '量潮科技', icon: 'business_outlined', dir: 'company'),
       ];
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
-            body: TenantSwitcher(
-              tenants: tenants,
+            body: WorkspaceSwitcher(
+              workspaces: workspaces,
               selectedIndex: 0,
               onChanged: (index) => selectedIndex = index,
             ),
@@ -117,10 +117,10 @@ void main() {
   });
 
   group('NavSidebar rendering', () {
-    testWidgets('renders tenant switcher and nav icons', (tester) async {
-      final tenants = [
-        TenantInfo(name: '量潮创始人', icon: 'person_outline', dir: 'founder'),
-        TenantInfo(name: '量潮科技', icon: 'business_outlined', dir: 'company'),
+    testWidgets('renders workspace switcher and nav icons', (tester) async {
+      final workspaces = [
+        WorkspaceInfo(name: '量潮创始人', icon: 'person_outline', dir: 'founder'),
+        WorkspaceInfo(name: '量潮科技', icon: 'business_outlined', dir: 'company'),
       ];
       final sections = [
         NavSection(
@@ -142,9 +142,9 @@ void main() {
         MaterialApp(
           home: Scaffold(
             body: NavSidebar(
-              tenants: tenants,
-              selectedTenant: 0,
-              onTenantChanged: (_) {},
+              workspaces: workspaces,
+              selectedWorkspace: 0,
+              onWorkspaceChanged: (_) {},
               sections: sections,
               selectedIndex: 0,
               onItemTap: (_) {},
@@ -157,15 +157,15 @@ void main() {
       expect(find.text('仪表盘'), findsOneWidget);
       expect(find.text('量潮数据'), findsOneWidget);
       expect(find.text('量潮课堂'), findsOneWidget);
-      expect(find.byIcon(tenants[0].resolveIcon()), findsOneWidget);
+      expect(find.byIcon(workspaces[0].resolveIcon()), findsOneWidget);
       expect(find.byIcon(Icons.today_outlined), findsOneWidget);
       expect(find.byIcon(Icons.storage_outlined), findsOneWidget);
     });
 
     testWidgets('fires onItemTap when nav icon is tapped', (tester) async {
       int tappedIndex = -1;
-      final tenants = [
-        TenantInfo(name: '量潮创始人', icon: 'person_outline', dir: 'founder'),
+      final workspaces = [
+        WorkspaceInfo(name: '量潮创始人', icon: 'person_outline', dir: 'founder'),
       ];
       final sections = [
         NavSection(
@@ -181,9 +181,9 @@ void main() {
         MaterialApp(
           home: Scaffold(
             body: NavSidebar(
-              tenants: tenants,
-              selectedTenant: 0,
-              onTenantChanged: (_) {},
+              workspaces: workspaces,
+              selectedWorkspace: 0,
+              onWorkspaceChanged: (_) {},
               sections: sections,
               selectedIndex: 0,
               onItemTap: (i) => tappedIndex = i,
