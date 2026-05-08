@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:qtadmin_studio/models/metadata.dart';
 import 'package:qtadmin_studio/models/dashboard.dart';
 import 'package:qtadmin_studio/models/qtclass.dart';
@@ -19,7 +18,6 @@ import 'package:qtadmin_studio/services/thinking_loader.dart';
 import 'package:qtadmin_studio/views/navigation.dart';
 
 void main() async {
-  await dotenv.load();
   runApp(const QtAdminStudio());
 }
 
