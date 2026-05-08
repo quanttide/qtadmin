@@ -1,0 +1,25 @@
+name: studio
+
+on:
+  push:
+    paths:
+      - 'src/studio/**'
+  pull_request:
+    paths:
+      - 'src/studio/**'
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: src/studio
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.x'
+          channel: stable
+      - run: flutter pub get
+      - run: dart analyze lib/ test/
+      - run: flutter test
