@@ -4,7 +4,10 @@ import 'package:qtadmin_studio/models/dashboard.dart';
 import 'package:qtadmin_studio/models/qtclass.dart';
 import 'package:qtadmin_studio/models/qtconsult.dart';
 import 'package:qtadmin_studio/models/thinking.dart';
+import 'package:qtadmin_studio/models/org.dart';
 import 'package:qtadmin_studio/screens/business_detail_screen.dart';
+import 'package:qtadmin_studio/screens/org_screen.dart';
+import 'package:qtadmin_studio/services/org_loader.dart';
 import 'package:qtadmin_studio/screens/function_detail_screen.dart';
 import 'package:qtadmin_studio/screens/dashboard_screen.dart';
 import 'package:qtadmin_studio/screens/qtclass_screen.dart';
@@ -40,6 +43,7 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
   QtConsultData? _consultData;
   QtClassData? _classData;
   ThinkingData? _thinkingData;
+  OrgDashboardData? _orgData;
   List<NavSection> _sections = [];
 
   DashboardData? get _data =>
@@ -57,6 +61,8 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
         return QtConsultScreen(data: _consultData!);
       case 'classroom':
         return QtClassScreen(data: _classData!);
+      case 'org':
+        return OrgScreen(data: _orgData!);
       case 'business_detail': {
         final unit = _data!.businessUnits.firstWhere(
           (u) => u.name == item.label,
@@ -109,6 +115,7 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
       QtConsultLoader.load(workspace: WorkspaceType.customer),
       QtClassLoader.load(),
       ThinkingLoader.load(),
+      OrgLoader.load(),
     ]);
     if (mounted) {
       setState(() {
@@ -123,6 +130,7 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
         _consultData = results[4] as QtConsultData;
         _classData = results[5] as QtClassData;
         _thinkingData = results[6] as ThinkingData;
+        _orgData = results[7] as OrgDashboardData;
         _buildSections();
       });
     }
