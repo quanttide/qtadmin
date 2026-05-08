@@ -1,5 +1,5 @@
 import 'dart:io' show File;
-import 'data_source.dart';
+import 'base.dart';
 
 class FileSource extends DataSource {
   const FileSource();

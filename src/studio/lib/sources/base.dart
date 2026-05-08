@@ -1,6 +1,23 @@
 import 'dart:convert';
-import 'data_result.dart';
-import 'data_source.dart';
+
+sealed class DataResult<T> {
+  const DataResult();
+}
+
+class DataSuccess<T> extends DataResult<T> {
+  final T data;
+  const DataSuccess(this.data);
+}
+
+class DataError<T> extends DataResult<T> {
+  final String message;
+  const DataError(this.message);
+}
+
+abstract class DataSource {
+  const DataSource();
+  Future<String> read(String path);
+}
 
 class DataLoader<T extends Object> {
   final DataSource source;
