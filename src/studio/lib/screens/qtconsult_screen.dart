@@ -1,126 +1,55 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:qtadmin_studio/blocs/consult_bloc.dart';
 import 'package:qtadmin_studio/models/qtconsult.dart';
 import 'package:qtadmin_studio/constants.dart';
 import 'package:qtadmin_studio/views/stat_item.dart';
 
-class QtConsultScreen extends StatefulWidget {
-  final QtConsult data;
-
-  const QtConsultScreen({super.key, required this.data});
+class QtConsultScreen extends StatelessWidget {
+  const QtConsultScreen({super.key});
 
   @override
-  State<QtConsultScreen> createState() => _QtConsultScreenState();
+  Widget build(BuildContext context) {
+    return const _Body();
+  }
 }
 
-class _QtConsultScreenState extends State<QtConsultScreen> {
-  late List<Discovery> _discoveries;
-  late List<StrategyRevision> _revisions;
+class _Body extends StatefulWidget {
+  const _Body();
+
+  @override
+  State<_Body> createState() => _BodyState();
+}
+
+class _BodyState extends State<_Body> {
   final Set<String> _expandedComms = {};
   final Set<String> _expandedStakeholders = {};
 
-  @override
-  void initState() {
-    super.initState();
-    _discoveries = List.from(widget.data.discoveries);
-    _revisions = List.from(widget.data.revisions);
-  }
+  QtConsult get _data => context.watch<ConsultBloc>().state.data;
 
   String _dateString() {
     final now = DateTime.now();
     return '${now.month}月${now.day}日';
   }
 
-  String _generateId() {
-    final r = Random();
-    return 'id_${DateTime.now().millisecondsSinceEpoch}_${r.nextInt(9999)}';
-  }
-
   int get _pendingReviewCount =>
-      _revisions.where((r) => !r.isReviewed).length;
+      _data.revisions.where((r) => !r.isReviewed).length;
 
   int get _confirmedCount =>
-      _discoveries.where((d) => d.status == DiscoveryStatus.confirmed).length;
+      _data.discoveries.where((d) => d.status == DiscoveryStatus.confirmed).length;
 
-  int get _highRiskCount => _discoveries
+  int get _highRiskCount => _data.discoveries
       .where((d) => d.type == DiscoveryType.risk && d.status == DiscoveryStatus.confirmed)
       .length;
 
   int get _blockerCount =>
-      _discoveries.where((d) => d.type == DiscoveryType.risk).length;
-
-  void _addDiscovery(String text, DiscoveryType type, String source) {
-    final dateStr = _dateString();
-    final isRiskOrConcern =
-        type == DiscoveryType.risk || type == DiscoveryType.concern;
-
-    final discovery = Discovery(
-      id: _generateId(),
-      text: text,
-      type: type,
-      source: source,
-      date: dateStr,
-      linkedToStrategy: isRiskOrConcern,
-    );
-    setState(() {
-      _discoveries.insert(0, discovery);
-      if (isRiskOrConcern) {
-        _revisions.insert(
-          0,
-          StrategyRevision(
-            id: _generateId(),
-            date: dateStr,
-            reason: '新发现${type == DiscoveryType.risk ? '（高风险）' : ''}：$text → 策略待审视',
-            relatedDiscoveryId: discovery.id,
-          ),
-        );
-      }
-    });
-  }
-
-  void _confirmDiscovery(String id) {
-    setState(() {
-      final index = _discoveries.indexWhere((d) => d.id == id);
-      if (index != -1) {
-        _discoveries[index] =
-            _discoveries[index].copyWith(status: DiscoveryStatus.confirmed, date: _dateString());
-      }
-    });
-  }
-
-  void _dismissDiscovery(String id) {
-    setState(() {
-      final index = _discoveries.indexWhere((d) => d.id == id);
-      if (index != -1) {
-        _discoveries[index] = _discoveries[index].copyWith(status: DiscoveryStatus.dismissed);
-      }
-    });
-  }
-
-  void _deleteDiscovery(String id) {
-    setState(() {
-      _discoveries.removeWhere((d) => d.id == id);
-      _revisions.removeWhere((r) => r.relatedDiscoveryId == id);
-    });
-  }
-
-  void _markRevisionReviewed(String id) {
-    setState(() {
-      final index = _revisions.indexWhere((r) => r.id == id);
-      if (index != -1) {
-        _revisions[index] = _revisions[index].copyWith(
-          isReviewed: true,
-          date: '${_dateString()} 已审视',
-        );
-      }
-    });
-  }
+      _data.discoveries.where((d) => d.type == DiscoveryType.risk).length;
 
   void _showAddDiscoveryDialog() {
     final textController = TextEditingController();
     DiscoveryType selectedType = DiscoveryType.concern;
     String selectedSource = '直接记录';
+    final bloc = context.read<ConsultBloc>();
 
     showDialog(
       context: context,
@@ -144,7 +73,7 @@ class _QtConsultScreenState extends State<QtConsultScreen> {
                       autofocus: true,
                       maxLines: 4,
                       decoration: InputDecoration(
-                        hintText: widget.data.isInternal
+                        hintText: _data.isInternal
                             ? '量潮云数据揭示了什么之前没注意到的问题？'
                             : '这次接触发现了什么之前不知道的？描述具体事实……',
                         hintStyle: const TextStyle(fontSize: 13, color: Color(0xFFAAAAAA)),
@@ -186,7 +115,7 @@ class _QtConsultScreenState extends State<QtConsultScreen> {
                         contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                         isDense: true,
                       ),
-                      items: widget.data.isInternal
+                      items: _data.isInternal
                           ? const [
                               DropdownMenuItem(value: '量潮云 · 项目数据', child: Text('量潮云 · 项目数据', style: TextStyle(fontSize: 13))),
                               DropdownMenuItem(value: '量潮云 · 财务数据', child: Text('量潮云 · 财务数据', style: TextStyle(fontSize: 13))),
@@ -216,7 +145,12 @@ class _QtConsultScreenState extends State<QtConsultScreen> {
                   onPressed: () {
                     final text = textController.text.trim();
                     if (text.isEmpty) return;
-                    _addDiscovery(text, selectedType, selectedSource);
+                    bloc.add(AddDiscovery(
+                      text: text,
+                      type: selectedType,
+                      source: selectedSource,
+                      date: _dateString(),
+                    ));
                     Navigator.pop(ctx);
                   },
                   style: FilledButton.styleFrom(
@@ -256,9 +190,9 @@ class _QtConsultScreenState extends State<QtConsultScreen> {
   }
 
   Widget _buildTopbar(bool isMobile) {
-    final phaseTag = widget.data.isInternal ? '内部观察' : widget.data.phase;
-    final phaseColor = widget.data.isInternal ? const Color(0xFF6A1B9A) : const Color(0xFF1A7F37);
-    final phaseBg = widget.data.isInternal ? const Color(0xFFF3E5F5) : const Color(0xFFE8F5E9);
+    final phaseTag = _data.isInternal ? '内部观察' : _data.phase;
+    final phaseColor = _data.isInternal ? const Color(0xFF6A1B9A) : const Color(0xFF1A7F37);
+    final phaseBg = _data.isInternal ? const Color(0xFFF3E5F5) : const Color(0xFFE8F5E9);
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -267,14 +201,14 @@ class _QtConsultScreenState extends State<QtConsultScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                widget.data.projectName,
+                _data.projectName,
                 style: TextStyle(
                   fontSize: isMobile ? 17 : 20,
                   fontWeight: FontWeight.w700,
                   color: const Color(0xFF222222),
                 ),
               ),
-              if (widget.data.isInternal)
+              if (_data.isInternal)
                 const Padding(
                   padding: EdgeInsets.only(top: 4),
                   child: Text(
@@ -352,8 +286,6 @@ class _QtConsultScreenState extends State<QtConsultScreen> {
     );
   }
 
-
-
   Widget _buildPanels(bool isMobile) {
     if (isMobile) {
       return Column(
@@ -374,10 +306,8 @@ class _QtConsultScreenState extends State<QtConsultScreen> {
     );
   }
 
-  // ============ 信息看板 ============
-
   String get _infoPanelSubtitle {
-    if (widget.data.isInternal) return '组织自身是什么情况';
+    if (_data.isInternal) return '组织自身是什么情况';
     return '客户是什么情况';
   }
 
@@ -397,7 +327,7 @@ class _QtConsultScreenState extends State<QtConsultScreen> {
           _buildProfileRow(),
           const SizedBox(height: 14),
           _sectionTitle('发现清单'),
-          ..._discoveries.map(_buildDiscoveryItem),
+          ..._data.discoveries.map(_buildDiscoveryItem),
           const SizedBox(height: 6),
           SizedBox(
             width: double.infinity,
@@ -413,10 +343,10 @@ class _QtConsultScreenState extends State<QtConsultScreen> {
               ),
             ),
           ),
-          if (widget.data.communications.isNotEmpty) ...[
+          if (_data.communications.isNotEmpty) ...[
             const SizedBox(height: 16),
             _sectionTitle('沟通记录'),
-            ...widget.data.communications.map(_buildCommItem),
+            ..._data.communications.map(_buildCommItem),
           ],
         ],
       ),
@@ -471,8 +401,8 @@ class _QtConsultScreenState extends State<QtConsultScreen> {
       spacing: 6,
       runSpacing: 4,
       children: [
-        _profileTag(widget.data.industry),
-        _profileTag(widget.data.scale),
+        _profileTag(_data.industry),
+        _profileTag(_data.scale),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
           decoration: BoxDecoration(
@@ -480,7 +410,7 @@ class _QtConsultScreenState extends State<QtConsultScreen> {
             borderRadius: BorderRadius.circular(14),
           ),
           child: Text(
-            widget.data.maturity,
+            _data.maturity,
             style: const TextStyle(
               fontSize: 11,
               fontWeight: FontWeight.w600,
@@ -507,6 +437,7 @@ class _QtConsultScreenState extends State<QtConsultScreen> {
   }
 
   Widget _buildDiscoveryItem(Discovery d) {
+    final bloc = context.read<ConsultBloc>();
     final dotColor = discoveryDotColor(d.type);
     final statusLabel = switch (d.status) {
       DiscoveryStatus.confirmed => '已确认',
@@ -595,11 +526,11 @@ class _QtConsultScreenState extends State<QtConsultScreen> {
                 icon: const Icon(Icons.more_horiz, size: 16, color: Color(0xFFBBBBBB)),
                 onSelected: (action) {
                   if (action == 'confirm' && d.status != DiscoveryStatus.confirmed) {
-                    _confirmDiscovery(d.id);
+                    bloc.add(ConfirmDiscovery(d.id));
                   } else if (action == 'dismiss') {
-                    _dismissDiscovery(d.id);
+                    bloc.add(DismissDiscovery(d.id));
                   } else if (action == 'delete') {
-                    _deleteDiscovery(d.id);
+                    bloc.add(DeleteDiscovery(d.id));
                   }
                 },
                 itemBuilder: (ctx) => [
@@ -670,8 +601,6 @@ class _QtConsultScreenState extends State<QtConsultScreen> {
     );
   }
 
-  // ============ 策略看板 ============
-
   Widget _buildStrategyPanel() {
     return Container(
       decoration: BoxDecoration(
@@ -686,23 +615,23 @@ class _QtConsultScreenState extends State<QtConsultScreen> {
         children: [
           _strategyPanelHeader(),
           const SizedBox(height: 14),
-          _strategySection('战略诉求', widget.data.strategyGoal, widget.data.strategyInsight, isItalic: true),
+          _strategySection('战略诉求', _data.strategyGoal, _data.strategyInsight, isItalic: true),
           const SizedBox(height: 14),
           _buildStrategySteps(),
           const SizedBox(height: 14),
           _buildRiskNote(),
           const SizedBox(height: 14),
           _strategySectionTitle('决策链路'),
-          ...widget.data.stakeholders.map(_buildStakeholderItem),
+          ..._data.stakeholders.map(_buildStakeholderItem),
           const SizedBox(height: 16),
           _sectionTitle('策略修正记录'),
-          if (_revisions.isEmpty)
+          if (_data.revisions.isEmpty)
             const Padding(
               padding: EdgeInsets.symmetric(vertical: 20),
               child: Center(child: Text('暂无策略修正记录', style: TextStyle(fontSize: 12, color: Color(0xFFCCCCCC)))),
             )
           else
-            ..._revisions.map(_buildRevisionItem),
+            ..._data.revisions.map(_buildRevisionItem),
         ],
       ),
     );
@@ -766,7 +695,7 @@ class _QtConsultScreenState extends State<QtConsultScreen> {
       children: [
         const Text('切入策略', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Color(0xFF555555))),
         const SizedBox(height: 4),
-        ...widget.data.strategySteps.map(
+        ..._data.strategySteps.map(
           (step) => Padding(
             padding: const EdgeInsets.symmetric(vertical: 3),
             child: Row(
@@ -796,7 +725,7 @@ class _QtConsultScreenState extends State<QtConsultScreen> {
           const Text('⚠ ', style: TextStyle(fontSize: 11)),
           Expanded(
             child: Text(
-              widget.data.riskNote,
+              _data.riskNote,
               style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w500, color: Color(0xFFC8690A), height: 1.5),
             ),
           ),
@@ -874,6 +803,7 @@ class _QtConsultScreenState extends State<QtConsultScreen> {
   }
 
   Widget _buildRevisionItem(StrategyRevision r) {
+    final bloc = context.read<ConsultBloc>();
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
       decoration: BoxDecoration(
@@ -915,7 +845,7 @@ class _QtConsultScreenState extends State<QtConsultScreen> {
           ),
           if (!r.isReviewed)
             GestureDetector(
-              onTap: () => _markRevisionReviewed(r.id),
+              onTap: () => bloc.add(ReviewRevision(r.id)),
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
