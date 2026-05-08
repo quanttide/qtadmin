@@ -1,43 +1,11 @@
 import 'package:flutter/material.dart';
 
 class NavItemData {
-  final String label;
-  final String icon;
-  final String pageType;
+  final String name;
 
-  const NavItemData({
-    required this.label,
-    required this.icon,
-    required this.pageType,
-  });
+  const NavItemData({required this.name});
 
-  factory NavItemData.fromJson(Map<String, dynamic> json) {
-    return NavItemData(
-      label: json['label'] as String,
-      icon: json['icon'] as String,
-      pageType: json['pageType'] as String,
-    );
-  }
-
-  IconData resolveIcon() {
-    const icons = {
-      'person_outline': Icons.person_outline,
-      'business_outlined': Icons.business_outlined,
-      'today_outlined': Icons.today_outlined,
-      'storage_outlined': Icons.storage_outlined,
-      'school_outlined': Icons.school_outlined,
-      'support_agent_outlined': Icons.support_agent_outlined,
-      'cloud_outlined': Icons.cloud_outlined,
-      'psychology_outlined': Icons.psychology_outlined,
-      'edit_outlined': Icons.edit_outlined,
-      'people_outline': Icons.people_outline,
-      'account_balance_outlined': Icons.account_balance_outlined,
-      'account_tree_outlined': Icons.account_tree_outlined,
-      'track_changes_outlined': Icons.track_changes_outlined,
-      'campaign_outlined': Icons.campaign_outlined,
-    };
-    return icons[icon] ?? Icons.circle_outlined;
-  }
+  factory NavItemData.fromJson(String name) => NavItemData(name: name);
 }
 
 class NavSectionData {
@@ -50,7 +18,7 @@ class NavSectionData {
     return NavSectionData(
       id: json['id'] as String,
       items: (json['items'] as List<dynamic>)
-          .map((i) => NavItemData.fromJson(i as Map<String, dynamic>))
+          .map((i) => NavItemData.fromJson(i as String))
           .toList(),
     );
   }

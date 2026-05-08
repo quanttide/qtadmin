@@ -4,71 +4,25 @@ import 'package:qtadmin_studio/models/metadata.dart';
 
 void main() {
   group('NavItemData', () {
-    test('fromJson parses correctly', () {
-      final json = {
-        'label': '全景图',
-        'icon': 'today_outlined',
-        'pageType': 'dashboard',
-      };
-      final item = NavItemData.fromJson(json);
+    test('fromJson parses string name correctly', () {
+      final item = NavItemData.fromJson('dashboard');
 
-      expect(item.label, '全景图');
-      expect(item.icon, 'today_outlined');
-      expect(item.pageType, 'dashboard');
-    });
-
-    test('resolveIcon returns correct IconData for known icon', () {
-      final item = NavItemData(label: '测试', icon: 'storage_outlined', pageType: 'detail');
-      expect(item.resolveIcon(), Icons.storage_outlined);
-    });
-
-    test('resolveIcon returns circle_outlined for unknown icon', () {
-      final item = NavItemData(label: '测试', icon: 'nonexistent_icon', pageType: 'detail');
-      expect(item.resolveIcon(), Icons.circle_outlined);
-    });
-
-    test('resolveIcon handles all known icon names', () {
-      final testCases = {
-        'person_outline': Icons.person_outline,
-        'business_outlined': Icons.business_outlined,
-        'today_outlined': Icons.today_outlined,
-        'storage_outlined': Icons.storage_outlined,
-        'school_outlined': Icons.school_outlined,
-        'support_agent_outlined': Icons.support_agent_outlined,
-        'cloud_outlined': Icons.cloud_outlined,
-        'psychology_outlined': Icons.psychology_outlined,
-        'edit_outlined': Icons.edit_outlined,
-        'people_outline': Icons.people_outline,
-        'account_balance_outlined': Icons.account_balance_outlined,
-        'account_tree_outlined': Icons.account_tree_outlined,
-        'track_changes_outlined': Icons.track_changes_outlined,
-        'campaign_outlined': Icons.campaign_outlined,
-      };
-
-      for (final entry in testCases.entries) {
-        final item = NavItemData(label: '', icon: entry.key, pageType: '');
-        expect(item.resolveIcon(), entry.value,
-            reason: 'Icon "${entry.key}" should resolve to ${entry.value}');
-      }
+      expect(item.name, 'dashboard');
     });
   });
 
   group('NavSectionData', () {
-    test('fromJson parses id and items correctly', () {
+    test('fromJson parses id and string items correctly', () {
       final json = {
         'id': 'dashboard',
-        'items': [
-          {'label': '全景图', 'icon': 'today_outlined', 'pageType': 'dashboard'},
-          {'label': '思考', 'icon': 'psychology_outlined', 'pageType': 'thinking'},
-        ],
+        'items': ['dashboard', 'thinking'],
       };
       final section = NavSectionData.fromJson(json);
 
       expect(section.id, 'dashboard');
       expect(section.items.length, 2);
-      expect(section.items[0].label, '全景图');
-      expect(section.items[1].label, '思考');
-      expect(section.items[1].pageType, 'thinking');
+      expect(section.items[0].name, 'dashboard');
+      expect(section.items[1].name, 'thinking');
     });
 
     test('fromJson handles empty items', () {
@@ -110,16 +64,11 @@ void main() {
         'sections': [
           {
             'id': 'dashboard',
-            'items': [
-              {'label': '全景图', 'icon': 'today_outlined', 'pageType': 'dashboard'},
-            ],
+            'items': ['dashboard'],
           },
           {
             'id': 'business',
-            'items': [
-              {'label': '思考', 'icon': 'psychology_outlined', 'pageType': 'thinking'},
-              {'label': '写作', 'icon': 'edit_outlined', 'pageType': 'writing'},
-            ],
+            'items': ['thinking', 'writing'],
           },
         ],
       };
@@ -128,8 +77,10 @@ void main() {
       expect(metadata.sections.length, 2);
       expect(metadata.sections[0].id, 'dashboard');
       expect(metadata.sections[0].items.length, 1);
+      expect(metadata.sections[0].items[0].name, 'dashboard');
       expect(metadata.sections[1].id, 'business');
       expect(metadata.sections[1].items.length, 2);
+      expect(metadata.sections[1].items[1].name, 'writing');
     });
 
     test('fromJson parses company metadata correctly', () {
@@ -137,28 +88,15 @@ void main() {
         'sections': [
           {
             'id': 'dashboard',
-            'items': [
-              {'label': '全景图', 'icon': 'today_outlined', 'pageType': 'dashboard'},
-            ],
+            'items': ['dashboard'],
           },
           {
             'id': 'business',
-            'items': [
-              {'label': '量潮数据', 'icon': 'storage_outlined', 'pageType': 'business_detail'},
-              {'label': '量潮课堂', 'icon': 'school_outlined', 'pageType': 'business_detail'},
-              {'label': '量潮咨询', 'icon': 'support_agent_outlined', 'pageType': 'consulting'},
-              {'label': '量潮云', 'icon': 'cloud_outlined', 'pageType': 'business_detail'},
-            ],
+            'items': ['data', 'classroom', 'consulting', 'cloud'],
           },
           {
             'id': 'function',
-            'items': [
-              {'label': '人力资源', 'icon': 'people_outline', 'pageType': 'function_detail'},
-              {'label': '财务管理', 'icon': 'account_balance_outlined', 'pageType': 'function_detail'},
-              {'label': '组织管理', 'icon': 'account_tree_outlined', 'pageType': 'function_detail'},
-              {'label': '战略管理', 'icon': 'track_changes_outlined', 'pageType': 'function_detail'},
-              {'label': '新媒体', 'icon': 'campaign_outlined', 'pageType': 'function_detail'},
-            ],
+            'items': ['hr', 'finance', 'org', 'strategy', 'media'],
           },
         ],
       };
@@ -172,15 +110,15 @@ void main() {
     test('allItems flattens all items across sections', () {
       final json = {
         'sections': [
-          {'id': 'a', 'items': [{'label': 'A', 'icon': 'today_outlined', 'pageType': 'dashboard'}]},
-          {'id': 'b', 'items': [{'label': 'B', 'icon': 'psychology_outlined', 'pageType': 'thinking'}, {'label': 'C', 'icon': 'edit_outlined', 'pageType': 'writing'}]},
-          {'id': 'c', 'items': [{'label': 'D', 'icon': 'people_outline', 'pageType': 'function_detail'}]},
+          {'id': 'a', 'items': ['A']},
+          {'id': 'b', 'items': ['B', 'C']},
+          {'id': 'c', 'items': ['D']},
         ],
       };
       final metadata = NavMetadata.fromJson(json);
 
       expect(metadata.allItems.length, 4);
-      expect(metadata.allItems.map((i) => i.label), ['A', 'B', 'C', 'D']);
+      expect(metadata.allItems.map((i) => i.name), ['A', 'B', 'C', 'D']);
     });
   });
 
