@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:qtadmin_studio/models/qtconsult.dart';
-import 'package:qtadmin_studio/constants/app_constants.dart';
+import 'package:qtadmin_studio/constants.dart';
 import 'package:qtadmin_studio/views/stat_item.dart';
 
 class QtConsultScreen extends StatefulWidget {
