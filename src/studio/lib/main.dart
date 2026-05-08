@@ -6,8 +6,7 @@ import 'package:qtadmin_studio/models/qtclass.dart';
 import 'package:qtadmin_studio/models/thinking.dart';
 import 'package:qtadmin_studio/models/org.dart';
 import 'package:qtadmin_studio/router.dart';
-import 'package:qtadmin_studio/sources/data_loader.dart';
-import 'package:qtadmin_studio/sources/data_result.dart';
+import 'package:qtadmin_studio/sources/base.dart';
 import 'package:qtadmin_studio/sources/file_source.dart';
 import 'package:qtadmin_studio/views/navigation.dart';
 
