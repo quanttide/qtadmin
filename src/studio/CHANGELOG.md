@@ -6,9 +6,28 @@
 - 重命名 租户(Tenant) → Workspace工作空间(Workspace)：中文文档、Dart 代码标识符、JSON fixture 键全量替换
   - `TenantType` → `WorkspaceType`，`TenantInfo` → `WorkspaceInfo`，`TenantSwitcher` → `WorkspaceSwitcher`
   - 所有相关字段/参数/变量同步更新
+- 路由重构：metadata.json 的 items 改为纯 name 列表，移除 label/icon/pageType
+  - 新增 `RouteConfig` 集中管理所有路由定义
+  - `AppRouter.buildScreen()` 通过 `RouteConfig` 分发
+- 数据加载改为缓存注入：移除 `rootBundle` 和 pubspec.yaml assets
+  - 所有 Loader 添加 `inject()` 方法
+  - fixture JSON 移至 `data/` 本地目录
+- 组织管理代表改为多对多：`institutionId` → `institutionIds: List<String>`
+
+### Added
+- 组织管理页面（`OrgScreen`）：机构看板、代表履职（可展开详情）、职级流动
+- 组织管理数据模型（`OrgDashboardData` / `OrgInstitutionData` / `OrgRepresentativeData` / `OrgRankData` / `OrgPromotionData`）
+- `OrgLoader` fixture 加载 + 缓存注入
+- 路由独立模块 `lib/router.dart`
 
 ### Fixed
 - 修复数据加载完成前侧边栏空 `workspaces` 列表导致的 `RangeError`（预存 bug）
+- 切换工作空间时 `_router` 重新赋值报错（`late final` → `late`）
+
+### Tests
+- 新增 `org_test.dart`（13 个模型测试）
+- 新增 `org_screen_test.dart`（11 个 widget 测试）
+- 更新 `metadata_test.dart` 适应新的纯 name 格式
 
 ## v0.0.5
 
