@@ -27,6 +27,13 @@ pdm run uvicorn app:app --reload
 pytest
 ```
 
+## 版本约定
+
+- `v0.0.x` — 探索验证阶段，技术债清理、架构验证
+- `v0.1.0` 起 — 进入上线推进阶段，标记探索期结束
+
+主仓库与 studio 子标签版本号同步，升则同升。
+
 ## Documentation
 
 - `docs/dev/` — 开发文档
