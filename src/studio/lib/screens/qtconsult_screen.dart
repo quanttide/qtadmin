@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:qtadmin_studio/models/qtconsult.dart';
+import 'package:qtadmin_studio/views/stat_item.dart';
 
 class QtConsultScreen extends StatefulWidget {
   final QtConsultData data;
@@ -312,11 +313,11 @@ class _QtConsultScreenState extends State<QtConsultScreen> {
       ),
       child: Row(
         children: [
-          _statItem(const Color(0xFF1A7F37), '已确认发现', _confirmedCount.toString()),
+          StatItem(dotColor: Color(0xFF1A7F37), label: '已确认发现', value: _confirmedCount.toString()),
           const SizedBox(width: 16),
-          _statItem(const Color(0xFFC8690A), '高风险', _highRiskCount.toString()),
+          StatItem(dotColor: Color(0xFFC8690A), label: '高风险', value: _highRiskCount.toString()),
           const SizedBox(width: 16),
-          _statItem(const Color(0xFFB71C1C), '阻碍项', _blockerCount.toString()),
+          StatItem(dotColor: Color(0xFFB71C1C), label: '阻碍项', value: _blockerCount.toString()),
           if (_pendingReviewCount > 0) ...[
             const Spacer(),
             GestureDetector(
@@ -350,25 +351,7 @@ class _QtConsultScreenState extends State<QtConsultScreen> {
     );
   }
 
-  Widget _statItem(Color dotColor, String label, String count) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Container(
-          width: 7,
-          height: 7,
-          decoration: BoxDecoration(color: dotColor, shape: BoxShape.circle),
-        ),
-        const SizedBox(width: 5),
-        Text(label, style: const TextStyle(fontSize: 11, color: Color(0xFF888888))),
-        const SizedBox(width: 4),
-        Text(
-          count,
-          style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Color(0xFF222222)),
-        ),
-      ],
-    );
-  }
+
 
   Widget _buildPanels(bool isMobile) {
     if (isMobile) {

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:qtadmin_studio/models/org.dart';
+import 'package:qtadmin_studio/views/stat_item.dart';
 
 class OrgScreen extends StatefulWidget {
   final OrgDashboardData data;
@@ -85,42 +86,15 @@ class _OrgScreenState extends State<OrgScreen> {
       ),
       child: Row(
         children: [
-          _statItem(const Color(0xFF5B8DEF), '机构', widget.data.institutions.length.toString()),
+          StatItem(dotColor: Color(0xFF5B8DEF), label: '机构', value: widget.data.institutions.length.toString()),
           const SizedBox(width: 16),
-          _statItem(const Color(0xFF1A7F37), '代表', widget.data.representatives.length.toString()),
+          StatItem(dotColor: Color(0xFF1A7F37), label: '代表', value: widget.data.representatives.length.toString()),
           const SizedBox(width: 16),
-          _statItem(const Color(0xFF7C4DFF), '职级', widget.data.ranks.length.toString()),
+          StatItem(dotColor: Color(0xFF7C4DFF), label: '职级', value: widget.data.ranks.length.toString()),
           const SizedBox(width: 16),
-          _statItem(const Color(0xFFC8690A), '待晋升', widget.data.promotions.length.toString()),
+          StatItem(dotColor: Color(0xFFC8690A), label: '待晋升', value: widget.data.promotions.length.toString()),
         ],
       ),
-    );
-  }
-
-  Widget _statItem(Color dotColor, String label, String count) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Container(
-          width: 7,
-          height: 7,
-          decoration: BoxDecoration(color: dotColor, shape: BoxShape.circle),
-        ),
-        const SizedBox(width: 5),
-        Text(
-          label,
-          style: const TextStyle(fontSize: 11, color: Color(0xFF888888)),
-        ),
-        const SizedBox(width: 4),
-        Text(
-          count,
-          style: const TextStyle(
-            fontSize: 11,
-            fontWeight: FontWeight.w700,
-            color: Color(0xFF222222),
-          ),
-        ),
-      ],
     );
   }
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'app_colors.dart';
 
 class ThinkingEmotion {
   final String label;
@@ -15,7 +16,7 @@ class ThinkingEmotion {
     return ThinkingEmotion(
       label: json['label'] as String,
       value: json['value'] as String,
-      colorValue: _parseHexColor(json['color'] as String),
+      colorValue: parseHexColor(json['color'] as String),
     );
   }
 
@@ -43,7 +44,7 @@ class ThinkingStage {
       title: json['title'] as String,
       subtitle: json['subtitle'] as String,
       points: (json['points'] as List<dynamic>).cast<String>(),
-      colorValue: _parseHexColor(json['color'] as String),
+      colorValue: parseHexColor(json['color'] as String),
     );
   }
 
@@ -139,22 +140,19 @@ class ThinkingData {
       emotionNote: json['emotionNote'] as String,
       awarenessSectionLabel: awareness['label'] as String,
       awarenessSectionIcon: awareness['icon'] as String,
-      awarenessSectionColor: _parseHexColor(awareness['color'] as String),
+      awarenessSectionColor: parseHexColor(awareness['color'] as String),
       insights: (json['insights'] as List<dynamic>)
           .map((i) => ThinkingInsight.fromJson(i as Map<String, dynamic>))
           .toList(),
       insightSectionLabel: insightSection['label'] as String,
       insightSectionIcon: insightSection['icon'] as String,
-      insightSectionColor: _parseHexColor(insightSection['color'] as String),
+      insightSectionColor: parseHexColor(insightSection['color'] as String),
       closing: ThinkingClosing.fromJson(json['closing'] as Map<String, dynamic>),
     );
   }
 }
 
-int _parseHexColor(String hex) {
-  hex = hex.replaceAll('#', '');
-  return int.parse('FF$hex', radix: 16);
-}
+
 
 IconData resolveThinkingIcon(String name) {
   const icons = {

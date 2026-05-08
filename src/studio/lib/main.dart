@@ -112,7 +112,6 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return MaterialApp(
       title: '量潮管理后台',
       debugShowCheckedModeBanner: false,
