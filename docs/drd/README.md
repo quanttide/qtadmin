@@ -7,4 +7,7 @@
 ## 文件
 
 - `metadata.json` — 导航元数据 schema
+- `dashboard.json` — 仪表盘数据模型 schema
+- `qtclass.json` — 量潮课堂数据模型 schema
+- `thinking.json` — 思考页面数据模型 schema
 - `qtconsult.json` — 咨询模块数据模型 schema
