@@ -53,7 +53,7 @@ Program:
 |---|---|---|
 | **Course** | 课程定义，稳定的教学单元 | "Python 数据分析" |
 | **Class** | 课程的一次具体开课 | "杭电 2026 春 Python 实训班" |
-| **Session** | 单次授课 | "3月15日 14:00-16:00 函数式编程" |
+| **Lesson** | 单次授课 | "3月15日 14:00-16:00 函数式编程" |
 | **Teacher** | 授课人 | "王老师" |
 | **Syllabus** | 教学大纲，知识点结构 | 8 个章节、3 个实践项目 |
 
@@ -65,7 +65,7 @@ Program:
 |---|---|---|
 | **Student** | 学员个人信息与学习轨迹 | 可跨多个 Class 跟踪 |
 | **Organization** | 外部合作机构（院校/企业） | "杭州电子科技大学" |
-| **CustomerAccount** | 内部客户视图，关联合同 | B2B / B2C / 高校 / 内部 |
+| **Customer** | 内部客户视图，关联合同 | B2B / B2C / 高校 / 内部 |
 | **Contract** | 商业合同，约定金额与交付范围 | "杭电 Python 实训合同 ¥120,000" |
 
 ## 交付模式：两个领域的连接点
@@ -86,7 +86,7 @@ Program:
 ```
 DeliveryMode:
   id, name                  // 如 "校企合作"
-  code                      // schoolEnterprise / trainingBase / internalTeaching / oneOnOne
+  category                      // schoolEnterprise / trainingBase / internalTeaching / oneOnOne
   constraints:              // 该模式的约束规则
     - requiresPartner       // 是否需要合作方
     - maxStudents           // 最大学员数
@@ -148,13 +148,3 @@ Organization ──▶ Contract ──▶ Class ──▶ Course
 - **排课与资源调度**：教室、设备、时间冲突检测——独立的排课模块
 - **支付与发票**：资金流不属于课堂的领域边界
 - **学员端**：学员查看课程表、成绩的独立入口——需要时作为独立 bounded context 引入
-
-## 演进路线
-
-| 阶段 | 课程域 | 组织域 | 交付物 |
-|---|---|---|---|
-| **v0.5** | 卡片展示 | — | QtClassScreen（已实现） |
-| **v0.6** | Course + Class + Session | — | 课程管理 CRUD |
-| **v0.7** | — | Student + Organization | 学员与机构管理 |
-| **v0.8** | — | Contract + Enrollment | 内外关联打通 |
-| **v1.0** | Teacher + Syllabus | CustomerAccount | 教学管理与客户分析 |
