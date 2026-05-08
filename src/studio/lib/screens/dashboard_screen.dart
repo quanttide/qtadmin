@@ -5,9 +5,9 @@ import 'package:qtadmin_studio/views/function_section_widget.dart';
 
 class DashboardScreen extends StatelessWidget {
   final DashboardData data;
-  final String tenantName;
+  final String workspaceName;
 
-  const DashboardScreen({super.key, required this.data, this.tenantName = '量潮科技'});
+  const DashboardScreen({super.key, required this.data, this.workspaceName = '量潮科技'});
 
   String _dateString() {
     final now = DateTime.now();
@@ -54,7 +54,7 @@ class DashboardScreen extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          tenantName,
+          workspaceName,
           style: TextStyle(
             fontSize: isMobile ? 18 : 20,
             fontWeight: FontWeight.w600,

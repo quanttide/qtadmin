@@ -3,30 +3,30 @@ import 'package:flutter/services.dart';
 import 'package:qtadmin_studio/models/qtconsult.dart';
 
 class QtConsultLoader {
-  static final Map<TenantType, QtConsultData?> _cache = {};
+  static final Map<WorkspaceType, QtConsultData?> _cache = {};
 
-  static Future<QtConsultData> load({TenantType tenant = TenantType.customer}) async {
-    if (_cache[tenant] != null) return _cache[tenant]!;
+  static Future<QtConsultData> load({WorkspaceType workspace = WorkspaceType.customer}) async {
+    if (_cache[workspace] != null) return _cache[workspace]!;
     final jsonStr = await rootBundle.loadString(
-      'assets/fixtures/${_tenantDir(tenant)}/qtconsult.json',
+      'assets/fixtures/${_workspaceDir(workspace)}/qtconsult.json',
     );
     final data = QtConsultData.fromJson(json.decode(jsonStr) as Map<String, dynamic>);
-    _cache[tenant] = data;
+    _cache[workspace] = data;
     return data;
   }
 
-  static String _tenantDir(TenantType tenant) {
-    switch (tenant) {
-      case TenantType.internal:
+  static String _workspaceDir(WorkspaceType workspace) {
+    switch (workspace) {
+      case WorkspaceType.internal:
         return 'founder';
-      case TenantType.customer:
+      case WorkspaceType.customer:
         return 'company';
     }
   }
 
-  static void clearCache({TenantType? tenant}) {
-    if (tenant != null) {
-      _cache.remove(tenant);
+  static void clearCache({WorkspaceType? workspace}) {
+    if (workspace != null) {
+      _cache.remove(workspace);
     } else {
       _cache.clear();
     }

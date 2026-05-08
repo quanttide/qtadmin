@@ -18,11 +18,11 @@ class FixtureConfig {
 
   static String metadataPath(String dir) => '$_basePath/$dir/metadata.json';
 
-  static String dashboardPath(TenantType tenant) {
-    switch (tenant) {
-      case TenantType.internal:
+  static String dashboardPath(WorkspaceType workspace) {
+    switch (workspace) {
+      case WorkspaceType.internal:
         return '$_basePath/founder/dashboard.json';
-      case TenantType.customer:
+      case WorkspaceType.customer:
         return '$_basePath/company/dashboard.json';
     }
   }
@@ -31,11 +31,11 @@ class FixtureConfig {
 
   static String get thinkingPath => '$_basePath/founder/thinking.json';
 
-  static String qtconsultPath(TenantType tenant) {
-    switch (tenant) {
-      case TenantType.customer:
+  static String qtconsultPath(WorkspaceType workspace) {
+    switch (workspace) {
+      case WorkspaceType.customer:
         return '$_basePath/company/qtconsult.json';
-      case TenantType.internal:
+      case WorkspaceType.internal:
         return '$_basePath/founder/qtconsult.json';
     }
   }

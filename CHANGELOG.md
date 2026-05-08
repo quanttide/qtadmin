@@ -35,7 +35,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0
 
 ### Added
 
-- `assets/fixtures/metadata.json`：根注册表（租户清单 + 段定义）
+- `assets/fixtures/metadata.json`：根注册表（Workspace工作空间清单 + 段定义）
 - `NavSidebar` 独立组件，封装侧边栏全部布局逻辑
 - `docs/drd/` 数据规范目录：metadata.json + qtconsult.json schema
 - `docs/dev/README.md`：主仓库开发文档边界说明
@@ -43,15 +43,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0
 ### Changed
 
 - `src/studio/` 导航重构：
-  - 根 metadata + 每租户 metadata 两层分离，分隔线规则从 Dart 代码移到 JSON
-  - `_NavItem`/`_NavIcon`/`_TenantSwitcher` 从 `main.dart` 私有类提取为公开组件
+  - 根 metadata + 每Workspace工作空间 metadata 两层分离，分隔线规则从 Dart 代码移到 JSON
+  - `_NavItem`/`_NavIcon`/`_WorkspaceSwitcher` 从 `main.dart` 私有类提取为公开组件
   - `lib/widgets/` → `lib/views/`
-  - `_buildSidebar` 替换为 `NavSidebar`，新增租户无需改 Dart 代码
+  - `_buildSidebar` 替换为 `NavSidebar`，新增Workspace工作空间无需改 Dart 代码
 - `src/studio/CHANGELOG.md`：独立维护 Studio 版本日志
 - 文档结构重组：
   - `docs/dev/studio.md` → `src/studio/doc/index.md`（Studio 实现文档归入子模块）
   - `docs/add/qtconsult.md` → `src/studio/doc/screens/qtconsult.md`（降级为屏幕实现）
-  - `docs/add/multi-tenant.md` 删除
+  - `docs/add/multi-workspace.md` 删除
   - `docs/drd/` 新增数据规范，与实现文档分离
   - `docs/myst.yml` 同步更新目录结构
 
@@ -73,17 +73,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0
 
 ### Changed
 
-- `src/studio/` 导航重构：`_tenants` 改为实例字段，支持动态页面加载
+- `src/studio/` 导航重构：`_workspaces` 改为实例字段，支持动态页面加载
 - `src/studio/pubspec.yaml` 注册 `qtconsult.json` asset
 
 ## [0.0.3] - 2026-05-06
 
 ### Added
 
-- `src/studio/`: 多租户架构
+- `src/studio/`: 多Workspace工作空间架构
   - 量潮创始人：全景图 + 思考（认知演进报告）+ 写作（占位）
   - 量潮科技：全景图 + 量潮数据/课堂/咨询/云
-  - 租户切换器（PopupMenuButton），支持一键切换
+  - Workspace工作空间切换器（PopupMenuButton），支持一键切换
   - 思考页面（ThinkingScreen）：认知建构与思维演进分析报告
 - `examples/default/`：日志文本分析工具及报告
 - `scripts/record-studio-linux.sh`：自动录屏脚本（ffmpeg + xdotool）

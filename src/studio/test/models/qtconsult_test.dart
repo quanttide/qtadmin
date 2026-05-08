@@ -3,10 +3,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:qtadmin_studio/models/qtconsult.dart';
 
 void main() {
-  group('TenantType', () {
+  group('WorkspaceType', () {
     test('byName resolves correctly', () {
-      expect(TenantType.values.byName('customer'), TenantType.customer);
-      expect(TenantType.values.byName('internal'), TenantType.internal);
+      expect(WorkspaceType.values.byName('customer'), WorkspaceType.customer);
+      expect(WorkspaceType.values.byName('internal'), WorkspaceType.internal);
     });
   });
 
@@ -175,7 +175,7 @@ void main() {
   group('QtConsultData', () {
     test('fromJson parses full consult data', () {
       final json = {
-        'tenant': 'customer',
+        'workspace': 'customer',
         'projectName': '某制造企业数字化项目',
         'phase': '方案期',
         'industry': '制造业',
@@ -225,7 +225,7 @@ void main() {
       };
       final data = QtConsultData.fromJson(json);
 
-      expect(data.tenant, TenantType.customer);
+      expect(data.workspace, WorkspaceType.customer);
       expect(data.projectName, '某制造企业数字化项目');
       expect(data.discoveries.length, 1);
       expect(data.communications.length, 1);
@@ -234,7 +234,7 @@ void main() {
       expect(data.isInternal, false);
     });
 
-    test('fromJson defaults tenant to customer when null', () {
+    test('fromJson defaults workspace to customer when null', () {
       final json = {
         'projectName': '测试',
         'phase': '方案期',
@@ -251,7 +251,7 @@ void main() {
       };
       final data = QtConsultData.fromJson(json);
 
-      expect(data.tenant, TenantType.customer);
+      expect(data.workspace, WorkspaceType.customer);
     });
 
     test('fromJson defaults communications to empty list when null', () {
@@ -274,9 +274,9 @@ void main() {
       expect(data.communications, isEmpty);
     });
 
-    test('isInternal returns true for internal tenant', () {
+    test('isInternal returns true for internal workspace', () {
       final data = QtConsultData(
-        tenant: TenantType.internal,
+        workspace: WorkspaceType.internal,
         projectName: '',
         phase: '',
         industry: '',

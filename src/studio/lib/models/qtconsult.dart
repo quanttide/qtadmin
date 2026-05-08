@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-enum TenantType { customer, internal }
+enum WorkspaceType { customer, internal }
 
 enum DiscoveryType { risk, concern, opportunity, neutral }
 
@@ -156,7 +156,7 @@ class StrategyRevisionData {
 }
 
 class QtConsultData {
-  final TenantType tenant;
+  final WorkspaceType workspace;
   final String projectName;
   final String phase;
   final String industry;
@@ -172,7 +172,7 @@ class QtConsultData {
   final List<StakeholderData> stakeholders;
 
   const QtConsultData({
-    this.tenant = TenantType.customer,
+    this.workspace = WorkspaceType.customer,
     required this.projectName,
     required this.phase,
     required this.industry,
@@ -188,13 +188,13 @@ class QtConsultData {
     required this.stakeholders,
   });
 
-  bool get isInternal => tenant == TenantType.internal;
+  bool get isInternal => workspace == WorkspaceType.internal;
 
   factory QtConsultData.fromJson(Map<String, dynamic> json) {
     return QtConsultData(
-      tenant: json['tenant'] != null
-          ? TenantType.values.byName(json['tenant'] as String)
-          : TenantType.customer,
+      workspace: json['workspace'] != null
+          ? WorkspaceType.values.byName(json['workspace'] as String)
+          : WorkspaceType.customer,
       projectName: json['projectName'] as String,
       phase: json['phase'] as String,
       industry: json['industry'] as String,

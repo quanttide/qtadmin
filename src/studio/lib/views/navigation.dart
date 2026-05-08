@@ -66,25 +66,25 @@ class NavIcon extends StatelessWidget {
   }
 }
 
-class TenantSwitcher extends StatelessWidget {
-  final List<TenantInfo> tenants;
+class WorkspaceSwitcher extends StatelessWidget {
+  final List<WorkspaceInfo> workspaces;
   final int selectedIndex;
   final ValueChanged<int> onChanged;
 
-  const TenantSwitcher({
+  const WorkspaceSwitcher({
     super.key,
-    required this.tenants,
+    required this.workspaces,
     required this.selectedIndex,
     required this.onChanged,
   });
 
   @override
   Widget build(BuildContext context) {
-    final tenant = tenants[selectedIndex];
+    final workspace = workspaces[selectedIndex];
     return PopupMenuButton<int>(
       onSelected: onChanged,
       offset: const Offset(0, 48),
-      itemBuilder: (context) => tenants.asMap().entries.map((entry) {
+      itemBuilder: (context) => workspaces.asMap().entries.map((entry) {
         final i = entry.key;
         final t = entry.value;
         return PopupMenuItem<int>(
@@ -110,10 +110,10 @@ class TenantSwitcher extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(tenant.resolveIcon(), size: 22, color: const Color(0xFF1A1A1A)),
+            Icon(workspace.resolveIcon(), size: 22, color: const Color(0xFF1A1A1A)),
             const SizedBox(height: 2),
             Text(
-              tenant.name,
+              workspace.name,
               style: const TextStyle(
                 fontSize: 9,
                 color: Color(0xFF1A1A1A),
@@ -137,18 +137,18 @@ Widget buildNavDivider() {
 }
 
 class NavSidebar extends StatelessWidget {
-  final List<TenantInfo> tenants;
-  final int selectedTenant;
-  final ValueChanged<int> onTenantChanged;
+  final List<WorkspaceInfo> workspaces;
+  final int selectedWorkspace;
+  final ValueChanged<int> onWorkspaceChanged;
   final List<NavSection> sections;
   final int selectedIndex;
   final ValueChanged<int> onItemTap;
 
   const NavSidebar({
     super.key,
-    required this.tenants,
-    required this.selectedTenant,
-    required this.onTenantChanged,
+    required this.workspaces,
+    required this.selectedWorkspace,
+    required this.onWorkspaceChanged,
     required this.sections,
     required this.selectedIndex,
     required this.onItemTap,
@@ -158,16 +158,20 @@ class NavSidebar extends StatelessWidget {
   Widget build(BuildContext context) {
     int flatIndex = 0;
 
+    if (workspaces.isEmpty) {
+      return const SizedBox(width: 72);
+    }
+
     return Container(
       width: 72,
       color: Theme.of(context).colorScheme.surface,
       child: Column(
         children: [
           const SizedBox(height: 4),
-          TenantSwitcher(
-            tenants: tenants,
-            selectedIndex: selectedTenant,
-            onChanged: onTenantChanged,
+          WorkspaceSwitcher(
+            workspaces: workspaces,
+            selectedIndex: selectedWorkspace,
+            onChanged: onWorkspaceChanged,
           ),
           ...sections.asMap().entries.expand((entry) {
             final section = entry.value;

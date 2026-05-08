@@ -2,7 +2,7 @@
 
 ## Fixture 路径
 
-`assets/fixtures/{tenant}/dashboard.json`
+`assets/fixtures/{workspace}/dashboard.json`
 
 ## DashboardData
 

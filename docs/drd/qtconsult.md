@@ -2,13 +2,13 @@
 
 ## Fixture 路径
 
-`assets/fixtures/{tenant}/qtconsult.json`
+`assets/fixtures/{workspace}/qtconsult.json`
 
 ## QtConsultData
 
 | 字段 | 类型 | 必填 | 说明 |
 |---|---|---|---|
-| `tenant` | string | 否 | `"customer"` / `"internal"`，默认 `"customer"` |
+| `workspace` | string | 否 | `"customer"` / `"internal"`，默认 `"customer"` |
 | `projectName` | string | 是 | 项目名称 |
 | `phase` | string | 是 | 当前阶段 |
 | `industry` | string | 是 | 行业 |
@@ -65,7 +65,7 @@
 | `concern` | string | 是 | 核心关切 |
 | `detail` | string | 是 | 补充说明 |
 
-## TenantType
+## WorkspaceType
 
 `"customer"` — 对外交付，数据来源于客户沟通
 `"internal"` — 自我诊断，数据来源于量潮云

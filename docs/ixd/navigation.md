@@ -2,13 +2,13 @@
 
 ## 布局
 
-导航项由各租户的 PanoramaData 驱动，不同租户展示不同内容：
+导航项由各Workspace工作空间的 PanoramaData 驱动，不同Workspace工作空间展示不同内容：
 
 ### 公司（量潮科技）
 
 ```
 ┌────────────┐
-│  租户切换器  │
+│  Workspace工作空间切换器  │
 ├────────────┤
 │  全景图      │
 ├────────────┤
@@ -31,7 +31,7 @@
 
 ```
 ┌────────────┐
-│  租户切换器  │
+│  Workspace工作空间切换器  │
 ├────────────┤
 │  全景图      │
 ├────────────┤
@@ -45,7 +45,7 @@
 ## 设计规则
 
 - **数据驱动**：导航项由 PanoramaData 的 `businessUnits` 和 `functionCards` 动态生成
-- **所有租户共享同一套代码**，差异仅来自 fixture 数据
+- **所有Workspace工作空间共享同一套代码**，差异仅来自 fixture 数据
 - **仅两个区域**：业务线（businessUnits）和职能线（functionCards），不因特殊模块新增区域
 - **`screenType` 决定页面类型**：
   - `detail` → `BusinessDetailScreen`
