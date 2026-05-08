@@ -57,20 +57,4 @@ flutter build web
 
 输出在 `build/web/`。
 
-## 项目结构
 
-```
-lib/
-├── blocs/        # BLoC 状态管理（AppBloc + ConsultBloc）
-├── models/       # freezed 数据模型
-├── sources/      # 数据源抽象
-│   ├── base.dart           # DataResult + DataSource + DataLoader
-│   ├── file_source.dart    # 文件实现
-│   └── bundle_source.dart  # Web 资源实现
-├── screens/      # 页面（7 个）
-├── views/        # 组件（8 个）
-├── theme.dart    # 颜色工具
-├── constants.dart# UI 映射常量
-├── main.dart
-└── router.dart   # RouteConfig + AppRouter
-```
