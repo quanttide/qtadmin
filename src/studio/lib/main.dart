@@ -5,6 +5,7 @@ import 'package:qtadmin_studio/models/qtconsult.dart';
 import 'package:qtadmin_studio/models/qtclass.dart';
 import 'package:qtadmin_studio/models/thinking.dart';
 import 'package:qtadmin_studio/models/org.dart';
+import 'package:qtadmin_studio/route_config.dart';
 import 'package:qtadmin_studio/router.dart';
 import 'package:qtadmin_studio/services/metadata_loader.dart';
 import 'package:qtadmin_studio/services/dashboard_loader.dart';
@@ -43,15 +44,13 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
   DashboardData? get _data =>
       _selectedWorkspace == 0 ? _founderDashboard : _companyDashboard;
 
-  late final AppRouter _router;
+  late AppRouter _router;
 
   void _buildSections() {
     final dir = _workspaces[_selectedWorkspace].dir;
     final nav = _navData[dir]!;
     _router = AppRouter(
       data: () => _data!,
-      founderDashboard: _founderDashboard,
-      companyDashboard: _companyDashboard,
       thinkingData: _thinkingData,
       consultData: _consultData,
       classData: _classData,
@@ -63,10 +62,11 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
       return NavSection(
         dividerBefore: _sectionDefs[section.id]?.dividerBefore ?? true,
         items: section.items.map((item) {
+          final route = RouteConfig.find(item.name);
           return NavItem(
-            icon: item.resolveIcon(),
-            label: item.label,
-            builder: () => _router.buildScreen(item),
+            icon: route.icon,
+            label: route.label,
+            builder: () => _router.buildScreen(route),
           );
         }).toList(),
       );

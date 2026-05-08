@@ -5,6 +5,7 @@ import 'package:qtadmin_studio/models/qtconsult.dart';
 import 'package:qtadmin_studio/models/qtclass.dart';
 import 'package:qtadmin_studio/models/thinking.dart';
 import 'package:qtadmin_studio/models/org.dart';
+import 'package:qtadmin_studio/route_config.dart';
 import 'package:qtadmin_studio/screens/dashboard_screen.dart';
 import 'package:qtadmin_studio/screens/thinking_screen.dart';
 import 'package:qtadmin_studio/screens/qtconsult_screen.dart';
@@ -15,8 +16,6 @@ import 'package:qtadmin_studio/screens/function_detail_screen.dart';
 
 class AppRouter {
   final DashboardData Function() data;
-  final DashboardData? founderDashboard;
-  final DashboardData? companyDashboard;
   final ThinkingData? thinkingData;
   final QtConsultData? consultData;
   final QtClassData? classData;
@@ -26,8 +25,6 @@ class AppRouter {
 
   const AppRouter({
     required this.data,
-    this.founderDashboard,
-    this.companyDashboard,
     this.thinkingData,
     this.consultData,
     this.classData,
@@ -38,8 +35,8 @@ class AppRouter {
 
   DashboardData? get _dashboard => data();
 
-  Widget buildScreen(NavItemData item) {
-    switch (item.pageType) {
+  Widget buildScreen(RouteConfig route) {
+    switch (route.screenType) {
       case 'dashboard':
         return DashboardScreen(
           data: _dashboard!,
@@ -57,15 +54,15 @@ class AppRouter {
         return OrgScreen(data: orgData!);
       case 'business_detail': {
         final unit = _dashboard!.businessUnits.firstWhere(
-          (u) => u.name == item.label,
-          orElse: () => throw StateError('未找到业务单元: ${item.label}'),
+          (u) => u.name == route.label,
+          orElse: () => throw StateError('未找到业务单元: ${route.label}'),
         );
         return BusinessDetailScreen(unit: unit);
       }
       case 'function_detail': {
         final card = _dashboard!.functionCards.firstWhere(
-          (c) => c.name == item.label,
-          orElse: () => throw StateError('未找到职能卡: ${item.label}'),
+          (c) => c.name == route.label,
+          orElse: () => throw StateError('未找到职能卡: ${route.label}'),
         );
         return FuncDetailScreen(card: card);
       }

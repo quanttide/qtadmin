@@ -2,16 +2,11 @@
   "sections": [
     {
       "id": "dashboard",
-      "items": [
-        { "label": "仪表盘", "icon": "today_outlined", "pageType": "dashboard" }
-      ]
+      "items": ["dashboard"]
     },
     {
       "id": "business",
-      "items": [
-        { "label": "思考", "icon": "psychology_outlined", "pageType": "thinking" },
-        { "label": "写作", "icon": "edit_outlined", "pageType": "writing" }
-      ]
+      "items": ["thinking", "writing"]
     }
   ]
 }
