@@ -35,3 +35,8 @@ data/
 # OS
 .DS_Store
 Thumbs.db
+
+# Terraform
+.terraform/
+terraform/terraform.tfstate
+terraform/terraform.tfstate.backup
