@@ -1,0 +1,19 @@
+{
+  "businessUnits": [
+    {
+      "name": "思考",
+      "tag": "",
+      "isPrimary": true,
+      "screenType": "thinking",
+      "decisions": []
+    },
+    {
+      "name": "写作",
+      "tag": "",
+      "isPrimary": true,
+      "screenType": "writing",
+      "decisions": []
+    }
+  ],
+  "functionCards": []
+}
