@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.0.7
+
+### Docs
+
+- 关键决策记录：14 项架构选型决策及理由
+- 债务评估更新：P0-P2 全部完成，综合评级降至低
+- 文档重组：拆分为 decision.md / refactor.md，新增 dev/README.md
+- 删除 ROADMAP.md（P0-P2 全部达成）
+
 ## v0.0.6
 
 ### Refactor
