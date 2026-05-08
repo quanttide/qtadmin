@@ -20,14 +20,14 @@
     { "id": "customer", "name": "量潮科技", "icon": "business_outlined", "dir": "company" }
   ],
   "sections": [
-    { "id": "panorama",  "dividerBefore": false },
+    { "id": "dashboard",  "dividerBefore": false },
     { "id": "business",  "dividerBefore": true },
     { "id": "function",  "dividerBefore": true }
   ]
 }
 ```
 
-→ `panorama` 段无上分隔线，`business` 和 `function` 段前有分隔线。
+→ `dashboard` 段无上分隔线，`business` 和 `function` 段前有分隔线。
 
 ## 每租户 metadata.json
 
@@ -38,17 +38,17 @@
 | `sections` | array | 是 | 该租户引用的导航段 |
 | `sections[].id` | string | 是 | 引用根的段 id |
 | `sections[].items` | array | 是 | 该段下导航项 |
-| `items[].label` | string | 是 | 显示文字，也用作匹配 panorama 的 key |
+| `items[].label` | string | 是 | 显示文字，也用作匹配 dashboard 的 key |
 | `items[].icon` | string | 是 | 图标名，传给 `NavIcon` |
 | `items[].pageType` | string | 是 | 路由类型 |
 
-founder 引用 `panorama` + `business` 两个段：
+founder 引用 `dashboard` + `business` 两个段：
 
 ```json
 {
   "sections": [
-    { "id": "panorama", "items": [
-      { "label": "全景图", "icon": "today_outlined", "pageType": "panorama" }
+    { "id": "dashboard", "items": [
+      { "label": "仪表盘", "icon": "today_outlined", "pageType": "dashboard" }
     ]},
     { "id": "business", "items": [
       { "label": "思考", "icon": "psychology_outlined", "pageType": "thinking" },
@@ -58,19 +58,19 @@ founder 引用 `panorama` + `business` 两个段：
 }
 ```
 
-→ 侧边栏: 全景图 | 分隔线 | 思考 · 写作
+→ 侧边栏: 仪表盘 | 分隔线 | 思考 · 写作
 
 company 引用全部三个段：
 
 ```json
 {
   "sections": [
-    { "id": "panorama", "items": [
-      { "label": "全景图", "icon": "today_outlined", "pageType": "panorama" }
+    { "id": "dashboard", "items": [
+      { "label": "仪表盘", "icon": "today_outlined", "pageType": "dashboard" }
     ]},
     { "id": "business", "items": [
       { "label": "量潮数据", "icon": "storage_outlined", "pageType": "business_detail" },
-      { "label": "量潮课堂", "icon": "school_outlined", "pageType": "business_detail" },
+      { "label": "量潮课堂", "icon": "school_outlined", "pageType": "classroom" },
       { "label": "量潮咨询", "icon": "support_agent_outlined", "pageType": "consulting" },
       { "label": "量潮云", "icon": "cloud_outlined", "pageType": "business_detail" }
     ]},
@@ -85,18 +85,19 @@ company 引用全部三个段：
 }
 ```
 
-→ 侧边栏: 全景图 | 分隔线 | 数据·课堂·咨询·云 | 分隔线 | 人力·财务·组织·战略·新媒体
+→ 侧边栏: 仪表盘 | 分隔线 | 数据·课堂·咨询·云 | 分隔线 | 人力·财务·组织·战略·新媒体
 
 ## pageType 路由表
 
 | pageType | 目标页面 | 依赖数据 |
 |---|---|---|
-| `panorama` | `PanoramaScreen` | panorama.json |
-| `thinking` | `ThinkingScreen` | 无 |
+| `dashboard` | `DashboardScreen` | dashboard.json |
+| `thinking` | `ThinkingScreen` | thinking.json |
 | `writing` | `Center(child: Text('即将上线'))` | 无 |
+| `classroom` | `QtClassScreen` | qtclass.json |
 | `consulting` | `QtConsultScreen` | qtconsult.json |
-| `business_detail` | `BusinessDetailScreen` | panorama.json → `businessUnits` |
-| `function_detail` | `FuncDetailScreen` | panorama.json → `functionCards` |
+| `business_detail` | `BusinessDetailScreen` | dashboard.json → `businessUnits` |
+| `function_detail` | `FuncDetailScreen` | dashboard.json → `functionCards` |
 
 ## 可用图标
 
