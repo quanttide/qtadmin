@@ -45,6 +45,8 @@ dependencies:
     path: packages/qtadmin-think
   qtadmin_org:
     path: packages/qtadmin-org
+  data_sources:
+    path: packages/data-sources
 
 dev_dependencies:
   flutter_test:
