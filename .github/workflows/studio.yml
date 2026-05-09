@@ -21,7 +21,11 @@ jobs:
           flutter-version: '3.x'
           channel: stable
       - run: flutter pub get
-      - name: Setup test fixtures
-        run: cp -r ../../assets/fixtures/* data/
+      - name: Create asset stubs for build
+        run: |
+          mkdir -p data/founder data/company
+          for f in metadata.json founder/metadata.json founder/dashboard.json founder/thinking.json company/metadata.json company/dashboard.json company/qtconsult.json company/qtclass.json company/org.json; do
+            echo '{}' > "data/$f"
+          done
       - run: dart analyze lib/ test/
       - run: flutter test
