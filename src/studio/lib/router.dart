@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:qtadmin_studio/models/dashboard.dart';
-import 'package:qtadmin_studio/models/qtconsult.dart';
+import 'package:qtadmin_qtconsult/qtconsult.dart';
 import 'package:qtadmin_studio/models/qtclass.dart';
 import 'package:qtadmin_studio/models/thinking.dart';
 import 'package:qtadmin_studio/models/org.dart';
