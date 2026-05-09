@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:qtadmin_studio/constants.dart';
+import 'package:qtadmin_think/think.dart';
 
 void main() {
   group('resolveThinkingIcon', () {

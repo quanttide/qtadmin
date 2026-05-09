@@ -1,5 +1,5 @@
+import 'package:flutter_test/flutter_test.dart';
 import 'package:qtadmin_qtclass/qtclass.dart';
-import 'package:test/test.dart';
 
 void main() {
   group('QtClassComponent', () {

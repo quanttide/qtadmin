@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:qtadmin_qtclass/qtclass.dart';
-import 'package:qtadmin_studio/constants.dart';
-import 'package:qtadmin_studio/views/stat_item.dart';
+import 'package:qtadmin_qtclass/class.dart';
 
 class QtClassScreen extends StatelessWidget {
   final QtClass data;

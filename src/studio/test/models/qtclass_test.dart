@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:qtadmin_qtclass/qtclass.dart';
-import 'package:qtadmin_studio/constants.dart';
+import 'package:qtadmin_qtclass/class.dart';
 
 void main() {
   group('Helper functions', () {

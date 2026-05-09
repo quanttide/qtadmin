@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:qtadmin_org/org.dart';
-import 'package:qtadmin_studio/views/stat_item.dart';
+import 'package:qtadmin_org/org_barrel.dart';
 
 class OrgScreen extends StatefulWidget {
   final OrgDashboard data;

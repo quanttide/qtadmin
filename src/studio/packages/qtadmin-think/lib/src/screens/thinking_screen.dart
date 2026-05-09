@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:qtadmin_think/thinking.dart';
-import 'package:qtadmin_studio/constants.dart';
+import 'package:qtadmin_think/think.dart';
 
 class ThinkingScreen extends StatelessWidget {
   final Thinking data;

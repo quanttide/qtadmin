@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:qtadmin_think/thinking.dart';
-import 'package:qtadmin_studio/screens/thinking_screen.dart';
+import 'package:qtadmin_think/think.dart';
 
 Thinking _createTestData() {
   return Thinking(
