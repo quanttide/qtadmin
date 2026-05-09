@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:qtadmin_studio/blocs/app_bloc.dart';
-import 'package:qtadmin_studio/blocs/dashboard_bloc.dart';
+import 'package:qtadmin_dashboard/dashboard_barrel.dart';
 import 'package:qtadmin_qtconsult/consult.dart';
 import 'package:qtadmin_studio/router.dart';
 import 'package:qtadmin_studio/views/navigation.dart';

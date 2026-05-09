@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:qtadmin_studio/models/dashboard.dart';
-import 'package:qtadmin_studio/views/func_card_widget.dart';
+import 'package:qtadmin_dashboard/dashboard_barrel.dart';
 
-class FuncDetailScreen extends StatelessWidget {
-  final FuncCard card;
+class BusinessDetailScreen extends StatelessWidget {
+  final BusinessUnit unit;
 
-  const FuncDetailScreen({super.key, required this.card});
+  const BusinessDetailScreen({super.key, required this.unit});
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +15,12 @@ class FuncDetailScreen extends StatelessWidget {
           padding: EdgeInsets.all(isMobile ? 14 : 24),
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 820),
-            child: FuncCardWidget(data: card),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                BizUnitWidget(data: unit),
+              ],
+            ),
           ),
         );
       },

@@ -1,13 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:qtadmin_studio/models/dashboard.dart';
-import 'package:qtadmin_studio/views/biz_unit_widget.dart';
-import 'package:qtadmin_studio/views/business_section_widget.dart';
-import 'package:qtadmin_studio/views/decision_card_widget.dart';
-import 'package:qtadmin_studio/views/func_card_widget.dart';
-import 'package:qtadmin_studio/views/function_section_widget.dart';
-import 'package:qtadmin_studio/views/section_header.dart';
-import 'package:qtadmin_studio/views/stat_item.dart';
+import 'package:qtadmin_dashboard/dashboard_barrel.dart';
 
 Widget _wrap(Widget w) => MaterialApp(home: Scaffold(body: w));
 

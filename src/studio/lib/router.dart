@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:qtadmin_studio/models/dashboard.dart';
-import 'package:qtadmin_studio/screens/dashboard_screen.dart';
+import 'package:qtadmin_dashboard/dashboard_barrel.dart';
 import 'package:qtadmin_think/think.dart';
 import 'package:qtadmin_qtconsult/consult.dart';
 import 'package:qtadmin_qtclass/class.dart';
 import 'package:qtadmin_org/org_barrel.dart';
-import 'package:qtadmin_studio/screens/business_detail_screen.dart';
-import 'package:qtadmin_studio/screens/function_detail_screen.dart';
 
 class ScreenContext {
   final Dashboard dashboard;

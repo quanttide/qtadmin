@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:qtadmin_studio/models/dashboard.dart';
-import 'package:qtadmin_studio/views/business_section_widget.dart';
-import 'package:qtadmin_studio/views/function_section_widget.dart';
+import 'package:qtadmin_dashboard/dashboard_barrel.dart';
 
 class DashboardScreen extends StatelessWidget {
   final Dashboard data;

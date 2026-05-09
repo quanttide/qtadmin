@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:qtadmin_studio/models/dashboard.dart';
+import 'package:qtadmin_dashboard/dashboard_barrel.dart';
 
 class DecisionCardWidget extends StatefulWidget {
   final Decision data;
