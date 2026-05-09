@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:qtadmin_studio/blocs/consult_bloc.dart';
-import 'package:qtadmin_studio/models/qtconsult.dart';
+import 'package:qtadmin_qtconsult/qtconsult.dart';
 import 'package:qtadmin_studio/constants.dart';
 import 'package:qtadmin_studio/views/stat_item.dart';
 

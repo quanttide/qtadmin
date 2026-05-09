@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:qtadmin_studio/models/qtconsult.dart';
+import 'package:qtadmin_qtconsult/qtconsult.dart';
 
 sealed class ConsultEvent {}
 
