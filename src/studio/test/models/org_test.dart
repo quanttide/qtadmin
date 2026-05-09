@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:qtadmin_studio/models/org.dart';
+import 'package:qtadmin_org/org.dart';
 
 void main() {
   group('InstitutionStatus', () {

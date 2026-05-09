@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:qtadmin_studio/models/qtclass.dart';
+import 'package:qtadmin_qtclass/qtclass.dart';
 import 'package:qtadmin_studio/constants.dart';
 
 void main() {

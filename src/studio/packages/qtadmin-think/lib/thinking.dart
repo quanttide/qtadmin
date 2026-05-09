@@ -1,9 +1,13 @@
 import 'dart:ui' show Color;
 import 'package:freezed_annotation/freezed_annotation.dart';
-import '../theme.dart';
 
 part 'thinking.freezed.dart';
 part 'thinking.g.dart';
+
+int parseHexColor(String hex) {
+  hex = hex.replaceAll('#', '');
+  return int.parse('FF$hex', radix: 16);
+}
 
 @freezed
 abstract class ThinkingEmotion with _$ThinkingEmotion {

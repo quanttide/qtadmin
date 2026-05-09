@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:qtadmin_studio/models/qtclass.dart';
+import 'package:qtadmin_qtclass/qtclass.dart';
 import 'package:qtadmin_qtconsult/qtconsult.dart';
 
 // --- Thinking ---

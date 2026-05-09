@@ -39,6 +39,12 @@ dependencies:
   go_router: ^14.0.0
   qtadmin_qtconsult:
     path: packages/qtadmin-qtconsult
+  qtadmin_qtclass:
+    path: packages/qtadmin-qtclass
+  qtadmin_think:
+    path: packages/qtadmin-think
+  qtadmin_org:
+    path: packages/qtadmin-org
 
 dev_dependencies:
   flutter_test:
