@@ -1,5 +1,17 @@
 # Changelog
 
+## v0.1.1
+
+### Refactor
+
+- 分包：模型、BLoC、常量、页面按领域提取为独立包（qtadmin-qtconsult / qtadmin-qtclass / qtadmin-think / qtadmin-org）
+- DataSource/DataLoader/DataResult 基础设施提取为 data_sources 包
+- ConsultBloc 随咨询领域包迁移
+
+### Chore
+
+- deploy.yml 触发条件从 push 改为 release published
+
 ## v0.1.0
 
 ### Refactor
