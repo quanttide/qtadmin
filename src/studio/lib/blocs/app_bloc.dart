@@ -7,7 +7,7 @@ import 'package:qtadmin_think/thinking.dart';
 import 'package:qtadmin_org/org.dart';
 import 'package:data_sources/data_sources.dart';
 
-final _source = const BundleSource();
+final _source = const FileSource();
 
 final _rootMetaLoader =
     DataLoader<RootMetadata>(_source, 'data/metadata.json', RootMetadata.fromJson);
