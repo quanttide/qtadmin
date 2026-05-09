@@ -1,6 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:qtadmin_studio/models/metadata.dart';
-import 'package:qtadmin_studio/models/dashboard.dart';
 import 'package:qtadmin_qtconsult/qtconsult.dart';
 import 'package:qtadmin_qtclass/qtclass.dart';
 import 'package:qtadmin_think/thinking.dart';
@@ -15,10 +14,6 @@ final _founderMetaLoader =
     DataLoader<NavMetadata>(_source, 'data/founder/metadata.json', NavMetadata.fromJson);
 final _companyMetaLoader =
     DataLoader<NavMetadata>(_source, 'data/company/metadata.json', NavMetadata.fromJson);
-final _founderDashLoader =
-    DataLoader<Dashboard>(_source, 'data/founder/dashboard.json', Dashboard.fromJson);
-final _companyDashLoader =
-    DataLoader<Dashboard>(_source, 'data/company/dashboard.json', Dashboard.fromJson);
 final _consultLoader =
     DataLoader<QtConsult>(_source, 'data/company/qtconsult.json', QtConsult.fromJson);
 final _classLoader =
@@ -62,8 +57,6 @@ class AppData {
   final List<WorkspaceInfo> workspaces;
   final Map<String, SectionDef> sectionDefs;
   final Map<String, NavMetadata> navData;
-  final Dashboard founderDashboard;
-  final Dashboard companyDashboard;
   final QtConsult consultData;
   final QtClass classData;
   final Thinking thinkingData;
@@ -73,16 +66,11 @@ class AppData {
     required this.workspaces,
     required this.sectionDefs,
     required this.navData,
-    required this.founderDashboard,
-    required this.companyDashboard,
     required this.consultData,
     required this.classData,
     required this.thinkingData,
     required this.orgData,
   });
-
-  Dashboard dashboard(String dir) =>
-      dir == 'founder' ? founderDashboard : companyDashboard;
 }
 
 class AppBloc extends Bloc<AppEvent, AppState> {
@@ -96,8 +84,6 @@ class AppBloc extends Bloc<AppEvent, AppState> {
       _rootMetaLoader.load(),
       _founderMetaLoader.load(),
       _companyMetaLoader.load(),
-      _founderDashLoader.load(),
-      _companyDashLoader.load(),
       _consultLoader.load(),
       _classLoader.load(),
       _thinkingLoader.load(),
@@ -119,12 +105,10 @@ class AppBloc extends Bloc<AppEvent, AppState> {
         'founder': (results[1] as DataSuccess<NavMetadata>).data,
         'company': (results[2] as DataSuccess<NavMetadata>).data,
       },
-      founderDashboard: (results[3] as DataSuccess<Dashboard>).data,
-      companyDashboard: (results[4] as DataSuccess<Dashboard>).data,
-      consultData: (results[5] as DataSuccess<QtConsult>).data,
-      classData: (results[6] as DataSuccess<QtClass>).data,
-      thinkingData: (results[7] as DataSuccess<Thinking>).data,
-      orgData: (results[8] as DataSuccess<OrgDashboard>).data,
+      consultData: (results[3] as DataSuccess<QtConsult>).data,
+      classData: (results[4] as DataSuccess<QtClass>).data,
+      thinkingData: (results[5] as DataSuccess<Thinking>).data,
+      orgData: (results[6] as DataSuccess<OrgDashboard>).data,
     )));
   }
 }
