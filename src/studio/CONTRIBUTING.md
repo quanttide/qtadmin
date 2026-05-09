@@ -1,0 +1,64 @@
+# Contributing
+
+## 开发原则
+
+### 1. 模型归模型，工具归工具
+
+`models/` 只放 freezed 数据类。颜色工具（`theme.dart`）、UI 映射函数与模型解耦，放在根目录。
+
+### 2. 不提前抽象
+
+先做可工作的简单实现，等重复模式出现再抽象。
+
+### 3. 少即是多
+
+文件宁可大一点也不要拆碎。同类文件放在一起，不建多余子目录。
+
+### 4. freezed 没有替代品
+
+手写 `fromJson` 不安全，freezed 从第一天就该上。字段默认值用 `@Default`，枚举 fallback 用 `@JsonKey(fromJson:)`。
+
+### 5. 自定义方法用 extension，不在 freezed 类里写
+
+`._()` 构造器 + `implements` vs `extends` 问题过多。自定义 getter/method 写成 `extension XxxX on Xxx` 更干净。
+
+### 6. 命名即设计
+
+`XxxData` 后缀是噪音，改为 `Xxx`。
+
+### 7. BLoC 解决的是架构问题
+
+不是状态管理工具。用它拆 God 类和 God State，而不是替代 `setState` 做 UI 切换。
+
+### 8. pre-commit 与 CI 互补
+
+pre-commit 快跑 `dart analyze`，CI 跑完整 `flutter test`。两层的原因不是功能重复，而是环境依赖性不同。
+
+### 9. 第一次就要想清楚数据源抽象
+
+`DataSource` 接口 + `FileSource`/`BundleSource` 双实现从一开始就做，不然后面整片重写。
+
+### 10. 结构服从调用方
+
+拍平到根目录，调用方少敲一层路径。按来源类型分，不按模型分。
+
+### 11. 框架就是约束，约束就是设计
+
+引入 freezed、BLoC、go_router 不只是为了功能。是把 ad-hoc 的手写设计放进工业标准框子——框子卡住的地方，就是技术债的真实位置。
+
+不要评价框架「现阶段有没有用」。框架的意义是让设计缺陷提前暴露。
+
+## 本地开发
+
+```bash
+flutter run -d linux
+flutter run -d chrome
+dart analyze lib/ test/
+flutter test
+dart run build_runner build   # freezed codegen
+```
+
+## 版本约定
+
+- `v0.0.x` — 探索验证阶段
+- `v0.1.0` 起 — 上线推进阶段
