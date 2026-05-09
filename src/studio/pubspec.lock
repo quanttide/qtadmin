@@ -161,6 +161,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "3.1.7"
+  data_sources:
+    dependency: "direct main"
+    description:
+      path: "packages/data-sources"
+      relative: true
+    source: path
+    version: "0.1.0"
   fake_async:
     dependency: transitive
     description:
