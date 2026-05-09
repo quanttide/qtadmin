@@ -1,14 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:qtadmin_studio/models/dashboard.dart';
-import 'package:qtadmin_qtconsult/qtconsult.dart';
-import 'package:qtadmin_qtclass/qtclass.dart';
-import 'package:qtadmin_think/thinking.dart';
-import 'package:qtadmin_org/org.dart';
 import 'package:qtadmin_studio/screens/dashboard_screen.dart';
-import 'package:qtadmin_studio/screens/thinking_screen.dart';
-import 'package:qtadmin_studio/screens/qtconsult_screen.dart';
-import 'package:qtadmin_studio/screens/qtclass_screen.dart';
-import 'package:qtadmin_studio/screens/org_screen.dart';
+import 'package:qtadmin_think/think.dart';
+import 'package:qtadmin_qtconsult/consult.dart';
+import 'package:qtadmin_qtclass/class.dart';
+import 'package:qtadmin_org/org_barrel.dart';
 import 'package:qtadmin_studio/screens/business_detail_screen.dart';
 import 'package:qtadmin_studio/screens/function_detail_screen.dart';
 
