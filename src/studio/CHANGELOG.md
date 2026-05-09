@@ -1,5 +1,27 @@
 # Changelog
 
+## v0.1.2
+
+### Refactor
+
+- 分包续：导航提取为 `qtadmin-navigation` 包，与 WorkspaceInfo 解耦
+- 分包续：仪表盘提取为 `qtadmin-dashboard` 包，DashboardBloc 从 AppBloc 拆分
+- 数据源简化：用 `FileSource` 替代 `BundleSource`，移除 `data/` 的 pubspec assets 注册
+
+### Chore
+
+- 保持 `views/` 目录结构（.gitkeep）
+- CI 工作流：构建前复制 fixture
+
+### Docs
+
+- AGENTS.md 补充维护工作流
+- AI 上下文与开发原则分离至 CONTRIBUTING.md
+
+### Clean
+
+- 移除旧文件：`navigation.dart`（git 跟踪残留）、`stat_item.dart`（未使用）
+
 ## v0.1.1
 
 ### Refactor
