@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:qtadmin_studio/models/dashboard.dart';
-import 'package:qtadmin_studio/screens/function_detail_screen.dart';
+import 'package:qtadmin_dashboard/dashboard_barrel.dart';
 
 FuncCard _createTestCard() {
   return FuncCard(

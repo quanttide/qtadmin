@@ -1,7 +1,13 @@
+import 'dart:ui' show Color;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:qtadmin_studio/theme.dart';
-import 'package:qtadmin_studio/models/dashboard.dart';
+import 'package:qtadmin_dashboard/dashboard_barrel.dart';
+
+Color hexColor(String hex) {
+  hex = hex.replaceAll('#', '');
+  return Color(int.parse('FF$hex', radix: 16));
+}
 
 void main() {
   group('DecisionAction', () {

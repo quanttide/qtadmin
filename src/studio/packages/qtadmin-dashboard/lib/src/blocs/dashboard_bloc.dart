@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:qtadmin_studio/models/dashboard.dart';
+import 'package:qtadmin_dashboard/dashboard_barrel.dart';
 import 'package:data_sources/data_sources.dart';
 
 sealed class DashboardEvent {}
