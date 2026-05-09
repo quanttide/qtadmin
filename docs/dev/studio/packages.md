@@ -2,53 +2,69 @@
 
 ## 当前问题
 
-`lib/models/` 下 6 个领域混在同一目录，随新增领域持续膨胀：
+`lib/models/` 下 6 个领域混在同一目录，随新增领域持续膨胀；同时对应的 blocs、screens、views 也散落在各自目录中，领域边界模糊，跨 app 复用只能靠复制。
 
-| 文件 | 领域 | 跨应用潜力 |
+| 领域 | 文件 | 跨应用潜力 |
 |------|------|-----------|
-| `org.dart` | 组织管理 | 中 — `qtcloud-hr` 可能需要 |
-| `qtconsult.dart` | 咨询 | 高 — 与 `qtconsult` 重叠 |
-| `qtclass.dart` | 课堂 | 高 — 与 `qtclass` 重叠 |
-| `thinking.dart` | 思考 | 中 — `qtcloud-think` 可能需要 |
-| `dashboard.dart` | 仪表盘 | 低 — qtadmin 专属 |
-| `metadata.dart` | 导航结构 | 低 — qtadmin 专属 |
-
-不分包的问题：每增加一个功能域都在已有目录里追加文件，领域边界模糊，跨 app 复用只能靠复制。
+| 组织管理 | `models/org.dart` + `screens/org_screen.dart` | 中 — `qtcloud-hr` 可能需要 |
+| 咨询 | `models/qtconsult.dart` + `blocs/consult_bloc.dart` + `screens/qtconsult_screen.dart` | 高 — 与 `qtconsult` 重叠 |
+| 课堂 | `models/qtclass.dart` + `screens/qtclass_screen.dart` | 高 — 与 `qtclass` 重叠 |
+| 思考 | `models/thinking.dart` + `screens/thinking_screen.dart` | 中 — `qtcloud-think` 可能需要 |
+| 仪表盘 | `models/dashboard.dart` + screens + views | 低 — qtadmin 专属 |
+| 导航结构 | `models/metadata.dart` | 低 — qtadmin 专属 |
 
 ## 分包架构
 
-按领域分包，参考 `qtconsult` 的三层模式：
+按领域分包，每个包包含完整的领域层：模型、BLoC、页面、UI 组件、测试。
 
 ```
 src/studio/
 ├── packages/
-│   ├── qtadmin-org/         ← 组织管理（Freezed 模型）
-│   ├── qtadmin-qtconsult/   ← 咨询（Freezed 模型 + UI 组件？）
-│   ├── qtadmin-qtclass/     ← 课堂
-│   └── qtadmin-think/       ← 思考
+│   ├── qtadmin-org/           ← 组织管理
+│   │   ├── lib/
+│   │   │   ├── org.dart           (Freezed 模型)
+│   │   │   └── src/
+│   │   │       ├── blocs/         (OrgBloc)
+│   │   │       ├── screens/       (OrgScreen)
+│   │   │       └── views/         (小组件)
+│   │   └── test/
+│   ├── qtadmin-qtconsult/     ← 咨询
+│   │   ├── lib/
+│   │   │   ├── qtconsult.dart     (Freezed 模型)
+│   │   │   └── src/
+│   │   │       ├── blocs/         (ConsultBloc)
+│   │   │       ├── screens/       (QtConsultScreen)
+│   │   │       └── views/
+│   │   └── test/
+│   ├── qtadmin-qtclass/       ← 课堂
+│   │   └── ...
+│   └── qtadmin-think/         ← 思考
+│       └── ...
 ├── lib/
-│   ├── models/              ← 仅保留 dashboard + metadata
-│   └── ...
+│   ├── models/                ← 仅保留 dashboard + metadata
+│   ├── blocs/                 ← 仅保留 AppBloc
+│   ├── screens/               ← 仅保留 dashboard + 通用 screens
+│   └── views/                 ← 仅保留通用 UI 组件
 ```
 
 ### 各包方案
 
-| 领域 | 是否独立包 | 理由 | 与 `quanttide-project-toolkit` 关系 |
-|------|-----------|------|-----------------------------------|
-| `qtconsult.dart` | `packages/qtadmin-qtconsult` | 与 qtconsult 共享领域模型，未来应统一引用 `quanttide_project` | 引入 `quanttide_project`，私有适配层覆盖 OODA 特化 |
-| `qtclass.dart` | `packages/qtadmin-qtclass` | 与 qtclass 共享，模型独立无外部依赖 | 不依赖，纯领域模型 |
-| `thinking.dart` | `packages/qtadmin-think` | 跨 app 思考记录模型 | 不依赖 |
-| `org.dart` | `packages/qtadmin-org` | 组织架构模型，hr 等场景复用 | 不依赖 |
-| `dashboard.dart` | 留在 `lib/models/` | 专属聚合视图，无复用 | — |
-| `metadata.dart` | 留在 `lib/models/` | 导航配置，app 专属 | — |
+| 领域 | 独立包 | 包含内容 | 复用目标 |
+|------|-------|---------|---------|
+| `qtconsult` | `packages/qtadmin-qtconsult` | 模型 + ConsultBloc + ConsultScreen + UI 组件 | `qtconsult` 项目，共享模型和业务逻辑 |
+| `qtclass` | `packages/qtadmin-qtclass` | 模型 + QtClassScreen + UI 组件 | `qtclass` 项目，共享模型和业务逻辑 |
+| `thinking` | `packages/qtadmin-think` | 模型 + ThinkingScreen | `qtcloud-think`，共享思考记录模型 |
+| `org` | `packages/qtadmin-org` | 模型 + OrgScreen + UI 组件 | `qtcloud-hr`，共享组织架构模型 |
+| `dashboard` | 留在主项目 | — | 专属聚合视图，无复用 |
+| `metadata` | 留在主项目 | — | 导航配置，app 专属 |
 
 ### 提取原则
 
-每个包独立开发、独立测试（测试随包一起提取）、独立版本。提取节奏按需进行，不搞大版本重构：
+每个包独立开发、独立测试、独立版本。提取节奏按需进行，不搞大版本重构：
 
-1. 先提取 `qtadmin-qtconsult`（与 qtconsult 重叠最多，复用收益最高）
-2. 按需提取 `qtadmin-qtclass` 和 `qtadmin-think`（需求稳定再动）
-3. `qtadmin-org` 待第二个消费者出现再提取
+1. **先提取模型**（已完成）—— 解耦数据定义，获得立即的构建隔离
+2. **逐步迁移业务逻辑和 UI** —— 随需求稳定，逐个搬入包内
+3. **跨 app 复用前不强制** —— 等到第二个消费者出现时再补齐包内完整内容
 
 ## 与平台层的关系
 
