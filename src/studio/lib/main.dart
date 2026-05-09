@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:qtadmin_studio/blocs/app_bloc.dart';
+import 'package:qtadmin_studio/blocs/dashboard_bloc.dart';
 import 'package:qtadmin_qtconsult/consult.dart';
 import 'package:qtadmin_studio/router.dart';
 import 'package:qtadmin_studio/views/navigation.dart';
@@ -57,8 +58,11 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
         ShellRoute(
           builder: (context, state, child) {
             final data = (context.read<AppBloc>().state as AppLoaded).data;
-            return BlocProvider(
-              create: (_) => ConsultBloc(ConsultState(data: data.consultData)),
+            return MultiBlocProvider(
+              providers: [
+                BlocProvider(create: (_) => ConsultBloc(ConsultState(data: data.consultData))),
+                BlocProvider(create: (_) => DashboardBloc()..add(DashboardLoad())),
+              ],
               child: _SidebarShell(child: child),
             );
           },
@@ -67,13 +71,14 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
               path: '/workspace/:workspace/:page',
               builder: (context, state) {
                 final data = (context.read<AppBloc>().state as AppLoaded).data;
+                final dashState = context.read<DashboardBloc>().state;
                 final dir = state.pathParameters['workspace']!;
                 final page = state.pathParameters['page']!;
                 final wsIndex = data.workspaces.indexWhere((w) => w.dir == dir);
-                final dashboard = dir == 'founder' ? data.founderDashboard : data.companyDashboard;
                 final route = RouteConfig.find(page);
+                if (dashState is! DashboardLoaded) return const SizedBox();
                 final ctx = ScreenContext(
-                  dashboard: dashboard,
+                  dashboard: dashState.dashboard(dir),
                   workspaceName: data.workspaces[wsIndex >= 0 ? wsIndex : 0].name,
                   selectedWorkspace: wsIndex >= 0 ? wsIndex : 0,
                   thinkingData: data.thinkingData,
