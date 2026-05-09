@@ -1,6 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:qtadmin_studio/blocs/consult_bloc.dart';
-import 'package:qtadmin_qtconsult/qtconsult.dart';
+import 'package:qtadmin_qtconsult/consult.dart';
 
 QtConsult _createTestData() {
   return QtConsult(
