@@ -4,10 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:qtadmin_studio/blocs/app_bloc.dart';
+import 'package:qtadmin_studio/models/metadata.dart';
 import 'package:qtadmin_dashboard/dashboard_barrel.dart';
 import 'package:qtadmin_qtconsult/consult.dart';
 import 'package:qtadmin_studio/router.dart';
-import 'package:qtadmin_studio/views/navigation.dart';
+import 'package:qtadmin_navigation/navigation.dart';
 
 class _AppStateNotifier extends ChangeNotifier {
   StreamSubscription? _sub;
@@ -195,11 +196,13 @@ class _SidebarShellState extends State<_SidebarShell> {
 
     final selectedIndex = _flatRouteIds.indexOf(currentPage);
 
+    final wsList = data.workspaces.map((w) => (icon: w.resolveIcon(), name: w.name)).toList();
+
     return Scaffold(
       body: Row(
         children: [
           NavSidebar(
-            workspaces: data.workspaces,
+            workspaces: wsList,
             selectedWorkspace: data.workspaces.indexWhere((w) => w.dir == currentDir),
             onWorkspaceChanged: (index) {
               final newDir = data.workspaces[index].dir;

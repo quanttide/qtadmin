@@ -49,6 +49,8 @@ dependencies:
     path: packages/data-sources
   qtadmin_dashboard:
     path: packages/qtadmin-dashboard
+  qtadmin_navigation:
+    path: packages/qtadmin-navigation
 
 dev_dependencies:
   flutter_test:
