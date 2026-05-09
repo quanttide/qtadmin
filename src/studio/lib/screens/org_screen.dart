@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:qtadmin_studio/models/org.dart';
+import 'package:qtadmin_org/org.dart';
 import 'package:qtadmin_studio/views/stat_item.dart';
 
 class OrgScreen extends StatefulWidget {

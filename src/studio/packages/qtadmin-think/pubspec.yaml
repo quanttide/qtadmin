@@ -1,0 +1,20 @@
+name: qtadmin_think
+description: 思考记录领域模型包，供 qtadmin_studio 及潜在跨应用复用。
+publish_to: 'none'
+version: 0.0.1
+
+environment:
+  sdk: ">=3.8.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  freezed_annotation: ^3.1.0
+  json_annotation: ^4.11.0
+
+dev_dependencies:
+  build_runner: ^2.4.6
+  freezed: ^3.2.5
+  json_serializable: ^6.9.0
+  flutter_test:
+    sdk: flutter

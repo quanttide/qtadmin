@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:qtadmin_studio/models/org.dart';
+import 'package:qtadmin_org/org.dart';
 import 'package:qtadmin_studio/screens/org_screen.dart';
 
 OrgDashboard _createTestData() {

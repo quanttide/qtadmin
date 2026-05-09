@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:qtadmin_studio/models/dashboard.dart';
 import 'package:qtadmin_qtconsult/qtconsult.dart';
-import 'package:qtadmin_studio/models/qtclass.dart';
-import 'package:qtadmin_studio/models/thinking.dart';
-import 'package:qtadmin_studio/models/org.dart';
+import 'package:qtadmin_qtclass/qtclass.dart';
+import 'package:qtadmin_think/thinking.dart';
+import 'package:qtadmin_org/org.dart';
 import 'package:qtadmin_studio/screens/dashboard_screen.dart';
 import 'package:qtadmin_studio/screens/thinking_screen.dart';
 import 'package:qtadmin_studio/screens/qtconsult_screen.dart';
