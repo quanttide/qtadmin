@@ -12,30 +12,7 @@ project:
   github: https://github.com/quanttide/qtadmin
   license: Proprietary
   toc:
-    - file: README.md
-    - title: 业务需求说明书
-      children:
-        - file: brd/index.md
-        - file: brd/qtconsult.md
-    - title: 产品需求文档
-      children:
-        - file: prd/index.md
-        - file: prd/qtconsult.md
-    - title: 交互设计
-      children:
-        - file: ixd/panorama.md
-        - file: ixd/qtconsult.md
-    - title: 架构决策
-      children:
-        - file: add/README.md
-    - title: 数据规范
-      children:
-        - file: drd/README.md
-        - file: drd/metadata.md
-        - file: drd/qtconsult.md
-    - title: 开发文档
-      children:
-        - file: dev/README.md
+    - file: user-guide/asset.md
 site:
   template: book-theme
   options:

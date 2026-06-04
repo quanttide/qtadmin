@@ -1,4 +1,4 @@
-# 数字资产职能 (`qtadmin asset`)
+# 数字资产职能
 
 通过 `qtadmin asset` 命令管理数字资产。
 
