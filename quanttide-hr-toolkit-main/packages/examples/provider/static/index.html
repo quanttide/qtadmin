@@ -1,0 +1,1206 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>招聘管道看板 + 飞书确认队列</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, "Microsoft YaHei", sans-serif; background: var(--bg-page); color: var(--text-primary); font-size: var(--font-body); height: 100vh; display: flex; flex-direction: column; }
+
+:root {
+  --primary: #0d9488;
+  --primary-light: #14b8a6;
+  --primary-dark: #0f766e;
+  --primary-bg: #f0fdfa;
+  --primary-text: #ffffff;
+  --success: #10b981;
+  --success-bg: #d1fae5;
+  --success-text: #065f46;
+  --warning: #f59e0b;
+  --warning-bg: #fef3c7;
+  --warning-text: #92400e;
+  --danger: #ef4444;
+  --danger-bg: #fef2f2;
+  --danger-text: #991b1b;
+  --info: #3b82f6;
+  --info-bg: #dbeafe;
+  --info-text: #1e40af;
+  --status-new: #6b7280;
+  --status-new-bg: #f3f4f6;
+  --status-contacted: #3b82f6;
+  --status-contacted-bg: #dbeafe;
+  --status-exam-sent: #6366f1;
+  --status-exam-sent-bg: #e0e7ff;
+  --status-exam-received: #a855f7;
+  --status-exam-received-bg: #f3e8ff;
+  --status-evaluating: #ec4899;
+  --status-evaluating-bg: #fce7f3;
+  --status-interview: #10b981;
+  --status-interview-bg: #d1fae5;
+  --status-offer: #059669;
+  --status-offer-bg: #dcfce7;
+  --status-closed: #4b5563;
+  --status-closed-bg: #f3f4f6;
+  --bg-page: #f0f2f5;
+  --bg-card: #ffffff;
+  --bg-surface: #fafafa;
+  --bg-hover: #f5f5f5;
+  --border: #e8e8e8;
+  --border-light: #f0f0f0;
+  --text-primary: #1f2937;
+  --text-secondary: #6b7280;
+  --text-tertiary: #9ca3af;
+  --text-placeholder: #bbb;
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --font-page-title: 18px;
+  --font-section-title: 15px;
+  --font-body: 14px;
+  --font-caption: 11px;
+  --font-label: 12px;
+  --font-small: 13px;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --shadow-card: 0 1px 2px rgba(0,0,0,0.06);
+  --shadow-card-hover: 0 4px 12px rgba(0,0,0,0.12);
+  --shadow-modal: 0 20px 60px rgba(0,0,0,0.2);
+  --shadow-drawer: 4px 0 20px rgba(0,0,0,0.15);
+}
+
+.header { background: var(--bg-card); padding: 12px 24px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: var(--space-md); flex-shrink: 0; flex-wrap: wrap; }
+.header h1 { font-size: var(--font-page-title); color: var(--text-primary); font-weight: 700; }
+.header .tabs { display: flex; gap: var(--space-xs); margin-left: var(--space-lg); }
+.header .tabs button { padding: 4px 14px; border: 1px solid var(--border); background: var(--bg-card); border-radius: var(--radius-sm); cursor: pointer; font-size: var(--font-small); color: var(--text-secondary); transition: all 0.15s; }
+.header .tabs button:hover { border-color: var(--primary); color: var(--primary); }
+.header .tabs button.active { background: var(--primary); color: var(--primary-text); border-color: var(--primary); font-weight: 500; }
+.header .stats { display: flex; gap: var(--space-lg); margin-left: auto; font-size: var(--font-small); color: var(--text-tertiary); }
+.header .stats .num { font-weight: 700; color: var(--primary); font-size: var(--font-page-title); }
+.header .refresh-btn { background: none; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 4px 10px; cursor: pointer; font-size: 16px; color: var(--text-tertiary); transition: all 0.15s; }
+.header .refresh-btn:hover { border-color: var(--primary); color: var(--primary); }
+.header .refresh-btn.loading { animation: spin 0.8s linear infinite; }
+.queue-toggle { display: none; background: none; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 4px 8px; cursor: pointer; font-size: 16px; color: var(--text-tertiary); margin-left: var(--space-sm); }
+.queue-toggle:hover { border-color: var(--primary); color: var(--primary); }
+
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+@keyframes viewFadeIn { from { opacity: 0; } to { opacity: 1; } }
+.fade-in { animation: viewFadeIn 0.2s ease-out; }
+
+.main { display: flex; flex: 1; overflow: hidden; position: relative; }
+
+.loading-overlay { position: absolute; inset: 0; background: rgba(255,255,255,0.85); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 100; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+.loading-overlay.show { opacity: 1; pointer-events: auto; }
+.spinner { width: 36px; height: 36px; border: 3px solid var(--border-light); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.7s linear infinite; }
+.loading-overlay .loading-text { margin-top: 12px; color: var(--text-tertiary); font-size: var(--font-small); }
+
+.error-banner { display: none; align-items: center; gap: 12px; padding: 12px 24px; background: var(--danger-bg); border-bottom: 1px solid #fecaca; color: var(--danger-text); font-size: var(--font-small); flex-shrink: 0; }
+.error-banner.show { display: flex; }
+.error-banner .retry-btn { padding: 4px 14px; border: 1px solid #fca5a5; background: #fff; border-radius: var(--radius-sm); cursor: pointer; font-size: var(--font-label); color: var(--danger-text); margin-left: auto; }
+.error-banner .retry-btn:hover { background: #fee2e2; }
+
+@keyframes shimmer { 0% { background-position: -200px 0; } 100% { background-position: calc(200px + 100%) 0; } }
+.skeleton-card { padding: 12px 16px; border-bottom: 1px solid var(--border-light); }
+.skeleton-card .s-line { height: 14px; border-radius: var(--radius-sm); background: linear-gradient(90deg, #eee 25%, var(--bg-surface) 50%, #eee 75%); background-size: 200px 100%; animation: shimmer 1.2s ease-in-out infinite; margin-bottom: var(--space-sm); }
+.skeleton-card .s-line:last-child { width: 60%; }
+
+.disconnect-banner { display: none; align-items: center; justify-content: center; padding: 8px 16px; background: #7f1d1d; color: #fca5a5; font-size: var(--font-label); flex-shrink: 0; gap: var(--space-sm); }
+.disconnect-banner.show { display: flex; }
+.disconnect-banner .reconnect-btn { padding: 2px 10px; border: 1px solid #fca5a5; background: transparent; border-radius: 3px; cursor: pointer; font-size: var(--font-caption); color: #fca5a5; }
+.disconnect-banner .reconnect-btn:hover { background: rgba(252,165,165,0.15); }
+
+.empty-state { text-align: center; padding: 40px 16px; color: var(--text-placeholder); font-size: var(--font-small); }
+
+.queue-panel { width: 380px; background: var(--bg-card); border-right: 1px solid var(--border); overflow-y: auto; flex-shrink: 0; display: flex; flex-direction: column; }
+.queue-panel.hidden { display: none; }
+.queue-panel .queue-header { padding: 12px 16px; border-bottom: 1px solid var(--border-light); font-weight: 600; font-size: var(--font-section-title); display: flex; align-items: center; gap: var(--space-sm); flex-shrink: 0; color: var(--text-primary); }
+.queue-panel .queue-header .q-badge { background: var(--primary); color: var(--primary-text); border-radius: 10px; padding: 0 8px; font-size: var(--font-caption); font-weight: 500; }
+.queue-panel .q-filters { padding: 8px 16px; display: flex; gap: 6px; border-bottom: 1px solid var(--border-light); flex-shrink: 0; }
+.queue-panel .q-filters button { padding: 3px 10px; border: 1px solid var(--border); background: var(--bg-card); border-radius: var(--radius-sm); cursor: pointer; font-size: var(--font-label); color: var(--text-secondary); transition: all 0.15s; }
+.queue-panel .q-filters button:hover { border-color: var(--primary); color: var(--primary); }
+.queue-panel .q-filters button.active { background: var(--primary); color: var(--primary-text); border-color: var(--primary); }
+.q-card { padding: 12px 16px; border-bottom: 1px solid var(--border-light); cursor: default; transition: background 0.15s, opacity 0.3s, transform 0.3s; border-left: 3px solid transparent; }
+.q-card:hover { background: var(--bg-hover); }
+.q-card.done { border-left-color: var(--border); background: var(--bg-surface); }
+.q-card.done:hover { background: var(--bg-hover); }
+.q-card.pending { border-left-color: var(--primary); }
+.q-card.removing { opacity: 0; transform: translateX(-30px); }
+.q-card .q-subject { font-size: var(--font-body); font-weight: 500; margin-bottom: 2px; color: var(--text-primary); }
+.q-card.done .q-subject { color: var(--text-tertiary); }
+.q-card .q-sender { font-size: var(--font-label); color: var(--text-secondary); }
+.q-card .q-tags { display: flex; gap: var(--space-xs); margin: 6px 0; flex-wrap: wrap; }
+.badge { padding: 1px 6px; border-radius: 3px; font-size: var(--font-caption); font-weight: 500; display: inline-block; }
+.badge.high { background: var(--success-bg); color: var(--success-text); }
+.badge.medium { background: var(--warning-bg); color: var(--warning-text); }
+.badge.low { background: #f3f4f6; color: var(--text-secondary); }
+.badge.new { background: var(--status-new-bg); color: var(--status-new); }
+.badge.contacted { background: var(--status-contacted-bg); color: var(--status-contacted); }
+.badge.exam_sent { background: var(--status-exam-sent-bg); color: var(--status-exam-sent); }
+.badge.exam_received { background: var(--status-exam-received-bg); color: var(--status-exam-received); }
+.badge.evaluating { background: var(--status-evaluating-bg); color: var(--status-evaluating); }
+.badge.interview { background: var(--status-interview-bg); color: var(--status-interview); }
+.badge.offer { background: var(--status-offer-bg); color: var(--status-offer); }
+.badge.closed { background: var(--status-closed-bg); color: var(--status-closed); }
+.q-card .q-actions { display: flex; gap: var(--space-xs); margin-top: 6px; flex-wrap: wrap; align-items: center; }
+.q-card .q-actions select { padding: 2px 4px; border: 1px solid var(--border); border-radius: 3px; font-size: var(--font-label); }
+.q-card .q-actions input { padding: 2px 4px; border: 1px solid var(--border); border-radius: 3px; font-size: var(--font-label); width: 80px; }
+.q-card .q-actions button { padding: 3px 10px; border: none; border-radius: var(--radius-sm); cursor: pointer; font-size: var(--font-label); }
+.btn-confirm { background: var(--success); color: #fff; }
+.btn-confirm:hover { background: #059669; }
+.btn-adjust { background: var(--warning); color: #fff; }
+.btn-adjust:hover { background: #d97706; }
+.btn-ignore { background: #d9d9d9; color: var(--text-secondary); }
+.btn-ignore:hover { background: #bfbfbf; }
+.q-card.done .q-actions { display: none; }
+.q-empty { text-align: center; padding: 40px 16px; color: var(--text-placeholder); font-size: var(--font-small); }
+
+.kanban-panel { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+.kanban-scroll { display: flex; overflow-x: auto; padding: var(--space-md); gap: 12px; flex: 1; }
+.kanban-col { min-width: 200px; max-width: 240px; background: var(--bg-surface); border-radius: var(--radius-md); display: flex; flex-direction: column; flex-shrink: 0; border: 1px solid var(--border-light); }
+.kanban-col .col-header { padding: 10px 12px; font-weight: 600; font-size: var(--font-small); display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--border); flex-shrink: 0; color: var(--text-primary); }
+.kanban-col .col-header .count { background: var(--border-light); border-radius: 8px; padding: 0 6px; font-size: var(--font-caption); font-weight: 500; color: var(--text-secondary); }
+.kanban-col .col-body { padding: 8px; overflow-y: auto; flex: 1; min-height: 60px; }
+.kanban-card { background: var(--bg-card); border-radius: 6px; padding: 10px 12px; margin-bottom: 8px; box-shadow: var(--shadow-card); cursor: pointer; border-left: 3px solid transparent; transition: box-shadow 0.15s, transform 0.15s; }
+.kanban-card:hover { box-shadow: var(--shadow-card-hover); transform: translateY(-1px); }
+.kanban-card.selected { box-shadow: 0 0 0 2px var(--primary); }
+.kanban-card .k-name { font-weight: 500; font-size: var(--font-body); color: var(--text-primary); }
+.kanban-card .k-meta { font-size: var(--font-caption); color: var(--text-tertiary); margin-top: 2px; }
+.kanban-card .k-wait { display: inline-block; font-size: var(--font-caption); margin-top: 4px; padding: 1px 6px; border-radius: 3px; font-weight: 500; }
+.kanban-card .k-wait.normal { color: var(--text-tertiary); background: var(--bg-surface); }
+.kanban-card .k-wait.warning { color: var(--warning-text); background: var(--warning-bg); }
+.kanban-card .k-wait.overdue { color: var(--danger-text); background: var(--danger-bg); font-weight: 700; }
+.kanban-card.excellent { border-left-color: var(--success); }
+.kanban-card.closed { border-left-color: var(--border); }
+.kanban-card .k-quality-star { color: var(--warning); font-size: 12px; margin-left: 4px; }
+.kanban-empty { text-align: center; padding: 20px 0; color: var(--text-placeholder); font-size: var(--font-label); }
+
+.detail-panel { width: 0; background: var(--bg-card); border-left: 1px solid var(--border); overflow: hidden; transition: width 0.25s ease; flex-shrink: 0; display: flex; flex-direction: column; }
+.detail-panel.open { width: 440px; }
+.detail-panel .d-header { padding: 14px 16px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+.detail-panel .d-header h2 { font-size: var(--font-page-title); font-weight: 700; color: var(--text-primary); }
+.detail-panel .d-header .d-close { cursor: pointer; color: var(--text-tertiary); font-size: 18px; padding: 0 4px; transition: color 0.15s; }
+.detail-panel .d-header .d-close:hover { color: var(--text-primary); }
+.detail-panel .d-body { padding: var(--space-md); overflow-y: auto; flex: 1; }
+.detail-panel .d-section { margin-bottom: var(--space-md); }
+.detail-panel .d-section h3 { font-size: var(--font-small); color: var(--text-secondary); margin-bottom: 6px; border-bottom: 1px solid var(--border-light); padding-bottom: 4px; font-weight: 600; }
+.detail-panel .d-section .d-info-row { font-size: var(--font-small); padding: 3px 0; display: flex; }
+.detail-panel .d-section .d-info-row .label { color: var(--text-secondary); width: 70px; flex-shrink: 0; }
+.detail-panel .d-section .d-info-row .value { color: var(--text-primary); }
+.detail-panel .d-section .d-body-text { font-size: var(--font-small); line-height: 1.6; white-space: pre-wrap; color: var(--text-primary); background: var(--bg-surface); padding: 12px; border-radius: 6px; max-height: 320px; overflow-y: auto; font-family: "Courier New", monospace; border: 1px solid var(--border-light); }
+.detail-panel .d-email-meta { font-size: var(--font-label); color: var(--text-secondary); padding: 6px 12px; background: var(--bg-surface); border-radius: 6px; margin-bottom: 8px; border: 1px solid var(--border-light); }
+.detail-panel .d-section .btn-transition { padding: 4px 12px; border: 1px solid var(--border); background: var(--bg-card); border-radius: var(--radius-sm); cursor: pointer; font-size: var(--font-label); color: var(--text-primary); transition: all 0.15s; }
+.detail-panel .d-section .btn-transition:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-bg); }
+.d-empty { text-align: center; padding: 60px 16px; color: var(--text-placeholder); font-size: var(--font-body); }
+
+.msg-item { padding: 8px 0; border-bottom: 1px solid var(--border-light); cursor: pointer; }
+.msg-item:hover { background: var(--bg-hover); margin: 0 -8px; padding-left: 8px; padding-right: 8px; }
+.msg-item .msg-subject { font-weight: 500; font-size: var(--font-small); }
+.msg-item .msg-meta { font-size: var(--font-caption); color: var(--text-tertiary); margin-top: 2px; }
+.msg-item .msg-body { display: none; margin-top: 6px; padding: 8px; background: #f9f9f9; border-radius: 4px; font-size: var(--font-label); white-space: pre-wrap; max-height: 200px; overflow-y: auto; }
+.msg-item .msg-body.show { display: block; }
+.tl-item { padding: 4px 0; border-bottom: 1px solid var(--border-light); font-size: var(--font-small); }
+.tl-item .tl-time { color: var(--text-tertiary); font-size: var(--font-caption); }
+
+.reply-form input, .reply-form textarea { width: 100%; padding: 6px 8px; border: 1px solid #ddd; border-radius: 4px; font-size: var(--font-small); }
+.reply-form input { margin-bottom: 6px; }
+.reply-form textarea { margin-bottom: 6px; min-height: 80px; resize: vertical; }
+
+.pool-panel { flex: 1; display: none; flex-direction: column; overflow: hidden; padding: var(--space-md); }
+.pool-panel.active { display: flex; }
+.pool-panel .pool-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; flex-shrink: 0; }
+.pool-panel .pool-header h2 { font-size: var(--font-page-title); color: var(--text-primary); }
+.pool-panel .pool-header .pool-stats { font-size: var(--font-small); color: var(--text-secondary); margin-left: auto; }
+.pool-panel .pool-header .pool-stats .num { font-weight: 700; color: var(--primary); }
+.pool-rec-chips { display: flex; gap: 6px; margin-bottom: 12px; flex-shrink: 0; overflow-x: auto; }
+.pool-rec-chips button { padding: 4px 12px; border: 1px solid var(--border); background: var(--bg-card); border-radius: 14px; cursor: pointer; font-size: var(--font-label); white-space: nowrap; transition: all 0.15s; color: var(--text-secondary); }
+.pool-rec-chips button:hover { border-color: var(--primary); color: var(--primary); }
+.pool-rec-chips button.active { background: var(--primary); color: var(--primary-text); border-color: var(--primary); }
+.pool-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; overflow-y: auto; flex: 1; align-items: start; }
+.pool-card { background: var(--bg-card); border-radius: var(--radius-md); padding: 14px; box-shadow: var(--shadow-card); transition: box-shadow 0.15s, transform 0.15s; min-height: 120px; display: flex; flex-direction: column; }
+.pool-card:hover { box-shadow: var(--shadow-card-hover); transform: translateY(-1px); }
+.pool-card .pc-name { font-weight: 600; font-size: var(--font-body); color: var(--text-primary); }
+.pool-card .pc-meta { font-size: var(--font-label); color: var(--text-secondary); margin-top: 2px; }
+.pool-card .pc-tags { display: flex; gap: var(--space-xs); margin: 8px 0; flex-wrap: wrap; }
+.pool-card .pc-actions { margin-top: auto; padding-top: 10px; }
+.pool-card .pc-actions button { padding: 4px 14px; border: 1px solid var(--primary); background: var(--bg-card); border-radius: var(--radius-sm); cursor: pointer; font-size: var(--font-label); color: var(--primary); transition: all 0.15s; }
+.pool-card .pc-actions button:hover { background: var(--primary-bg); }
+
+.settings-panel { flex: 1; display: none; flex-direction: column; overflow-y: auto; padding: var(--space-lg); }
+.settings-panel.active { display: flex; }
+.settings-panel h2 { font-size: var(--font-page-title); color: var(--text-primary); margin-bottom: var(--space-md); }
+.settings-card { background: var(--bg-card); border-radius: var(--radius-md); padding: 20px; box-shadow: var(--shadow-card); max-width: 560px; }
+.settings-card .s-field { margin-bottom: 14px; }
+.settings-card .s-field label { display: block; font-size: var(--font-small); color: var(--text-secondary); margin-bottom: 4px; font-weight: 500; }
+.settings-card .s-field input, .settings-card .s-field select { width: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: var(--radius-md); font-size: var(--font-small); }
+.settings-card .s-field input:focus, .settings-card .s-field select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 2px var(--primary-bg); }
+.settings-card .s-check { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
+.settings-card .s-check label { font-size: var(--font-small); color: var(--text-secondary); cursor: pointer; }
+.settings-card .s-actions { display: flex; gap: 8px; margin-top: 8px; }
+.settings-card .s-actions button { padding: 8px 20px; border: none; border-radius: var(--radius-md); cursor: pointer; font-size: var(--font-small); font-weight: 500; }
+.settings-card .s-actions .btn-save { background: var(--primary); color: #fff; }
+.settings-card .s-actions .btn-save:hover { background: var(--primary-dark); }
+.settings-card .s-actions .btn-test { background: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border); }
+.settings-card .s-actions .btn-test:hover { border-color: var(--primary); color: var(--primary); }
+.settings-card .s-status { margin-top: 12px; padding: 8px 12px; border-radius: var(--radius-sm); font-size: var(--font-label); display: none; }
+.settings-card .s-status.success { display: block; background: var(--success-bg); color: var(--success-text); }
+.settings-card .s-status.error { display: block; background: var(--danger-bg); color: var(--danger-text); }
+.settings-card textarea { font-family: "Courier New", monospace; }
+
+.outbox-stat { display: inline-flex; align-items: center; gap: 4px; cursor: pointer; }
+.outbox-stat:hover { color: var(--primary); }
+
+.toast { position: fixed; top: 16px; right: 16px; padding: 10px 20px; border-radius: var(--radius-md); color: #fff; font-size: var(--font-small); z-index: 999; opacity: 0; transition: opacity 0.3s, transform 0.3s; pointer-events: none; box-shadow: var(--shadow-card-hover); }
+.toast.show { opacity: 1; }
+.toast.success { background: var(--success); }
+.toast.error { background: var(--danger); }
+
+@media (max-width: 900px) {
+  .queue-panel { position: fixed; top: 0; left: 0; bottom: 0; z-index: 50; box-shadow: var(--shadow-drawer); transform: translateX(-100%); transition: transform 0.25s; display: flex !important; }
+  .queue-panel.open { transform: translateX(0); }
+  .queue-panel.hidden { display: flex !important; }
+  .queue-toggle { display: inline-flex !important; }
+  .kanban-col { min-width: 170px; }
+  .detail-panel.open { width: 360px; }
+}
+@media (max-width: 600px) {
+  .header { padding: 8px 12px; gap: 8px; }
+  .header h1 { font-size: 15px; }
+  .header .tabs { margin-left: 8px; }
+  .header .tabs button { padding: 3px 10px; font-size: var(--font-label); }
+  .header .stats { gap: 8px; font-size: var(--font-caption); }
+  .header .stats .num { font-size: var(--font-small); }
+  .detail-panel.open { width: 100vw !important; position: fixed; top: 0; right: 0; bottom: 0; z-index: 60; }
+  .kanban-col { min-width: 150px; max-width: 200px; }
+  .kanban-scroll { padding: 8px; gap: 8px; }
+  .pool-grid { grid-template-columns: 1fr; }
+  .modal-box { min-width: auto; margin: 0 12px; }
+}
+
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 200; display: none; align-items: center; justify-content: center; }
+.modal-overlay.show { display: flex; }
+.modal-box { background: var(--bg-card); border-radius: var(--radius-lg); padding: 24px; min-width: 360px; max-width: 480px; box-shadow: var(--shadow-modal); }
+.modal-box h3 { font-size: var(--font-page-title); margin-bottom: var(--space-md); color: var(--text-primary); }
+.modal-box .modal-actions { display: flex; gap: var(--space-sm); justify-content: flex-end; margin-top: 20px; }
+.modal-box .modal-actions button { padding: 6px 18px; border: none; border-radius: var(--radius-md); cursor: pointer; font-size: var(--font-small); }
+.modal-box .modal-actions .btn-cancel { background: #f3f4f6; color: var(--text-secondary); }
+.modal-box .modal-actions .btn-cancel:hover { background: #e5e7eb; }
+.modal-box .modal-actions .btn-danger { background: var(--danger); color: #fff; }
+.modal-box .modal-actions .btn-danger:hover { background: #dc2626; }
+.modal-box label { display: block; font-size: var(--font-small); color: var(--text-secondary); margin-bottom: 4px; }
+.modal-box select, .modal-box input { width: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: var(--radius-md); font-size: var(--font-small); margin-bottom: 12px; }
+
+.preview-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 300; display: none; align-items: center; justify-content: center; }
+.preview-overlay.show { display: flex; }
+.preview-container { background: var(--bg-card); border-radius: var(--radius-lg); width: 90vw; height: 90vh; display: flex; flex-direction: column; box-shadow: var(--shadow-modal); overflow: hidden; }
+.preview-header { padding: 14px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+.preview-header .preview-title { font-size: var(--font-section-title); font-weight: 600; color: var(--text-primary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 80%; }
+.preview-close { cursor: pointer; font-size: 24px; color: var(--text-tertiary); line-height: 1; padding: 0 4px; }
+.preview-close:hover { color: var(--text-primary); }
+.preview-body { flex: 1; overflow: auto; display: flex; align-items: center; justify-content: center; background: #f5f5f5; position: relative; }
+.preview-body iframe { width: 100%; height: 100%; border: none; }
+.preview-body img { max-width: 100%; max-height: 100%; object-fit: contain; }
+.preview-loading { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f5f5f5; z-index: 1; transition: opacity 0.3s; }
+.preview-loading.hidden { opacity: 0; pointer-events: none; }
+.preview-loading .spinner { width: 36px; height: 36px; border: 3px solid #ddd; border-top-color: var(--primary); border-radius: 50%; animation: spin 0.7s linear infinite; }
+.preview-loading .loading-text { margin-top: 12px; color: var(--text-tertiary); font-size: var(--font-small); }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <button class="queue-toggle" id="queueToggle" onclick="toggleQueue()" title="切换队列面板">&#9776;</button>
+  <h1>招聘管道看板</h1>
+  <div class="tabs">
+    <button class="active" onclick="switchView('split')">分栏</button>
+    <button onclick="switchView('kanban')">管道</button>
+    <button onclick="switchView('queue')">队列</button>
+    <button onclick="switchView('pool')">人才库</button>
+    <button onclick="switchView('settings')">设置</button>
+  </div>
+  <div class="stats" id="stats"></div>
+  <button class="refresh-btn" id="refreshBtn" onclick="refreshAll()" title="刷新数据">&#x21bb;</button>
+</div>
+
+<div class="error-banner" id="errorBanner">
+  <span id="errorMessage">加载失败</span>
+  <button class="retry-btn" onclick="refreshAll()">重试</button>
+</div>
+<div class="disconnect-banner" id="disconnectBanner">
+  后端服务连接断开
+  <button class="reconnect-btn" onclick="checkConnection(true)">重连</button>
+</div>
+
+<div class="main">
+  <div class="queue-panel" id="queuePanel">
+    <div class="queue-header">
+      飞书邮件确认队列
+      <span class="q-badge" id="pendingCount">0</span>
+    </div>
+    <div class="q-filters" id="qFilters"></div>
+    <div id="qCards"></div>
+  </div>
+
+  <div class="kanban-panel" id="kanbanPanel">
+    <div class="kanban-scroll" id="kanbanScroll"></div>
+  </div>
+
+  <div class="pool-panel" id="poolPanel">
+    <div class="pool-header">
+      <h2>人才库</h2>
+      <div class="pool-stats" id="poolStats"></div>
+    </div>
+    <div class="pool-rec-chips" id="poolRecChips"></div>
+    <div class="pool-grid" id="poolGrid"></div>
+  </div>
+
+  <div class="settings-panel" id="settingsPanel">
+    <h2>AI 配置</h2>
+    <div class="settings-card" id="settingsBody">
+      <p style="color:var(--text-tertiary);font-size:var(--font-small);">加载中...</p>
+    </div>
+  </div>
+
+  <div class="detail-panel" id="detailPanel">
+    <div class="d-header">
+      <h2 id="dTitle">候选人材料</h2>
+      <span class="d-close" onclick="closeDetail()">&times;</span>
+    </div>
+    <div class="d-body" id="dBody">
+      <div class="d-empty">点击候选人查看详情</div>
+    </div>
+  </div>
+</div>
+
+<div class="preview-overlay" id="previewOverlay" onclick="closePreview(event)">
+  <div class="preview-container">
+    <div class="preview-header">
+      <span class="preview-title" id="previewTitle">预览</span>
+      <span class="preview-close" onclick="closePreview()">&times;</span>
+    </div>
+    <div class="preview-body" id="previewBody">
+      <div class="preview-loading" id="previewLoading">
+        <div class="spinner"></div>
+        <div class="loading-text">加载中...</div>
+      </div>
+      <iframe id="previewIframe" style="display:none;"></iframe>
+      <img id="previewImage" style="display:none;" alt="预览图片">
+    </div>
+  </div>
+</div>
+
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="spinner"></div>
+  <div class="loading-text">加载中...</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const STATUS_LABELS = {
+  new: "新进入", contacted: "已联系", exam_sent: "笔试已发送",
+  exam_received: "笔试已提交", evaluating: "评估中", interview: "面试",
+  offer: "已发Offer", closed: "已结束"
+};
+const STATUS_ORDER = ["new","contacted","exam_sent","exam_received","evaluating","interview","offer","closed"];
+const STATUS_TRANSITIONS = {
+  new: ["contacted", "closed"],
+  contacted: ["exam_sent", "closed"],
+  exam_sent: ["exam_received", "closed"],
+  exam_received: ["evaluating", "closed"],
+  evaluating: ["interview", "exam_sent", "closed"],
+  interview: ["offer", "closed"],
+  offer: ["closed"],
+  closed: [],
+};
+
+let viewMode = 'split';
+let qFilter = null;
+let allTalents = [];
+let pipelineData = null;
+let currentRecId = null;
+let selectedTalentId = null;
+
+function toast(msg, type) {
+  const el = document.getElementById("toast");
+  el.textContent = msg;
+  el.className = "toast " + type + " show";
+  setTimeout(() => el.classList.remove("show"), 2500);
+}
+
+async function api(url, opts) {
+  const r = await fetch(url, { headers: {"Content-Type":"application/json"}, ...opts });
+  if (!r.ok) { const b = await r.json().catch(()=>({})); throw new Error(b.detail || r.statusText); }
+  return r.status === 204 ? null : r.json();
+}
+
+function esc(t) { if (!t) return ''; var d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
+
+function getAttachmentUrl(att, forPreview) {
+  // External URL (webmail embedded attachments like QQ large files)
+  if (att.external_url) return att.external_url;
+  // When requesting a preview URL for Word docs, use the PDF version
+  const srcPath = (forPreview && att.preview_path) ? att.preview_path : att.storage_path;
+  if (!srcPath) return null;
+  const idx = srcPath.indexOf('/attachments/');
+  if (idx === -1) return null;
+  const relPath = srcPath.substring(idx + '/attachments/'.length);
+  // Encode each path segment to handle Chinese chars and spaces in filenames
+  return '/attachments/' + relPath.split('/').map(s => encodeURIComponent(s)).join('/');
+}
+
+function openPreview(url, filename) {
+  document.getElementById('previewTitle').textContent = filename || '预览';
+  const iframe = document.getElementById('previewIframe');
+  const img = document.getElementById('previewImage');
+  const loading = document.getElementById('previewLoading');
+  // Show loading indicator immediately
+  loading.classList.remove('hidden');
+  iframe.style.display = 'none';
+  img.style.display = 'none';
+  iframe.src = '';
+  img.src = '';
+  const lower = (filename || '').toLowerCase();
+  if (lower.endsWith('.pdf')) {
+    iframe.style.display = 'block';
+    iframe.onload = function () { loading.classList.add('hidden'); };
+    iframe.src = url;
+  } else if (lower.match(/\.(png|jpg|jpeg|gif|webp|bmp|svg)$/)) {
+    img.style.display = 'block';
+    img.onload = function () { loading.classList.add('hidden'); };
+    img.src = url;
+  } else {
+    window.open(url, '_blank');
+    return;
+  }
+  document.getElementById('previewOverlay').classList.add('show');
+}
+
+function closePreview(e) {
+  if (e && e.target !== e.currentTarget) return;
+  document.getElementById('previewOverlay').classList.remove('show');
+  document.getElementById('previewIframe').src = '';
+  document.getElementById('previewImage').src = '';
+  document.getElementById('previewLoading').classList.add('hidden');
+}
+
+function showLoading() { document.getElementById('loadingOverlay').classList.add('show'); }
+function hideLoading() { document.getElementById('loadingOverlay').classList.remove('show'); }
+function showError(msg) {
+  document.getElementById('errorMessage').textContent = msg;
+  document.getElementById('errorBanner').classList.add('show');
+}
+function hideError() { document.getElementById('errorBanner').classList.remove('show'); }
+
+async function refreshAll() {
+  hideError();
+  const btn = document.getElementById('refreshBtn');
+  btn.classList.add('loading');
+  try { await loadQueue(); await Promise.all([loadPipeline(), loadPool()]); }
+  catch(e) { showError('刷新失败: ' + e.message); }
+  finally { btn.classList.remove('loading'); }
+}
+
+async function loadPipeline() {
+  const recs = await api("/recruitments");
+  if (recs.length === 0) { const r = await api("/recruitments", { method: "POST" }); recs.push(r); }
+  currentRecId = recs[recs.length - 1].id;
+  allTalents = await api(`/recruitments/${currentRecId}/talents`);
+  pipelineData = await api("/pipeline");
+
+  document.getElementById("stats").innerHTML =
+    `<span>总数 <span class="num">${pipelineData.summary.total}</span></span>` +
+    `<span>待关注 <span class="num">${pipelineData.summary.need_attention}</span></span>`;
+  renderKanban();
+}
+
+function waitDays(t) {
+  if (!t.updated_at) return null;
+  const d = new Date(t.updated_at.replace(' ', 'T') + 'Z');
+  return Math.floor((Date.now() - d) / 86400000);
+}
+
+function renderKanban() {
+  const el = document.getElementById("kanbanScroll");
+  const pending = parseInt(document.getElementById("pendingCount").textContent || "0", 10);
+  const total = pipelineData?.summary?.total || 0;
+  if (total === 0 && pending > 0) {
+    el.innerHTML = `<div class="empty-state" style="margin:auto;max-width:420px;">
+      管道暂无候选人。左侧确认队列中有 <strong>${pending}</strong> 封待处理邮件，确认后将出现在看板中。
+    </div>`;
+    return;
+  }
+  el.innerHTML = STATUS_ORDER.map(st => {
+    const items = (pipelineData && pipelineData.stages && pipelineData.stages[st]) || [];
+    return `<div class="kanban-col">
+      <div class="col-header">${STATUS_LABELS[st]||st} <span class="count">${items.length}</span></div>
+      <div class="col-body">${
+        items.length === 0 ? '<div class="kanban-empty">空</div>' :
+        items.map(t => {
+          const qc = t.quality === 'excellent' ? ' excellent' : t.quality === 'closed' ? ' closed' : '';
+          const sel = t.id === selectedTalentId ? ' selected' : '';
+          const wd = waitDays(t);
+          const wc = wd >= 14 ? 'overdue' : wd >= 7 ? 'warning' : 'normal';
+          return `<div class="kanban-card${qc}${sel}" onclick="selectTalent(${t.id}, ${t.candidate_id}, '${esc(t.real_name)}', '${esc(t.email)}')">
+            <div class="k-name">${esc(t.real_name)}${t.quality === 'excellent' ? ' <span class="k-quality-star">★</span>' : ''}</div>
+            <div class="k-meta">${esc(t.email)}</div>
+            ${t.sub_stage ? `<div class="k-meta">子阶段: ${esc(t.sub_stage)}</div>` : ''}
+            ${wd !== null ? `<div class="k-wait ${wc}">停留 ${wd} 天</div>` : ''}
+          </div>`;
+        }).join('')
+      }</div>
+    </div>`;
+  }).join('');
+}
+
+async function selectTalent(applicationId, candidateId, name, email) {
+  selectedTalentId = applicationId;
+  renderKanban();
+  const panel = document.getElementById("detailPanel");
+  const body = document.getElementById("dBody");
+  document.getElementById("dTitle").textContent = name + " - 详情";
+
+  let materials = null;
+  try { materials = await api(`/applications/${applicationId}/materials`); } catch(e) {}
+
+  let messages = [];
+  if (candidateId) { try { messages = await api(`/candidates/${candidateId}/messages`); } catch(e) {} }
+
+  let timeline = [];
+  if (candidateId) { try { timeline = await api(`/candidates/${candidateId}/timeline`); } catch(e) {} }
+
+  const qi = materials?.queue_item;
+  const rp = materials?.resume_parse;
+
+  let html = '';
+
+  // Basic Info
+  let talent = null;
+  if (pipelineData && pipelineData.stages) {
+    for (const st of STATUS_ORDER) {
+      talent = (pipelineData.stages[st] || []).find(t => t.id === applicationId);
+      if (talent) break;
+    }
+  }
+  html += `<div class="d-section">
+    <h3>基本信息</h3>
+    <div class="d-info-row"><span class="label">姓名</span><span class="value">${esc(name)}</span></div>
+    <div class="d-info-row"><span class="label">邮箱</span><span class="value">${esc(email)}</span></div>
+    <div class="d-info-row"><span class="label">阶段</span><span class="value">${STATUS_LABELS[talent?.status] || talent?.status || '-'}</span></div>
+    ${talent?.sub_stage ? `<div class="d-info-row"><span class="label">子阶段</span><span class="value">${esc(talent.sub_stage)}</span></div>` : ''}
+    ${talent?.quality ? `<div class="d-info-row"><span class="label">质量</span><span class="value">${talent.quality === 'excellent' ? '优秀' : talent.quality === 'closed' ? '淘汰' : '普通'}</span></div>` : ''}
+    ${talent?.created_at ? `<div class="d-info-row"><span class="label">创建时间</span><span class="value">${talent.created_at}</span></div>` : ''}
+  </div>`;
+
+  // Email Materials
+  if (qi) {
+    html += `<div class="d-section">
+      <h3>飞书邮件材料</h3>
+      <div class="d-email-meta">
+        <strong>主题:</strong> ${esc(qi.subject)}<br>
+        <strong>发件人:</strong> ${esc(qi.sender_name || '')} &lt;${esc(qi.sender_email)}&gt;
+        ${qi.recipient_email ? `<br><strong>收件人:</strong> ${esc(qi.recipient_email)}` : ''}
+      </div>`;
+    const bodyText = qi.body_text || qi.body;
+    if (bodyText) {
+      html += `<div class="d-body-text">${esc(bodyText)}</div>`;
+    } else {
+      html += `<div style="color:#bbb;font-size:12px;padding:8px 0;">该邮件无正文内容</div>`;
+    }
+    const ci = materials?.classifier_info;
+    if (ci) {
+      const srcLabel = ci.classifier_source === 'rule' ? '规则分类' : ci.classifier_source === 'llm' ? 'AI 分类' : ci.classifier_source || '未知';
+      html += `<div style="margin-top:8px;font-size:12px;color:#888;padding:6px 0;border-top:1px solid #f0f0f0;">
+        <strong>分类来源:</strong> ${srcLabel}
+        ${ci.classifier_reason ? `<br><strong>分类理由:</strong> ${esc(ci.classifier_reason)}` : ''}
+      </div>`;
+    }
+    html += `</div>`;
+  } else {
+    html += `<div class="d-section">
+      <h3>飞书邮件材料</h3>
+      <div style="color:#bbb;font-size:12px;">该申请不是从飞书邮件创建，无关联邮件</div>
+    </div>`;
+  }
+
+  // Attachments
+  if (qi && qi.attachments && qi.attachments.length > 0) {
+    html += `<div class="d-section">
+      <h3>附件材料 (${qi.attachments.length})</h3>
+      <div style="font-size:13px;">`;
+    qi.attachments.forEach(a => {
+      const isPDF = (a.mime_type && a.mime_type.includes('pdf')) || (a.filename && a.filename.endsWith('.pdf'));
+      const isWord = !isPDF && a.filename && a.filename.toLowerCase().match(/\.docx?$/);
+      const icon = isPDF ? '📎' : '📄';
+      const url = isWord ? getAttachmentUrl(a, true) : getAttachmentUrl(a);
+      const nameHtml = url
+        ? (a.external_url
+          ? `<a href="${url}" target="_blank" rel="noopener" style="color:var(--primary);text-decoration:none;font-weight:500;cursor:pointer;">${esc(a.filename)} <span style="font-size:11px;color:#999;">↗</span></a>`
+          : `<a href="javascript:void(0)" onclick="openPreview('${url}', '${isWord ? esc(a.filename).replace(/\.docx?$/i, '.pdf').replace(/'/g, "\\'") : esc(a.filename).replace(/'/g, "\\'")}')" style="color:var(--primary);text-decoration:none;font-weight:500;cursor:pointer;">${esc(a.filename)}${isWord && !a.preview_path ? ' (下载)' : ''}</a>`)
+        : esc(a.filename);
+      html += `<div style="padding:4px 0;border-bottom:1px solid #f0f0f0;">
+        ${icon} ${nameHtml} (${a.size ? (a.size/1024).toFixed(0) + ' KB' : '?'})
+      </div>`;
+    });
+    html += `</div></div>`;
+  }
+
+  // Corrections
+  if (materials?.corrections && materials.corrections.length > 0) {
+    html += `<div class="d-section">
+      <h3>修正记录 (${materials.corrections.length})</h3>
+      <div style="font-size:13px;">`;
+    materials.corrections.forEach(c => {
+      html += `<div style="padding:6px 0;border-bottom:1px solid #f0f0f0;">
+        <div><strong>${esc(c.field_name || '')}</strong>: ${esc(c.old_value ?? '')} → ${esc(c.new_value ?? '')}</div>
+        <div style="color:#999;font-size:11px;margin-top:2px;">${esc(c.operator || '')} · ${esc(c.created_at || '')}</div>
+      </div>`;
+    });
+    html += `</div></div>`;
+  }
+
+  // PDF Parse Result
+  if (rp) {
+    if (rp.status === 'success' && rp.text_excerpt) {
+      html += `<div class="d-section">
+        <h3>PDF 解析摘要</h3>`;
+      if (rp.name || rp.phone || rp.email) {
+        html += `<div style="margin-bottom:8px;font-size:13px;background:#f5f5f5;padding:8px;border-radius:6px;">`;
+        if (rp.name) html += `<div><strong>姓名：</strong>${esc(rp.name)}</div>`;
+        if (rp.phone) html += `<div><strong>电话：</strong>${esc(rp.phone)}</div>`;
+        if (rp.email) html += `<div><strong>邮箱：</strong>${esc(rp.email)}</div>`;
+        html += `</div>`;
+      }
+      html += `<div class="d-body-text">${esc(rp.text_excerpt)}</div>
+      </div>`;
+    } else if (rp.status === 'failure') {
+      html += `<div class="d-section">
+        <h3>PDF 解析结果</h3>
+        <div style="color:#ef4444;font-size:12px;">${esc(rp.error || 'PDF 解析失败')}</div>
+      </div>`;
+    }
+  }
+
+  // Messages
+  if (messages.length > 0) {
+    html += `<div class="d-section">
+      <h3>往来记录 (${messages.length})</h3>`;
+    messages.forEach(m => {
+      const dirLabel = m.direction === 'inbound' ? '📥 收信' : '📤 发信';
+      const statusBadge = m.direction === 'outbound'
+        ? (m.send_status === 'sent' ? '<span style="color:#10b981;font-size:11px;"> ✓已发送</span>'
+            : m.send_status === 'failed' ? '<span style="color:#ef4444;font-size:11px;"> ✗失败</span>'
+            : '<span style="color:#f59e0b;font-size:11px;"> ⏳待发送</span>')
+        : '';
+      // Attachment links from attachments_json
+      let attHtml = '';
+      if (m.attachments_json) {
+        try {
+          const atts = JSON.parse(m.attachments_json);
+          if (atts.length > 0) {
+            attHtml = '<div style="margin-top:8px;border-top:1px solid #eee;padding-top:6px;">';
+            atts.forEach(a => {
+              const isWord = a.filename && a.filename.toLowerCase().match(/\.docx?$/);
+              const url = isWord ? getAttachmentUrl(a, true) : getAttachmentUrl(a);
+              if (url) {
+                const link = a.external_url
+                  ? `<a href="${url}" target="_blank" rel="noopener" style="color:var(--primary);text-decoration:none;">${esc(a.filename)} <span style="font-size:11px;color:#999;">↗</span></a>`
+                  : (isWord && a.preview_path
+                    ? `<a href="javascript:void(0)" onclick="openPreview('${url}', '${esc(a.filename).replace(/\.docx?$/i, '.pdf').replace(/'/g, "\\'")}')" style="color:var(--primary);text-decoration:none;">${esc(a.filename)} <span style="font-size:11px;color:#999;">📄预览</span></a>`
+                    : `<a href="javascript:void(0)" onclick="openPreview('${url}', '${esc(a.filename).replace(/'/g, "\\'")}')" style="color:var(--primary);text-decoration:none;">${esc(a.filename)}${isWord && !a.preview_path ? ' (下载)' : ''}</a>`);
+                attHtml += `<div style="font-size:12px;padding:2px 0;">📎 ${link}</div>`;
+              } else {
+                attHtml += `<div style="font-size:12px;padding:2px 0;color:#999;">📎 ${esc(a.filename)} (无法访问)</div>`;
+              }
+            });
+            attHtml += '</div>';
+          }
+        } catch(e) {}
+      }
+      html += `<div class="msg-item" onclick="this.querySelector('.msg-body').classList.toggle('show')">
+        <div class="msg-subject">${dirLabel}: ${esc(m.subject)} ${statusBadge}</div>
+        <div class="msg-meta">${m.occurred_at} ${m.sender_email ? '· ' + esc(m.sender_email) : ''}</div>
+        <div class="msg-body">${esc(m.body_text || m.body || '(无正文)')}${attHtml}</div>
+      </div>`;
+    });
+    html += `</div>`;
+  }
+
+  // Timeline
+  if (timeline.length > 0) {
+    html += `<div class="d-section">
+      <h3>时间线</h3>`;
+    timeline.forEach(t => {
+      const icon = t.type === 'message'
+        ? (t.detail?.direction === 'inbound' ? '📥' : '📤')
+        : '🔄';
+      html += `<div class="tl-item">
+        <div>${icon} ${esc(t.description)}</div>
+        <div class="tl-time">${t.timestamp}</div>
+      </div>`;
+    });
+    html += `</div>`;
+  }
+
+  // Reply
+  if (candidateId) {
+    html += `<div class="d-section">
+      <h3>回复邮件</h3>
+      <div class="reply-form">
+        <input type="text" id="replySubject" placeholder="邮件主题" value="${esc('Re: ' + (qi?.subject || ''))}">
+        <textarea id="replyBody" placeholder="邮件内容..."></textarea>
+        <button class="btn-confirm" onclick="replyToCandidate(${candidateId}, ${applicationId})">发送回复</button>
+      </div>
+    </div>`;
+  }
+
+  // Stage Results
+  if (talent?.stage_results && Object.keys(talent.stage_results).length > 0) {
+    html += `<div class="d-section">
+      <h3>阶段结果</h3>
+      ${Object.entries(talent.stage_results).map(([k, v]) =>
+        `<div class="d-info-row"><span class="label">${STATUS_LABELS[k] || k}</span><span class="value">${v === 'pass' ? '通过' : '淘汰'}</span></div>`
+      ).join('')}
+    </div>`;
+  }
+
+  // Stage Transition
+  if (talent && talent.status !== 'closed') {
+    const next = STATUS_TRANSITIONS[talent.status] || [];
+    if (next.length > 0) {
+      html += `<div class="d-section">
+        <h3>阶段变更</h3>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:4px;">
+          ${next.map(s =>
+            `<button class="btn-transition" data-status="${s}" onclick="transitionTalent(${talent.id}, '${s}')">${STATUS_LABELS[s] || s}</button>`
+          ).join('')}
+        </div>
+      </div>`;
+    }
+  }
+
+  body.innerHTML = html;
+  panel.classList.add("open");
+}
+
+function closeDetail() {
+  selectedTalentId = null;
+  document.getElementById("detailPanel").classList.remove("open");
+  renderKanban();
+}
+
+async function transitionTalent(talentId, newStatus) {
+  try {
+    await api(`/applications/${talentId}/transition`, {
+      method: 'POST',
+      body: JSON.stringify({ status: newStatus }),
+    });
+    toast(`已变更到 ${STATUS_LABELS[newStatus] || newStatus}`, 'success');
+    await loadPipeline();
+    for (const stage of STATUS_ORDER) {
+      const found = (pipelineData.stages[stage] || []).find(t => t.id === talentId);
+      if (found) { selectTalent(found.id, found.candidate_id, found.real_name, found.email); return; }
+    }
+    closeDetail();
+  } catch(e) {
+    toast('变更失败: ' + e.message, 'error');
+  }
+}
+
+async function replyToCandidate(candidateId, applicationId) {
+  const subject = document.getElementById('replySubject').value.trim();
+  const body = document.getElementById('replyBody').value.trim();
+  if (!subject) { toast('请输入邮件主题', 'error'); return; }
+  try {
+    await api(`/candidates/${candidateId}/reply`, {
+      method: 'POST',
+      body: JSON.stringify({ application_id: applicationId, subject, body, body_text: body }),
+    });
+    toast('回复已加入发件队列', 'success');
+    document.getElementById('replyBody').value = '';
+  } catch(e) {
+    toast('回复失败: ' + e.message, 'error');
+  }
+}
+
+async function loadQueue() {
+  const qUrl = qFilter ? `/queue?hr_status=${qFilter}` : "/queue";
+  const data = await api(qUrl);
+  const stats = await api("/queue/stats");
+  document.getElementById("pendingCount").textContent = stats.pending || 0;
+  renderQueueFilters(stats);
+  renderQueueCards(data.items);
+}
+
+function renderQueueFilters(stats) {
+  document.getElementById("qFilters").innerHTML = [
+    { label: "全部", value: null },
+    { label: `待处理 (${stats.pending||0})`, value: "pending" },
+    { label: `已确认 (${stats.confirmed||0})`, value: "confirmed" },
+    { label: `已忽略 (${stats.ignored||0})`, value: "ignored" },
+  ].map(f =>
+    `<button class="${qFilter === f.value ? 'active' : ''}" onclick="setQFilter('${f.value === null ? '' : f.value}')">${f.label}</button>`
+  ).join('');
+}
+
+function setQFilter(v) { qFilter = v === '' ? null : v; loadQueue(); }
+
+function renderQueueCards(items) {
+  const el = document.getElementById("qCards");
+  if (items.length === 0) {
+    el.innerHTML = '<div class="q-empty">暂无邮件</div>';
+    return;
+  }
+  el.innerHTML = items.map(item => {
+    const qid = item.queue_id;
+    const effectiveName = item.extracted_name || item.sender_name || '';
+    const effectiveEmail = item.extracted_email || item.sender_email || '';
+    const statusBadge = item.suggested_status
+      ? `<span class="badge ${item.suggested_status}">${item.suggested_status}</span>`
+      : '<span class="badge low">无法判断</span>';
+    return `<div class="q-card${item.hr_status !== 'pending' ? ' done' : ' pending'}" id="qCard-${qid}">
+      <div class="q-subject">${esc(item.subject)}</div>
+      <div class="q-sender">${esc(item.sender_name||'')} &lt;${esc(item.sender_email)}&gt;</div>
+      ${item.recipient_email ? `<div style="font-size:11px;color:#999;">收件人: ${esc(item.recipient_email)}</div>` : ''}
+      <div class="q-tags">
+        <span class="badge ${item.confidence}">${item.confidence}</span>
+        ${statusBadge}
+        ${item.extracted_name ? `<span class="badge high">姓名: ${esc(item.extracted_name)}</span>` : ''}
+        ${item.extracted_email ? `<span class="badge high">邮箱: ${esc(item.extracted_email)}</span>` : ''}
+      </div>
+      ${item.hr_status === 'pending' ? `
+      <div class="q-actions">
+        <button class="btn-confirm" onclick="confirmItem(${qid}, 'confirmed')">确认</button>
+        <select id="qStatus-${qid}">
+          <option value="">保持建议</option>
+          <option value="new">new</option><option value="contacted">contacted</option>
+          <option value="exam_sent">exam_sent</option><option value="exam_received">exam_received</option>
+          <option value="evaluating">evaluating</option><option value="interview">interview</option>
+          <option value="offer">offer</option><option value="closed">closed</option>
+        </select>
+        <input type="text" id="qName-${qid}" placeholder="姓名" value="${esc(effectiveName)}">
+        <input type="text" id="qEmail-${qid}" placeholder="邮箱" value="${esc(effectiveEmail)}">
+        <input type="text" id="qRecTitle-${qid}" placeholder="招聘名称" value="默认招聘">
+        <button class="btn-adjust" onclick="confirmItem(${qid}, 'adjusted')">调整</button>
+        <button class="btn-ignore" onclick="confirmItem(${qid}, 'ignored')">忽略</button>
+      </div>` : '<div style="color:#999;font-size:12px;margin-top:4px;">已处理</div>'}
+    </div>`;
+  }).join('');
+}
+
+async function confirmItem(id, action) {
+  if (action === 'ignored') {
+    if (!confirm('确定忽略该邮件？候选人将不会进入招聘管道。')) return;
+    showLoading();
+    try {
+      await api(`/queue/${id}/ignore`, { method: 'PATCH', body: JSON.stringify({action:'ignored'}) });
+      toast('已忽略', 'success');
+      const d = document.getElementById('qCard-' + id);
+      if (d) { d.classList.add('removing'); setTimeout(() => { d.classList.add('done'); d.classList.remove('removing'); d.querySelector('.q-actions')?.remove(); }, 300); }
+      loadQueue();
+      loadPipeline();
+    } catch(e) { toast('操作失败: ' + e.message, 'error'); }
+    finally { hideLoading(); }
+    return;
+  }
+
+  const s = document.getElementById('qStatus-' + id);
+  const n = document.getElementById('qName-' + id);
+  const e = document.getElementById('qEmail-' + id);
+  const rt = document.getElementById('qRecTitle-' + id);
+  const body = {
+    action: action === 'adjusted' ? 'adjusted' : 'confirmed',
+    status: (s && s.value) || '',
+    real_name: (n && n.value) || '',
+    email: (e && e.value) || '',
+    recruitment_title: (rt && rt.value) || '默认招聘',
+  };
+  showLoading();
+  try {
+    await api(`/queue/${id}/confirm`, { method: 'PATCH', body: JSON.stringify(body) });
+    toast('操作成功', 'success');
+    const d = document.getElementById('qCard-' + id);
+    if (d) { d.classList.add('removing'); setTimeout(() => { d.classList.add('done'); d.classList.remove('removing'); d.querySelector('.q-actions')?.remove(); }, 300); }
+    loadQueue();
+    loadPipeline();
+  } catch(e) { toast('操作失败: ' + e.message, 'error'); }
+  finally { hideLoading(); }
+}
+
+let poolData = [];
+let poolRecruitments = [];
+let selectedPoolRecId = null;
+
+async function loadPool() {
+  const [pool, recs] = await Promise.all([api('/pool'), api('/recruitments')]);
+  poolData = pool;
+  poolRecruitments = recs;
+  if (!selectedPoolRecId && recs.length > 0) selectedPoolRecId = recs[recs.length - 1].id;
+  renderPoolRecChips();
+  renderPoolCards();
+  renderPoolStats();
+}
+
+function renderPoolRecChips() {
+  document.getElementById('poolRecChips').innerHTML = poolRecruitments.map(r => {
+    const active = r.id === selectedPoolRecId;
+    return `<button class="${active ? 'active' : ''}" onclick="selectPoolRec(${r.id})">招聘 #${r.id}</button>`;
+  }).join('');
+}
+
+function selectPoolRec(id) { selectedPoolRecId = id; renderPoolRecChips(); renderPoolCards(); renderPoolStats(); }
+
+async function renderPoolStats() {
+  if (selectedPoolRecId == null) { document.getElementById('poolStats').textContent = ''; return; }
+  try {
+    const hc = await api('/recruitments/' + selectedPoolRecId + '/headcount');
+    document.getElementById('poolStats').innerHTML = `已接受 <span class="num">${hc.accepted}</span> / 总 Offer <span class="num">${hc.total_offers}</span>`;
+  } catch(e) { document.getElementById('poolStats').textContent = ''; }
+}
+
+function renderPoolCards() {
+  const el = document.getElementById('poolGrid');
+  if (poolData.length === 0) { el.innerHTML = '<div class="empty-state">人才库为空</div>'; return; }
+  el.innerHTML = poolData.map(p => {
+    const pooledDate = p.pooled_at ? p.pooled_at.substring(0, 10) : '';
+    return `<div class="pool-card">
+      <div class="pc-name">${esc(p.candidate_name || p.candidateName)}</div>
+      <div class="pc-meta">${esc(p.candidate_email || p.candidateEmail)}</div>
+      <div class="pc-tags">
+        <span class="badge ${p.status}">${p.status}</span>
+        <span class="badge ${p.quality}">${p.quality}</span>
+        ${pooledDate ? `<span class="badge low">入池 ${pooledDate}</span>` : ''}
+      </div>
+      <div class="pc-actions">
+        <button onclick="unpoolItem(${p.id})">出池</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function unpoolItem(applicationId) {
+  if (selectedPoolRecId == null) { toast('请先选择一个招聘批次', 'error'); return; }
+  const targetId = await new Promise(resolve => {
+    const overlay = document.createElement('div');
+    overlay.className = 'modal-overlay show';
+    overlay.innerHTML = `<div class="modal-box">
+      <h3>出池确认</h3>
+      <label>目标招聘批次</label>
+      <select id="unpoolRecSelect">${poolRecruitments.map(r => `<option value="${r.id}" ${r.id === selectedPoolRecId ? 'selected' : ''}>招聘 #${r.id}</option>`).join('')}</select>
+      <div class="modal-actions">
+        <button class="btn-cancel" onclick="this.closest('.modal-overlay').remove(); resolve(null)">取消</button>
+        <button class="btn-confirm" onclick="const v=document.getElementById('unpoolRecSelect').value; this.closest('.modal-overlay').remove(); resolve(parseInt(v))">确认出池</button>
+      </div>
+    </div>`;
+    document.body.appendChild(overlay);
+  });
+  if (!targetId) return;
+  showLoading();
+  try {
+    await api('/applications/' + applicationId + '/unpool', { method: 'POST', body: JSON.stringify({ recruitment_id: targetId }) });
+    toast('出池成功', 'success');
+    loadPool();
+    loadPipeline();
+  } catch(e) { toast('出池失败: ' + e.message, 'error'); }
+  finally { hideLoading(); }
+}
+
+async function loadAISettings() {
+  const body = document.getElementById('settingsBody');
+  try {
+    const cfg = await api('/ai/config');
+    body.innerHTML = `
+      <div class="s-check">
+        <input type="checkbox" id="aiEnabled" ${cfg.enabled ? 'checked' : ''} style="width:auto;">
+        <label for="aiEnabled">启用 AI 分类</label>
+      </div>
+      <div class="s-field">
+        <label>提供商</label>
+        <select id="aiProvider">
+          <option value="openai" ${cfg.provider === 'openai' ? 'selected' : ''}>OpenAI</option>
+          <option value="azure" ${cfg.provider === 'azure' ? 'selected' : ''}>Azure OpenAI</option>
+          <option value="anthropic" ${cfg.provider === 'anthropic' ? 'selected' : ''}>Anthropic</option>
+          <option value="deepseek" ${cfg.provider === 'deepseek' ? 'selected' : ''}>DeepSeek</option>
+          <option value="zhipu" ${cfg.provider === 'zhipu' ? 'selected' : ''}>智谱 (ChatGLM)</option>
+          <option value="qwen" ${cfg.provider === 'qwen' ? 'selected' : ''}>通义千问 (Qwen)</option>
+        </select>
+      </div>
+      <div class="s-field">
+        <label>API Base URL</label>
+        <input type="text" id="aiBaseUrl" value="${esc(cfg.base_url)}" placeholder="https://api.openai.com/v1">
+      </div>
+      <div class="s-field">
+        <label>API Key</label>
+        <input type="password" id="aiApiKey" value="${esc(cfg.api_key)}" placeholder="输入新的 API Key 以修改">
+      </div>
+      <div class="s-field">
+        <label>模型</label>
+        <input type="text" id="aiModel" value="${esc(cfg.model)}" placeholder="gpt-4o-mini">
+      </div>
+      <div class="s-field">
+        <label>提示词模板</label>
+        <textarea id="aiPrompt" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:var(--radius-md);font-size:var(--font-small);min-height:80px;resize:vertical;">${esc(cfg.prompt_template)}</textarea>
+      </div>
+      <div style="display:flex;gap:16px;margin-bottom:14px;">
+        <div class="s-field" style="flex:1;">
+          <label>超时（秒）</label>
+          <input type="number" id="aiTimeout" value="${cfg.timeout_seconds || 30}" min="5" max="120">
+        </div>
+        <div class="s-field" style="flex:1;">
+          <label>重试次数</label>
+          <input type="number" id="aiRetry" value="${cfg.retry_times || 2}" min="0" max="10">
+        </div>
+      </div>
+      <div class="s-actions">
+        <button class="btn-save" onclick="saveAISettings()">保存配置</button>
+        <button class="btn-test" onclick="testAIConnection()">测试连接</button>
+      </div>
+      <div class="s-status" id="aiStatus"></div>
+    `;
+  } catch(e) {
+    body.innerHTML = `<p style="color:var(--danger-text);font-size:var(--font-small);">加载配置失败: ${esc(e.message)}</p>`;
+  }
+}
+
+async function saveAISettings() {
+  const status = document.getElementById('aiStatus');
+  try {
+    await api('/ai/config', {
+      method: 'PATCH',
+      body: JSON.stringify({
+        enabled: document.getElementById('aiEnabled').checked,
+        provider: document.getElementById('aiProvider').value,
+        base_url: document.getElementById('aiBaseUrl').value,
+        api_key: document.getElementById('aiApiKey').value,
+        model: document.getElementById('aiModel').value,
+        prompt_template: document.getElementById('aiPrompt').value,
+        timeout_seconds: parseInt(document.getElementById('aiTimeout').value) || 30,
+        retry_times: parseInt(document.getElementById('aiRetry').value) || 2,
+      }),
+    });
+    status.className = 's-status success';
+    status.textContent = '配置已保存';
+    loadAISettings();
+  } catch(e) {
+    status.className = 's-status error';
+    status.textContent = '保存失败: ' + e.message;
+  }
+}
+
+async function testAIConnection() {
+  const status = document.getElementById('aiStatus');
+  status.className = 's-status';
+  status.textContent = '测试中...';
+  status.style.display = 'block';
+  try {
+    const result = await api('/ai/test', { method: 'POST' });
+    status.className = 's-status ' + (result.success ? 'success' : 'error');
+    status.textContent = result.message;
+  } catch(e) {
+    status.className = 's-status error';
+    status.textContent = '测试失败: ' + e.message;
+  }
+}
+
+async function loadOutboxCount() {
+  try {
+    const r = await api('/messages/outbox');
+    if (r.count > 0) {
+      const statsEl = document.getElementById('stats');
+      const existing = statsEl.innerHTML;
+      statsEl.innerHTML = existing + `<span class="outbox-stat" onclick="switchView('queue')" title="待发送邮件">发件箱 <span class="num">${r.count}</span></span>`;
+    }
+  } catch(e) {}
+}
+
+function toggleQueue() {
+  document.getElementById('queuePanel').classList.toggle('open');
+}
+
+function switchView(mode) {
+  viewMode = mode;
+  const tabs = document.querySelectorAll('.tabs button');
+  tabs.forEach(b => b.classList.remove('active'));
+  const idx = ['split','kanban','queue','pool','settings'].indexOf(mode);
+  if (idx >= 0 && tabs[idx]) tabs[idx].classList.add('active');
+  document.getElementById('queuePanel').classList.toggle('hidden', mode !== 'split' && mode !== 'queue');
+  document.getElementById('kanbanPanel').style.display = (mode === 'queue' || mode === 'pool' || mode === 'settings') ? 'none' : '';
+  document.getElementById('poolPanel').classList.toggle('active', mode === 'pool');
+  document.getElementById('settingsPanel').classList.toggle('active', mode === 'settings');
+  document.getElementById('queuePanel').classList.remove('open');
+  if (mode !== 'queue' && window.innerWidth <= 900) closeDetail();
+  if (mode === 'settings') loadAISettings();
+
+  const activeEl = mode === 'pool' ? document.getElementById('poolPanel') :
+                   mode === 'settings' ? document.getElementById('settingsPanel') :
+                   mode === 'queue' ? document.getElementById('queuePanel') :
+                   document.getElementById('kanbanPanel');
+  activeEl.classList.remove('fade-in');
+  void activeEl.offsetWidth;
+  activeEl.classList.add('fade-in');
+}
+
+document.addEventListener('keydown', (e) => {
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT' || e.target.tagName === 'TEXTAREA') return;
+  if (e.key === 'Escape') {
+    const modals = document.querySelectorAll('.modal-overlay.show');
+    if (modals.length > 0) { modals.forEach(m => m.remove()); return; }
+    closeDetail();
+    return;
+  }
+  if (e.key >= '1' && e.key <= '5' && !e.ctrlKey && !e.metaKey && !e.altKey) {
+    const modes = ['split', 'kanban', 'queue', 'pool', 'settings'];
+    switchView(modes[parseInt(e.key) - 1]);
+    return;
+  }
+  if ((e.key === 'r' || e.key === 'R') && !e.ctrlKey && !e.metaKey) {
+    refreshAll();
+    return;
+  }
+});
+
+let connected = true;
+
+async function checkConnection(showToastOnReconnect) {
+  try {
+    const r = await fetch('/queue/stats', { signal: AbortSignal.timeout(5000) });
+    if (!r.ok) throw new Error('bad status');
+    if (!connected) {
+      connected = true;
+      document.getElementById('disconnectBanner').classList.remove('show');
+      if (showToastOnReconnect) toast('连接已恢复', 'success');
+      await loadQueue();
+      await Promise.all([loadPipeline(), loadPool()]);
+    }
+  } catch(e) {
+    if (connected || showToastOnReconnect) {
+      connected = false;
+      document.getElementById('disconnectBanner').classList.add('show');
+    }
+  }
+}
+
+function startHealthCheck() {
+  checkConnection();
+  setInterval(() => checkConnection(), 30000);
+}
+
+async function init() {
+  showLoading();
+  try {
+    await loadQueue();
+    await Promise.all([loadPipeline(), loadPool()]);
+    loadOutboxCount();
+  } catch(e) {
+    showError('加载失败: ' + e.message + '。请确认服务是否运行。');
+  } finally {
+    hideLoading();
+  }
+  startHealthCheck();
+}
+init();
+</script>
+</body>
+</html>

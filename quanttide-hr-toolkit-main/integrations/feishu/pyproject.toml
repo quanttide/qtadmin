@@ -1,0 +1,18 @@
+[project]
+name = "feishu-integration"
+version = "0.1.0"
+description = "Feishu email classification + HR confirmation queue integration"
+requires-python = ">=3.12"
+dependencies = [
+    "httpx>=0.27.0",
+    "fastapi>=0.115.0",
+    "sqlalchemy>=2.0.0",
+    "uvicorn>=0.20.0",
+]
+
+[build-system]
+requires = ["setuptools>=75.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]

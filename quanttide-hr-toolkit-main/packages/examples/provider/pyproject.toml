@@ -1,0 +1,17 @@
+[project]
+name = "hr-provider-example"
+version = "0.1.0"
+description = "Example application using fastapi_quanttide_hr"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi_quanttide_hr",
+    "httpx>=0.27.0",
+    "uvicorn[standard]>=0.30.0",
+]
+
+[build-system]
+requires = ["setuptools>=75.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["."]

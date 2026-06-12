@@ -1,0 +1,29 @@
+[Unit]
+Description=QtCloud HR Mail Ingest — Feishu email polling daemon
+Documentation=https://github.com/quanttide/quanttide-hr-toolkit
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python3 -m feishu_integration.mail_ingest_loop --watch
+Restart=on-failure
+RestartSec=10
+StartLimitIntervalSec=300
+StartLimitBurst=10
+
+# Environment
+Environment=QTADMIN_SERVER_URL=http://localhost:8000
+Environment=QTADMIN_MAILBOX=tc@huaxiadishenyi.online
+Environment=INGEST_INTERVAL=5
+Environment=HOME=/home/linli
+
+# PATH must include ~/.npm-global/bin for lark-cli
+Environment=PATH=/home/linli/.npm-global/bin:/usr/local/bin:/usr/bin:/bin
+
+# Security hardening
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

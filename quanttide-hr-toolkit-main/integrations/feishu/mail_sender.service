@@ -1,0 +1,26 @@
+[Unit]
+Description=QtCloud HR Mail Sender — outbox polling daemon
+Documentation=https://github.com/quanttide/quanttide-hr-toolkit
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=linli
+ExecStart=/usr/bin/python3 -m feishu_integration.mail_sender_loop
+Restart=on-failure
+RestartSec=5
+StartLimitIntervalSec=300
+StartLimitBurst=10
+
+# Environment
+Environment=QTADMIN_SERVER_URL=http://localhost:8000
+Environment=QTADMIN_MAILBOX=tc@huaxiadishenyi.online
+Environment=HOME=/home/linli
+
+# Security hardening
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
