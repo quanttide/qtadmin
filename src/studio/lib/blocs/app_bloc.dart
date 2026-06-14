@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:qtadmin_finance/finance.dart';
 import 'package:qtadmin_studio/models/metadata.dart';
 import 'package:qtadmin_qtconsult/qtconsult.dart';
 import 'package:qtadmin_qtclass/qtclass.dart';
@@ -22,6 +23,11 @@ final _thinkingLoader =
     DataLoader<Thinking>(_source, 'data/founder/thinking.json', Thinking.fromJson);
 final _orgLoader =
     DataLoader<OrgDashboard>(_source, 'data/company/org.json', OrgDashboard.fromJson);
+
+const _defaultFinanceApiBaseUrl = String.fromEnvironment(
+  'QTADMIN_FINANCE_API_BASE_URL',
+  defaultValue: 'http://localhost:8000',
+);
 
 // Events
 
@@ -57,6 +63,7 @@ class AppData {
   final List<WorkspaceInfo> workspaces;
   final Map<String, SectionDef> sectionDefs;
   final Map<String, NavMetadata> navData;
+  final FinanceModuleConfig financeConfig;
   final QtConsult consultData;
   final QtClass classData;
   final Thinking thinkingData;
@@ -66,6 +73,7 @@ class AppData {
     required this.workspaces,
     required this.sectionDefs,
     required this.navData,
+    required this.financeConfig,
     required this.consultData,
     required this.classData,
     required this.thinkingData,
@@ -105,6 +113,9 @@ class AppBloc extends Bloc<AppEvent, AppState> {
         'founder': (results[1] as DataSuccess<NavMetadata>).data,
         'company': (results[2] as DataSuccess<NavMetadata>).data,
       },
+      financeConfig: const FinanceModuleConfig(
+        apiBaseUrl: _defaultFinanceApiBaseUrl,
+      ),
       consultData: (results[3] as DataSuccess<QtConsult>).data,
       classData: (results[4] as DataSuccess<QtClass>).data,
       thinkingData: (results[5] as DataSuccess<Thinking>).data,

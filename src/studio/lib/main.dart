@@ -82,6 +82,7 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
                   dashboard: dashState.dashboard(dir),
                   workspaceName: data.workspaces[wsIndex >= 0 ? wsIndex : 0].name,
                   selectedWorkspace: wsIndex >= 0 ? wsIndex : 0,
+                  financeConfig: data.financeConfig,
                   thinkingData: data.thinkingData,
                   consultData: data.consultData,
                   classData: data.classData,

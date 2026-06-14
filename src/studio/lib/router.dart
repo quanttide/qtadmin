@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:qtadmin_dashboard/dashboard_barrel.dart';
+import 'package:qtadmin_finance/finance.dart';
 import 'package:qtadmin_think/think.dart';
 import 'package:qtadmin_qtconsult/consult.dart';
 import 'package:qtadmin_qtclass/class.dart';
@@ -9,6 +10,7 @@ class ScreenContext {
   final Dashboard dashboard;
   final String workspaceName;
   final int selectedWorkspace;
+  final FinanceModuleConfig financeConfig;
   final Thinking? thinkingData;
   final QtConsult? consultData;
   final QtClass? classData;
@@ -18,6 +20,7 @@ class ScreenContext {
     required this.dashboard,
     required this.workspaceName,
     required this.selectedWorkspace,
+    required this.financeConfig,
     this.thinkingData,
     this.consultData,
     this.classData,
@@ -95,13 +98,9 @@ class RouteConfig {
     ),
     'finance': RouteConfig(
       id: 'finance', label: '财务管理', icon: Icons.account_balance_outlined,
-      builder: (ctx) {
-        final card = ctx.dashboard.functionCards.firstWhere(
-          (c) => c.name == '财务管理',
-          orElse: () => throw StateError('未找到职能卡: 财务管理'),
-        );
-        return FuncDetailScreen(card: card);
-      },
+      builder: (ctx) => FinanceWorkspaceScreen(
+        config: ctx.financeConfig,
+      ),
     ),
     'strategy': RouteConfig(
       id: 'strategy', label: '战略管理', icon: Icons.track_changes_outlined,

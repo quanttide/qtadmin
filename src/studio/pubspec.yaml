@@ -51,6 +51,8 @@ dependencies:
     path: packages/qtadmin-dashboard
   qtadmin_navigation:
     path: packages/qtadmin-navigation
+  qtadmin_finance:
+    path: packages/qtadmin-finance
 
 dev_dependencies:
   flutter_test:

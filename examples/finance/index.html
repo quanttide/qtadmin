@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>量潮财务工具 — 全流程演示</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans SC", sans-serif; background: #f5f7fa; color: #1a1a2e; padding: 20px; }
+h1 { font-size: 24px; margin-bottom: 4px; }
+.subtitle { color: #666; font-size: 14px; margin-bottom: 24px; }
+.container { max-width: 1400px; margin: 0 auto; }
+
+.section { background: #fff; border-radius: 12px; padding: 20px; margin-bottom: 24px; box-shadow: 0 1px 4px rgba(0,0,0,.06); }
+.section h2 { font-size: 16px; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 1px solid #e5e7eb; display: flex; align-items: center; gap: 8px; }
+.section h2 .badge { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 10px; }
+.badge-blue { background: #dbeafe; color: #1d4ed8; }
+.badge-green { background: #d1fae5; color: #059669; }
+.badge-purple { background: #ede9fe; color: #7c3aed; }
+.badge-orange { background: #fef3c7; color: #d97706; }
+.badge-gray { background: #e5e7eb; color: #6b7280; }
+
+.form-row { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; margin-bottom: 12px; }
+.form-row label { font-size: 12px; color: #666; display: block; margin-bottom: 2px; }
+.form-row input, .form-row select { border: 1px solid #d0d5dd; border-radius: 6px; padding: 6px 10px; font-size: 13px; background: #fff; height: 34px; }
+.form-row .field { display: flex; flex-direction: column; }
+.form-row .field-wide { flex: 1; min-width: 200px; }
+
+.btn { background: #2563eb; color: #fff; border: none; border-radius: 6px; padding: 8px 20px; font-size: 13px; cursor: pointer; }
+.btn:hover { background: #1d4ed8; }
+.btn-sm { padding: 4px 12px; font-size: 12px; }
+.btn-green { background: #059669; }
+.btn-green:hover { background: #047857; }
+.btn-red { background: #dc2626; }
+.btn-red:hover { background: #b91c1c; }
+.btn-amber { background: #d97706; }
+.btn-amber:hover { background: #b45309; }
+.btn-gray { background: #e5e7eb; color: #374151; }
+.btn-gray:hover { background: #d1d5db; }
+.btn-white { background: #fff; color: #374151; border: 1px solid #d0d5dd; }
+.btn-white:hover { background: #f9fafb; }
+.btn-outline-green { background: #fff; color: #059669; border: 1px solid #059669; }
+.btn-outline-green:hover { background: #d1fae5; }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th { text-align: left; padding: 8px 10px; border-bottom: 2px solid #e5e7eb; color: #666; font-weight: 600; }
+td { padding: 8px 10px; border-bottom: 1px solid #f0f0f0; vertical-align: middle; }
+tr:hover td { background: #f9fafb; }
+.dir-outflow { color: #dc2626; }
+.dir-inflow { color: #059669; }
+.tag { display: inline-block; font-size: 11px; padding: 2px 6px; border-radius: 4px; background: #e5e7eb; }
+.tag-green { background: #d1fae5; color: #059669; }
+.tag-red { background: #fef2f2; color: #dc2626; }
+.tag-amber { background: #fef3c7; color: #d97706; }
+.tag-blue { background: #dbeafe; color: #1d4ed8; }
+.tag-gray { background: #f3f4f6; color: #6b7280; }
+
+/* ---- Confirm panel ---- */
+.confirm-panel { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 16px; margin-bottom: 16px; }
+.confirm-panel h3 { font-size: 14px; color: #059669; margin-bottom: 8px; }
+.confirm-fields { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 12px; }
+.confirm-fields .cf { display: flex; flex-direction: column; }
+.confirm-fields label { font-size: 11px; color: #666; margin-bottom: 2px; }
+.confirm-fields input, .confirm-fields select { border: 1px solid #d0d5dd; border-radius: 6px; padding: 4px 8px; font-size: 13px; background: #fff; height: 30px; }
+.confirm-actions { display: flex; gap: 8px; }
+
+/* ---- Classification groups ---- */
+.cls-group { border: 1px solid #e5e7eb; border-radius: 8px; margin-bottom: 12px; overflow: hidden; }
+.cls-group-header { background: #f9fafb; padding: 10px 14px; font-size: 14px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
+.cls-group-header .cls-count { font-size: 12px; font-weight: 400; color: #666; }
+.cls-group-body { padding: 0; }
+.cls-group-body table { margin: 0; }
+.cls-group-body td { padding: 6px 14px; font-size: 12px; }
+.cls-group-footer { background: #f9fafb; padding: 8px 14px; display: flex; gap: 8px; align-items: center; }
+
+/* ---- Summary cards ---- */
+.summary-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+.card { background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 1px 4px rgba(0,0,0,.06); }
+.card .label { font-size: 13px; color: #666; margin-bottom: 6px; }
+.card .value { font-size: 28px; font-weight: 700; }
+.card .value.money { color: #059669; }
+.card .sub { font-size: 12px; color: #999; margin-top: 4px; }
+.chart-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+.chart-box { background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 1px 4px rgba(0,0,0,.06); }
+.chart-box h3 { font-size: 15px; margin-bottom: 12px; }
+.chart-box canvas { max-height: 300px; }
+
+.loading { text-align: center; padding: 40px; color: #999; }
+.error-box { background: #fef2f2; color: #dc2626; padding: 12px 16px; border-radius: 8px; margin-bottom: 16px; font-size: 13px; }
+.success-box { background: #d1fae5; color: #059669; padding: 12px 16px; border-radius: 8px; margin-bottom: 16px; font-size: 13px; }
+.empty-box { text-align: center; padding: 24px; color: #999; font-size: 13px; }
+.hidden { display: none; }
+
+@media (max-width: 900px) {
+  .summary-row { grid-template-columns: repeat(2, 1fr); }
+  .chart-row { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>量潮财务全流程演示</h1>
+  <p class="subtitle">① 录入单据 → ② 确认标准化 → ③ 系统自动分类 → ④ 批量审核 → ⑤ 统计看板</p>
+  <div id="global-error" class="error-box hidden"></div>
+  <div id="global-success" class="success-box hidden"></div>
+
+  <!-- ========== Module 1: 结构化录入 ========== -->
+  <div class="section">
+    <h2>① 录入单据 <span class="badge badge-blue">M1</span></h2>
+    <div class="form-row">
+      <div class="field">
+        <label for="entry-amount">金额 (元) *</label>
+        <input type="number" id="entry-amount" min="0" step="0.01" required>
+      </div>
+      <div class="field">
+        <label for="entry-dir">方向 *</label>
+        <select id="entry-dir"><option value="outflow">支出</option><option value="inflow">收入</option></select>
+      </div>
+      <div class="field">
+        <label for="entry-date">业务日期</label>
+        <input type="date" id="entry-date">
+      </div>
+      <div class="field">
+        <label for="entry-dept">部门 *</label>
+        <select id="entry-dept">
+          <option value="">请选择</option>
+          <option value="研发部">研发部</option>
+          <option value="市场部">市场部</option>
+          <option value="行政部">行政部</option>
+          <option value="财务部">财务部</option>
+          <option value="销售部">销售部</option>
+          <option value="采购部">采购部</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="entry-person">人员</label>
+        <input type="text" id="entry-person" placeholder="选填">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="field field-wide">
+        <label for="entry-desc">描述 *</label>
+        <input type="text" id="entry-desc" placeholder="例如：购买A4打印纸、北京出差机票" style="width:100%;">
+      </div>
+    </div>
+    <div class="form-row">
+      <button class="btn" id="btn-submit" onclick="submitEntry()">录入</button>
+    </div>
+  </div>
+
+  <!-- ========== Module 2: 确认标准化 ========== -->
+  <div class="section" id="section-confirm">
+    <h2>② 确认标准化 <span class="badge badge-green">M2</span></h2>
+    <div id="confirm-area"><div class="empty-box">录入单据后，此处显示标准化预览。</div></div>
+  </div>
+
+  <!-- ========== Module 3: 自动分类 + 批量审核 ========== -->
+  <div class="section" id="section-classify">
+    <h2>③ 系统预分类 + 批量审核 <span class="badge badge-purple">M3</span></h2>
+    <div id="cls-groups"><div class="empty-box">标准化确认后，系统自动分类并在此展示。</div></div>
+  </div>
+
+  <!-- ========== Module 4: 统计看板 ========== -->
+  <div class="section">
+    <h2>④ 统计看板 <span class="badge badge-orange">M4</span></h2>
+    <div class="summary-row" id="summary-cards"></div>
+    <div class="chart-row">
+      <div class="chart-box"><h3>部门分布</h3><canvas id="breakdown-chart"></canvas></div>
+      <div class="chart-box"><h3>月度趋势</h3><canvas id="trend-chart"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = 'http://localhost:8000';
+let breakdownChart = null, trendChart = null;
+let _busy = false;
+
+/* ---- i18n ---- */
+const TYPE_MAP = { expense: '支出', income: '收入', transfer: '转账', reimbursement: '报销', other: '其他' };
+const DIR_MAP = { outflow: '流出', inflow: '流入' };
+const CATEGORIES = ['办公用品', '差旅', '采购', '工资', '其他'];
+const DEPTS = ['研发部', '市场部', '行政部', '财务部', '销售部', '采购部'];
+
+/* ---- Auto-classify rules (frontend, demo only) ---- */
+function autoClassify(desc) {
+  const d = (desc || '').toLowerCase();
+  if (/机票|高铁|住宿|差旅|出差|酒店|交通|火车|航班/.test(d)) return '差旅';
+  if (/A4|墨盒|文具|打印|办公桌|办公椅|纸|笔|文件夹/.test(d)) return '办公用品';
+  if (/采购|购买|设备|服务器|电脑|软件|硬件/.test(d)) return '采购';
+  if (/工资|奖金|薪|补贴/.test(d)) return '工资';
+  return '其他';
+}
+
+/* ---- Utilities ---- */
+function showError(msg) {
+  const el = document.getElementById('global-error'), s = document.getElementById('global-success');
+  if (msg) { el.textContent = msg; el.classList.remove('hidden'); s.classList.add('hidden'); }
+  else el.classList.add('hidden');
+}
+function showSuccess(msg) {
+  const el = document.getElementById('global-success'), e = document.getElementById('global-error');
+  if (msg) { el.textContent = msg; el.classList.remove('hidden'); e.classList.add('hidden'); }
+  else el.classList.add('hidden');
+}
+function esc(s) { if (s === null || s === undefined) return ''; return String(s).replace(/[&<>"']/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m])); }
+function renderMoney(c) { if (c === null || c === undefined) return '—'; return (c / 100).toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+
+async function api(method, path, body) {
+  const opts = { method, headers: {} };
+  if (body) { opts.headers['Content-Type'] = 'application/json'; opts.body = JSON.stringify(body); }
+  const resp = await fetch(API + path, opts);
+  if (!resp.ok) { const d = await resp.json().catch(() => ({})); throw new Error(d.detail || `HTTP ${resp.status}`); }
+  return resp.json();
+}
+
+/* ---- Module 1: Entry ---- */
+function todayStr() { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); }
+document.getElementById('entry-date').value = todayStr();
+
+async function submitEntry() {
+  if (_busy) return;
+  const amount = parseFloat(document.getElementById('entry-amount').value);
+  const direction = document.getElementById('entry-dir').value;
+  const businessDate = document.getElementById('entry-date').value;
+  const department = document.getElementById('entry-dept').value;
+  const person = document.getElementById('entry-person').value.trim();
+  const description = document.getElementById('entry-desc').value.trim();
+  if (!amount || amount <= 0) { showError('请填写金额'); return; }
+  if (!department) { showError('请选择部门'); return; }
+  if (!description) { showError('请填写描述'); return; }
+  const amountCents = Math.round(amount * 100);
+  const rawText = `${department}${person || ''}提交的${description}，金额${amount}元`;
+  _busy = true; showError(null);
+  const btn = document.getElementById('btn-submit'); btn.disabled = true; btn.textContent = '提交中...';
+  try {
+    const sr = await api('POST', '/source-records', { source_type: 'manual', raw_text: rawText });
+    const nr = await api('POST', '/normalized-records', {
+      primary_source_id: sr.id, record_type: 'expense', business_date: businessDate,
+      amount_cents: amountCents, currency: 'CNY', direction, department, person: person || null,
+      description, normalization_status: 'draft',
+    });
+    showSuccess('录入成功！请确认标准化结果。');
+    showConfirmPanel(nr);
+    document.getElementById('entry-amount').value = '';
+    document.getElementById('entry-desc').value = '';
+    document.getElementById('entry-person').value = '';
+    document.getElementById('entry-dept').value = '';
+  } catch (e) { showError('录入失败: ' + e.message); }
+  finally { _busy = false; btn.disabled = false; btn.textContent = '录入'; }
+}
+
+/* ---- Module 2: Confirm ---- */
+let pendingNr = null;
+
+function showConfirmPanel(nr) {
+  pendingNr = nr;
+  const cat = autoClassify(nr.description);
+  document.getElementById('confirm-area').innerHTML = `
+    <div class="confirm-panel">
+      <h3>📋 待确认标准化记录</h3>
+      <div class="confirm-fields">
+        <div class="cf"><label>金额 (元)</label><input type="number" id="cf-amount" value="${nr.amount_cents !== null ? (nr.amount_cents / 100).toFixed(2) : ''}" step="0.01"></div>
+        <div class="cf"><label>方向</label><select id="cf-dir"><option value="outflow"${nr.direction==='outflow'?' selected':''}>支出</option><option value="inflow"${nr.direction==='inflow'?' selected':''}>收入</option></select></div>
+        <div class="cf"><label>日期</label><input type="date" id="cf-date" value="${nr.business_date}"></div>
+        <div class="cf"><label>类型</label><select id="cf-type"><option value="expense"${nr.record_type==='expense'?' selected':''}>支出</option><option value="income"${nr.record_type==='income'?' selected':''}>收入</option><option value="transfer"${nr.record_type==='transfer'?' selected':''}>转账</option><option value="reimbursement"${nr.record_type==='reimbursement'?' selected':''}>报销</option><option value="other"${nr.record_type==='other'?' selected':''}>其他</option></select></div>
+        <div class="cf" style="flex:1;min-width:150px;"><label>描述</label><input type="text" id="cf-desc" value="${esc(nr.description)}" style="width:100%;"></div>
+      </div>
+      <div class="confirm-actions">
+        <button class="btn btn-green btn-sm" onclick="confirmNR(${nr.id})">✓ 确认</button>
+        <button class="btn btn-gray btn-sm" onclick="discardNR(${nr.id})">放弃</button>
+      </div>
+    </div>`;
+}
+
+async function confirmNR(id) {
+  if (_busy) return;
+  const amount = Math.round(parseFloat(document.getElementById('cf-amount').value || 0) * 100);
+  const direction = document.getElementById('cf-dir').value;
+  const businessDate = document.getElementById('cf-date').value;
+  const recordType = document.getElementById('cf-type').value;
+  const description = document.getElementById('cf-desc').value.trim();
+  _busy = true; showError(null);
+  try {
+    await api('PATCH', `/normalized-records/${id}`, {
+      amount_cents: amount, direction, business_date: businessDate,
+      record_type: recordType, description, normalization_status: 'normalized',
+    });
+    showSuccess('标准化确认完成，系统已自动预分类。');
+    pendingNr = null;
+    document.getElementById('confirm-area').innerHTML = '<div class="empty-box">标准化确认完成。</div>';
+    await Promise.all([loadClassificationGroups(), refreshStats()]);
+  } catch (e) { showError('确认失败: ' + e.message); }
+  finally { _busy = false; }
+}
+
+async function discardNR(id) {
+  if (_busy) return;
+  _busy = true;
+  try {
+    await api('PATCH', `/normalized-records/${id}`, { normalization_status: 'merged' });
+    pendingNr = null;
+    document.getElementById('confirm-area').innerHTML = '<div class="empty-box">已放弃该条记录。</div>';
+  } catch (e) { showError('操作失败: ' + e.message); }
+  finally { _busy = false; }
+}
+
+/* ---- Module 3: Classification Groups ---- */
+async function loadClassificationGroups() {
+  try {
+    const items = await api('GET', '/normalized-records?limit=200');
+    const classifiedIds = new Set();
+    const candidateMap = {};
+    // Fetch classifications for all records
+    const batchSize = 10;
+    for (let i = 0; i < items.length; i += batchSize) {
+      const batch = items.slice(i, i + batchSize);
+      await Promise.all(batch.map(async nr => {
+        try {
+          const cls = await api('GET', `/normalized-records/${nr.id}/classifications`);
+          cls.forEach(c => {
+            if (c.review_status === 'accepted') classifiedIds.add(nr.id);
+            else if (c.review_status === 'candidate') candidateMap[nr.id] = c;
+          });
+        } catch (_) {}
+      }));
+    }
+    // Build groups
+    const groups = {};
+    CATEGORIES.forEach(c => groups[c] = []);
+    let unclassifiedCount = 0;
+    items.forEach(nr => {
+      if (classifiedIds.has(nr.id)) return;
+      if (candidateMap[nr.id]) { /* candidate — show in its category */ }
+      const cat = candidateMap[nr.id] ? candidateMap[nr.id].category : autoClassify(nr.description);
+      if (!groups[cat]) groups[cat] = [];
+      groups[cat].push({ ...nr, pendingCls: candidateMap[nr.id] || null, autoCat: !candidateMap[nr.id] });
+    });
+    renderClassificationGroups(groups);
+  } catch (e) {
+    document.getElementById('cls-groups').innerHTML = `<div class="empty-box" style="color:#dc2626;">加载失败: ${esc(e.message)}</div>`;
+  }
+}
+
+function renderClassificationGroups(groups) {
+  const container = document.getElementById('cls-groups');
+  let html = '';
+  CATEGORIES.forEach(cat => {
+    const items = groups[cat] || [];
+    if (items.length === 0) return;
+    const pending = items.filter(i => i.pendingCls).length;
+    const toConfirm = items.filter(i => !i.pendingCls).length;
+    html += `<div class="cls-group">
+      <div class="cls-group-header">
+        <span>${cat} <span class="cls-count">（${items.length} 条${toConfirm > 0 ? `，${toConfirm} 条待确认` : ''}${pending > 0 ? `，${pending} 条待审核` : ''}）</span></span>
+      </div>
+      <div class="cls-group-body">
+        <table><tbody>
+          ${items.map(nr => {
+            const statusTag = nr.pendingCls ? 'tag-amber' : 'tag-gray';
+            const statusText = nr.pendingCls ? '待审核' : '待确认';
+            const canChange = !nr.pendingCls;
+            return `<tr>
+              <td style="width:24px;"><input type="checkbox" class="cls-cb" data-nrid="${nr.id}" data-cat="${cat}" ${nr.pendingCls ? 'checked disabled' : ''} ${nr.pendingCls ? `data-clsid="${nr.pendingCls.id}"` : ''}></td>
+              <td>${esc(nr.department || '—')}</td>
+              <td>${esc(nr.person || '—')}</td>
+              <td>¥${renderMoney(nr.amount_cents)}</td>
+              <td>${esc(nr.description)}</td>
+              <td><span class="tag ${statusTag}">${statusText}</span></td>
+              <td>${canChange ? `<select class="cls-change" data-nrid="${nr.id}" style="font-size:12px;padding:2px 4px;border:1px solid #d0d5dd;border-radius:4px;">${CATEGORIES.map(c => `<option value="${c}"${c===cat?' selected':''}>${c}</option>`).join('')}</select>` : ''}</td>
+            </tr>`;
+          }).join('')}
+        </tbody></table>
+      </div>
+      <div class="cls-group-footer">
+        <button class="btn btn-sm btn-green" onclick="batchConfirm('${cat}')">确认以上 ${items.length} 条为「${cat}」</button>
+        <span style="font-size:11px;color:#999;">已打勾的条目将被确认</span>
+      </div>
+    </div>`;
+  });
+  if (!html) { container.innerHTML = '<div class="empty-box">所有记录均已分类完毕 🎉</div>'; return; }
+  container.innerHTML = html;
+}
+
+async function batchConfirm(category) {
+  if (_busy) return;
+  const checkboxes = document.querySelectorAll('.cls-cb:checked:not(:disabled)');
+  const changes = document.querySelectorAll('.cls-change');
+  const overrideMap = {};
+  changes.forEach(sel => { overrideMap[sel.dataset.nrid] = sel.value; });
+  const ids = [];
+  checkboxes.forEach(cb => { if (cb.dataset.cat === category || overrideMap[cb.dataset.nrid] === category) ids.push(cb.dataset.nrid); });
+  if (ids.length === 0) { showError('没有可确认的条目'); return; }
+  _busy = true; showError(null);
+  let ok = 0, fail = 0;
+  for (const nrid of ids) {
+    const actualCat = overrideMap[nrid] || category;
+    try {
+      const cb = document.querySelector(`.cls-cb[data-nrid="${nrid}"]`);
+      const clsid = cb ? cb.dataset.clsid : null;
+      if (clsid) {
+        // Already has a candidate classification — just accept it
+        await api('PATCH', `/classifications/${clsid}`, { review_status: 'accepted' });
+      } else {
+        // Create new classification and accept immediately
+        const cls = await api('POST', `/normalized-records/${nrid}/classifications`, {
+          taxonomy: 'expense_type', category: actualCat, classifier_kind: 'rule', confidence: 0.85,
+        });
+        await api('PATCH', `/classifications/${cls.id}`, { review_status: 'accepted' });
+      }
+      ok++;
+    } catch (e) { fail++; }
+  }
+  showSuccess(`批量确认完成：${ok} 条成功${fail ? `，${fail} 条失败` : ''}`);
+  await Promise.all([loadClassificationGroups(), refreshStats()]);
+  _busy = false;
+}
+
+/* ---- Module 4: Statistics ---- */
+async function loadSummary() {
+  const data = await api('GET', '/statistics/summary');
+  const avg = data.record_count > 0 && data.amount_cents !== null ? Math.round(data.amount_cents / data.record_count) : null;
+  document.getElementById('summary-cards').innerHTML = `
+    <div class="card"><div class="label">记录总数</div><div class="value">${data.record_count}</div><div class="sub">已标准化记录</div></div>
+    <div class="card"><div class="label">金额合计</div><div class="value money">¥${renderMoney(data.amount_cents)}</div><div class="sub">CNY</div></div>
+    <div class="card"><div class="label">已分类</div><div class="value" style="color:#2563eb">${data.classified_count}</div><div class="sub">${data.record_count > 0 ? Math.round(data.classified_count / data.record_count * 100) : 0}% 分类率</div></div>
+    <div class="card"><div class="label">平均金额</div><div class="value">¥${avg !== null ? renderMoney(avg) : '—'}</div><div class="sub">每笔平均</div></div>`;
+}
+async function loadBreakdown() {
+  const data = await api('GET', '/statistics/breakdown?dimension=department');
+  const ctx = document.getElementById('breakdown-chart').getContext('2d');
+  const labels = data.rows.map(r => r.key || '(未填写)'), counts = data.rows.map(r => r.count);
+  if (breakdownChart) breakdownChart.destroy();
+  breakdownChart = new Chart(ctx, { type: 'bar', data: { labels, datasets: [{ label: '记录数', data: counts, backgroundColor: ['#2563eb','#059669','#d97706','#dc2626','#7c3aed','#0891b2'], borderRadius: 4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } } });
+}
+async function loadTrend() {
+  const data = await api('GET', '/statistics/trend?granularity=month');
+  const ctx = document.getElementById('trend-chart').getContext('2d');
+  const labels = data.rows.map(r => r.date);
+  const amounts = data.rows.map(r => r.amount_cents !== null ? Math.round(r.amount_cents / 100) : 0);
+  const counts = data.rows.map(r => r.count);
+  if (trendChart) trendChart.destroy();
+  trendChart = new Chart(ctx, { type: 'line', data: { labels, datasets: [
+    { label: '金额 (元)', data: amounts, borderColor: '#2563eb', backgroundColor: 'rgba(37,99,235,.1)', fill: true, tension: .3, yAxisID: 'y' },
+    { label: '记录数', data: counts, borderColor: '#059669', backgroundColor: 'rgba(5,150,101,.1)', fill: true, tension: .3, yAxisID: 'y1' },
+  ] }, options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, scales: { y: { beginAtZero: true, position: 'left', title: { display: true, text: '金额 (元)' } }, y1: { beginAtZero: true, position: 'right', grid: { drawOnChartArea: false }, title: { display: true, text: '记录数' } } } } });
+}
+async function refreshStats() { try { await Promise.all([loadSummary(), loadBreakdown(), loadTrend()]); } catch (e) { showError('统计加载失败: ' + e.message); } }
+
+/* ---- Bootstrap ---- */
+async function init() {
+  await Promise.all([loadClassificationGroups(), refreshStats()]);
+}
+init();
+</script>
+</body>
+</html>
