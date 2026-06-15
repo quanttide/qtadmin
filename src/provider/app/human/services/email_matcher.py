@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 
 from app.human.models.application import Application
 from app.human.models.candidate import Candidate
+from app.human.models.pending_queue import PendingQueueItem
 
 
 @dataclass
@@ -18,6 +19,49 @@ class MatchResult:
 
 def _normalize_email(email: str) -> str:
     return email.strip().lower()
+
+
+def effective_email(extracted_email: str | None, sender_email: str) -> str:
+    return _normalize_email(extracted_email or sender_email or "")
+
+
+def has_pending_queue_for_email(db: Session, email: str) -> bool:
+    normalized = _normalize_email(email)
+    if not normalized:
+        return False
+    return (
+        db.query(PendingQueueItem.id)
+        .filter(
+            PendingQueueItem.hr_status == "pending",
+            func.lower(func.coalesce(PendingQueueItem.extracted_email, PendingQueueItem.sender_email)) == normalized,
+        )
+        .first()
+        is not None
+    )
+
+
+def find_candidate_by_email(db: Session, email: str) -> Candidate | None:
+    normalized = _normalize_email(email)
+    if not normalized:
+        return None
+    return (
+        db.query(Candidate)
+        .filter(func.lower(Candidate.email) == normalized)
+        .order_by(Candidate.created_at.desc())
+        .first()
+    )
+
+
+def find_active_application(db: Session, candidate_id: int) -> Application | None:
+    return (
+        db.query(Application)
+        .filter(
+            Application.candidate_id == candidate_id,
+            Application.deactivated_at.is_(None),
+        )
+        .order_by(Application.updated_at.desc())
+        .first()
+    )
 
 
 def _subject_matches_recruitment(subject: str, recruitment_title: str) -> bool:

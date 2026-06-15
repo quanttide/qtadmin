@@ -1,475 +1,426 @@
-# 人力资源模块 — 零基础使用教程
+# 人力资源职能
 
-本教程教你从零开始搭建一套招聘管道管理系统：接收简历邮件 → AI 自动分类 → 人工确认 → 进入招聘看板追踪。
+## 1. 项目介绍
 
-## 目录
+人力资源职能（human）是量潮管理后台（QtCloud HR）的核心模块之一，覆盖招聘管道的全流程数字化管理。
 
-1. [系统概览](#1-系统概览)
-2. [环境准备](#2-环境准备)
-3. [启动 Provider（数据后端）](#3-启动-provider数据后端)
-4. [安装 CLI 命令行工具](#4-安装-cli-命令行工具)
-5. [连接飞书邮箱](#5-连接飞书邮箱)
-6. [配置 AI 智能分类](#6-配置-ai-智能分类)
-7. [完整使用教程](#7-完整使用教程)
-8. [打包项目](#8-打包项目)
-9. [常见问题](#9-常见问题)
+### 解决什么问题
+
+- **邮件轰炸**：招聘邮箱每天收到大量简历，人工筛选费时费力 → AI 自动分类+优先级排序
+- **流程混乱**：候选人面试进度靠表格追踪，状态不透明 → 可视化管道看板
+- **信息孤岛**：邮件往来、面试评价、附件分散各处 → 统一详情面板
+- **协作困难**：HR 和业务部门信息不同步 → 实时共享的管道视图
+
+### 核心流程
+
+```
+招聘邮件 → AI 分类 → 队列审核 → 入管道 → 面试流转 → 录用/人才池
+                                     ↓
+                              邮件往来 · 附件管理 · 修正追踪
+```
+
+### 适用角色
+
+| 角色 | 使用场景 |
+|------|----------|
+| HR 专员 | 审核邮件队列、管理候选人管道、发送通知邮件 |
+| HR 负责人 | 查看招聘进度、配置 AI 规则、导出数据 |
+| 面试官 | 查看候选人材料、评价记录 |
+| 管理员 | 配置服务端、管理飞书集成 |
 
 ---
 
-## 1. 系统概览
+## 2. 项目解析
 
-整个系统由 3 个部分组成：
+### 技术栈
 
-```
-飞书邮箱 ──→ CLI（拉取邮件+分类）──→ Provider API（数据+AI）──→ 看板页面
-                  ↑                          │
-                  └───── 定时轮询发件箱 ──────┘
-```
-
-| 组件 | 作用 | 端口 |
+| 层级 | 技术 | 说明 |
 |------|------|------|
-| **Provider** | 数据后端，存数据库、提供 API、AI 分类 | 8080 |
-| **CLI** | 命令行工具，拉取飞书邮件、推送分类结果 | — |
-| **看板页面** | Web 界面，管理候选人管道 | 8000 |
+| 前端 UI | Flutter 3.11+ / Dart 3 | 跨平台桌面/Web 看板应用 |
+| 后端 | Python 3.12+ / FastAPI | REST API 服务 |
+| ORM | SQLAlchemy 2.0 | 数据访问层 |
+| 数据库 | SQLite | 本地存储（可切换 PostgreSQL） |
+| AI 分类 | OpenAI / 任意 LLM API | 邮件智能分类 |
+| 飞书集成 | Feishu Open API | 邮件自动拉取与发送 |
+| CLI | Python / Click | 命令行管理工具 |
 
----
-
-## 2. 环境准备
-
-### 2.1 安装 Python 3.10+
-
-```bash
-python3 --version
-```
-
-如果低于 3.10，请到 [python.org](https://python.org) 下载安装。
-
-### 2.2 安装 Node.js（飞书集成需要）
-
-```bash
-node --version
-npm --version
-```
-
-如果未安装，到 [nodejs.org](https://nodejs.org) 下载 LTS 版本。
-
-### 2.3 获取项目代码
-
-```bash
-# 克隆项目（如果还没有）
-git clone <项目仓库地址> qtadmin
-cd qtadmin
-```
-
-> 如果已有项目代码，直接进入项目目录即可。
-
-### 2.4 目录结构
+### 目录结构
 
 ```
 qtadmin/
-├── src/provider/          # Provider API（数据后端）
-├── src/cli/               # CLI 命令行工具
-├── examples/human/        # Demo 演示（带 Web 页面）
-├── docs/user-guide/       # 本文档
-└── manifests/             # systemd 服务配置（生产用）
+├── src/
+│   ├── provider/                    # FastAPI 后端
+│   │   └── app/
+│   │       ├── __main__.py          # 应用入口（uvicorn 启动）
+│   │       └── human/
+│   │           ├── database.py      # SQLite 连接与会话
+│   │           ├── seed.py          # 种子数据（演示用）
+│   │           ├── models/          # SQLAlchemy 数据模型
+│   │           │   ├── talent.py           # 8 状态候选人状态机
+│   │           │   ├── recruitment.py      # 招聘项目
+│   │           │   ├── candidate.py        # 候选人
+│   │           │   ├── application.py      # 申请（候选人+项目关联）
+│   │           │   ├── pending_queue.py    # 待处理邮件队列
+│   │           │   ├── mail_message.py     # 邮件往来
+│   │           │   ├── correction_log.py   # 人工修正日志
+│   │           │   ├── material.py         # 素材附件
+│   │           │   ├── ai_config.py        # AI 配置
+│   │           │   └── processed_mail.py   # 已处理邮件记录
+│   │           ├── schemas/         # Pydantic 请求/响应模型
+│   │           ├── routers/         # API 路由
+│   │           │   ├── pipeline.py         # 管道视图
+│   │           │   ├── queue.py            # 邮件队列
+│   │           │   ├── applications.py     # 申请 CRUD
+│   │           │   ├── candidates.py       # 候选人 CRUD
+│   │           │   ├── recruitments.py     # 招聘项目 CRUD
+│   │           │   ├── messages.py         # 邮件往来
+│   │           │   ├── ingest.py           # 邮箱导入
+│   │           │   ├── ai_config.py        # AI 配置
+│   │           │   ├── export.py           # 数据导出
+│   │           │   ├── pool.py             # 人才池
+│   │           │   └── materials.py        # 素材查询
+│   │           └── services/        # 业务逻辑层
+│   │               ├── pipeline.py         # 管道聚合
+│   │               ├── transition.py       # 状态流转 + 同步
+│   │               ├── classifier.py       # 关键词分类
+│   │               ├── ai_classifier.py    # LLM 分类
+│   │               ├── email_matcher.py    # 邮箱匹配
+│   │               ├── pool.py             # 池管理
+│   │               ├── resume_parser.py    # 简历解析
+│   │               ├── material_service.py # 素材管理
+│   │               ├── headcount.py        # 编制规划
+│   │               └── export.py           # 导出生成
+│   │
+│   ├── hr-kanban/                   # Flutter 看板应用
+│   │   └── lib/
+│   │       ├── main.dart                   # 应用入口 + 导航壳
+│   │       ├── theme/hr_theme.dart         # 深色主题 + 状态色
+│   │       ├── services/api_service.dart   # API 客户端
+│   │       ├── models/                     # Dart 数据模型
+│   │       ├── screens/                    # 页面
+│   │       │   ├── pipeline_screen.dart    # 管道看板
+│   │       │   ├── queue_screen.dart       # 邮件队列
+│   │       │   ├── pool_screen.dart        # 人才池
+│   │       │   └── settings_screen.dart    # 设置
+│   │       └── widgets/                    # 通用组件
+│   │
+│   └── cli/                          # CLI 命令行工具
+│       └── app/human/
+│           ├── cli.py               # 命令定义
+│           ├── api_client.py        # HTTP 客户端
+│           ├── classifier.py        # 本地分类
+│           ├── mail_sender.py       # 邮件发送
+│           └── lark_client.py       # 飞书 API
+│
+├── quanttide-hr-toolkit-main/        # HR 工具包（子模块）
+│   ├── packages/
+│   │   ├── dart/                    # 纯 Dart 领域模型
+│   │   ├── fastapi/                 # FastAPI 库代码
+│   │   └── flutter/                 # Flutter 库代码
+│   └── integrations/feishu/         # 飞书集成
+│       └── src/feishu_integration/
+│           ├── mail_reader.py       # 邮件读取
+│           ├── mail_sender.py       # 邮件发送
+│           ├── mail_ingest_loop.py  # 拉取循环
+│           ├── mail_sender_loop.py  # 发送循环
+│           ├── classifier.py        # 分类器
+│           └── pipeline_writer.py   # 管道写回
+│
+└── CHANGELOG-human.md               # Human 模块更新日志
+```
+
+### 数据流
+
+```
+1. 邮件进入
+   ┌──────────┐    ┌──────────┐    ┌──────────┐
+   │ 飞书邮箱  │───>│ 分类器    │───>│ 待处理队列 │
+   │ API 拉取  │    │ AI/规则   │    │ Pending   │
+   └──────────┘    └──────────┘    └──────────┘
+
+2. HR 审核
+   ┌──────────┐    ┌──────────┐    ┌──────────┐
+   │ 队列看板  │───>│ 确认/调整 │───>│ 申请创建  │
+   │ Queue    │    │ Confirm   │    │Application│
+   └──────────┘    └──────────┘    └──────────┘
+
+3. 管道流转
+   ┌──────┐   ┌──────┐   ┌──────┐   ┌──────┐
+   │ NEW  │──>│EXAM  │──>│EVAL  │──>│OFFER │
+   │      │   │SENT  │   │UATING│   │      │
+   └──────┘   └──────┘   └──────┘   └──────┘
+                    │
+                    ▼
+               ┌────────┐        ┌────────┐
+               │ 人才池  │<───────│ CLOSED │
+               │ Pool   │        │        │
+               └────────┘        └────────┘
+```
+
+### 状态机
+
+候选人沿以下路径流转，每个状态只能跳转到允许的下一个状态：
+
+```
+NEW ──→ CONTACTED ──→ EXAM_SENT ──→ EXAM_RECEIVED ──→ EVALUATING ──→ INTERVIEW ──→ OFFER ──→ CLOSED
+ │          │             │               │                 │              │          │
+ └──→ CLOSED   └──→ CLOSED   └──→ CLOSED     └──→ CLOSED      └──→ CLOSED    └──→ CLOSED └──
+                                                                     │
+                                                                EXAM_SENT (重评)
 ```
 
 ---
 
-## 3. 启动 Provider（数据后端）
+## 3. 启动教程
 
-Provider 是所有数据的总源头，必须第一个启动。
+### 前置条件
 
-### 3.1 创建虚拟环境并安装
+| 工具 | 版本要求 | 验证命令 |
+|------|----------|----------|
+| Python | >= 3.12 | `python --version` |
+| Flutter | >= 3.11 | `flutter --version` |
+| pip | 最新 | `pip --version` |
 
-```bash
-cd src/provider
-
-# 创建虚拟环境（仅首次）
-python3 -m venv .venv
-
-# 安装依赖
-.venv/bin/pip install -e .
-```
-
-### 3.2 启动服务
+### 3.1 启动后端服务
 
 ```bash
-.venv/bin/uvicorn app.__main__:app --host 0.0.0.0 --port 8080
+# 1. 进入后端目录
+cd qtadmin/src/provider
+
+# 2. 安装依赖
+pip install -r requirements.txt
+
+# 或使用虚拟环境
+python -m venv .venv
+source .venv/bin/activate  # Linux/macOS
+# .venv\Scripts\activate   # Windows
+pip install -r requirements.txt
+
+# 3. 初始化数据库 + 启动服务
+python -m app
+
+# 服务运行在 http://localhost:8080
 ```
 
-看到以下输出即成功：
+> 数据库文件 `hr.db` 自动创建在当前目录。首次启动时，如果数据库为空会自动填充演示数据。
 
+**验证启动成功**：
+```bash
+curl http://localhost:8080/health
+# 返回: {"status":"ok"}
 ```
-INFO:     Started server process [12345]
-INFO:     Uvicorn running on http://0.0.0.0:8080
-```
 
-首次启动会自动创建 `hr.db` 数据库文件并写入 40 条示例数据。
+打开浏览器访问 `http://localhost:8080/docs` 查看 Swagger API 文档。
 
-### 3.3 验证
+### 3.2 启动 Flutter 看板
 
 ```bash
-# 新开一个终端，检查服务是否正常
-curl http://127.0.0.1:8080/health
-# 返回 {"status":"ok"} 即正常
+# 1. 进入看板目录
+cd qtadmin/src/hr-kanban
 
-# 查看管道数据
-curl http://127.0.0.1:8080/pipeline
+# 2. 安装依赖
+flutter pub get
+
+# 3. 启动（默认打开 Chrome 浏览器）
+flutter run -d chrome
 ```
 
-> Provider 启动后不要关闭终端，后续所有操作都在新终端中进行。
+看板启动后，在 **设置** 页面将服务端地址修改为 `http://localhost:8080`，点击保存即可连接。
 
----
+> 也可编译为桌面应用：`flutter run -d linux` / `flutter run -d macos` / `flutter run -d windows`
 
-## 4. 安装 CLI 命令行工具
+### 3.3 使用演示数据
 
-### 4.1 创建虚拟环境并安装
+后端首次启动时自动调用 `seed_data()` 填充演示数据，包含：
+
+- 1 个招聘项目
+- 10+ 候选人在不同流转阶段
+- 10 条待处理邮件队列
+- 部分候选人有邮件往来记录
+
+如果数据库被清空，可随时通过 API 重新填充：
 
 ```bash
-# 新开一个终端
+curl -X POST http://localhost:8080/seed
+```
+
+### 3.4 CLI 命令行工具
+
+```bash
+# 进入 CLI 目录
 cd qtadmin/src/cli
 
-# 创建虚拟环境
-python3 -m venv .venv
+# 查看可用命令
+python -m qtadmin --help
 
-# 安装
-.venv/bin/pip install -e .
+# 管理队列
+python -m qtadmin human queue list
+python -m qtadmin human queue confirm <queue_id> --recruitment "高级后端工程师"
+python -m qtadmin human queue ignore <queue_id>
 ```
 
-### 4.2 验证安装
+### 3.5 配置 AI 分类（可选）
+
+在看板 **设置** 页面或通过 API 配置：
+
+```json
+{
+  "provider": "openai",
+  "model": "gpt-4o-mini",
+  "api_key": "sk-xxx",
+  "base_url": "https://api.openai.com/v1",
+  "temperature": 0.3,
+  "prompt_template": "请根据邮件内容判断候选人适合的阶段：new/contacted/exam_sent/exam_received/evaluating/interview/offer/closed"
+}
+```
+
+配置后可通过 **连接测试** 按钮验证。
+
+### 3.6 飞书邮件集成（可选）
 
 ```bash
-.venv/bin/qtadmin --help
+# 设置飞书邮箱
+export QTADMIN_MAILBOX="user@feishu.cn"
+
+# 启动后端（自动开始轮询邮箱）
+python -m app
 ```
 
-看到帮助信息即安装成功。
+服务端启动时会自动创建后台任务，每 5 分钟拉取一次飞书邮箱，新邮件自动进入待处理队列。
 
-### 4.3 配置 Provider 地址
+---
 
-告诉 CLI 你的 Provider 运行在哪里：
+## 4. 看板功能
+
+### 4.1 管道（Pipeline）
+
+招聘管道看板，按候选人状态分组展示：
+
+- **状态分组**: 8 列，从 NEW 到 CLOSED
+- **停留天数**: 每个卡片底部显示停留天数，超 7 天黄色，超 14 天橙色
+- **搜索**: 按姓名或邮箱实时过滤
+- **拖拽流转**: 拖拽卡片到目标状态列完成状态变更
+- **详情面板**: 点击卡片弹出底部面板，查看完整信息
+
+### 4.2 队列（Queue）
+
+待处理邮件队列：
+
+- **邮件列表**: 所有未处理招聘邮件，按时间倒序
+- **置信度标签**: high(绿) / medium(黄) / low(灰)
+- **操作**: 确认（创建候选人）、调整（修改状态后确认）、忽略
+
+### 4.3 人才池（Pool）
+
+备选候选人池：
+
+- **筛选**: 按招聘项目过滤
+- **详情**: 查看候选人完整信息
+- **重新入池**: 移出池并分配到新的招聘项目
+
+### 4.4 设置（Settings）
+
+- AI 配置表单（供应商/模型/密钥/地址/温度/提示词）
+- 服务端地址切换（运行时修改，即时生效）
+- 连接测试按钮
+
+---
+
+## 5. API 端点参考
+
+### 招聘项目
+
+| 方法 | 路径 | 说明 |
+|------|------|------|
+| GET | `/recruitments` | 列表所有招聘项目 |
+| POST | `/recruitments` | 创建招聘项目 |
+| GET | `/recruitments/{id}` | 获取单个项目详情 |
+| POST | `/recruitments/{id}/talents` | 手动登记候选人 |
+| PATCH | `/recruitments/{id}/talents/{tid}` | 更新候选人信息 |
+| POST | `/recruitments/{id}/talents/{tid}/transition` | 流转候选人状态 |
+
+### 管道
+
+| 方法 | 路径 | 说明 |
+|------|------|------|
+| GET | `/pipeline` | 获取聚合管道视图 |
+
+### 队列
+
+| 方法 | 路径 | 说明 |
+|------|------|------|
+| GET | `/queue` | 列表待处理邮件队列 |
+| POST | `/queue/{id}/confirm` | 确认并创建候选人 |
+| POST | `/queue/{id}/ignore` | 忽略该邮件 |
+
+### 申请
+
+| 方法 | 路径 | 说明 |
+|------|------|------|
+| GET | `/applications` | 列表申请 |
+| POST | `/applications/{id}/transition` | 流转申请状态 |
+| POST | `/applications/{id}/pool` | 归入人才池 |
+| POST | `/applications/{id}/unpool` | 从人才池移出 |
+| GET | `/applications/{id}/materials` | 获取申请材料 |
+
+### 候选人
+
+| 方法 | 路径 | 说明 |
+|------|------|------|
+| GET | `/candidates` | 列表候选人 |
+| GET | `/candidates/{id}` | 候选人详情 |
+| PATCH | `/candidates/{id}` | 更新候选人信息 |
+
+### 消息
+
+| 方法 | 路径 | 说明 |
+|------|------|------|
+| GET | `/candidates/{id}/messages` | 获取候选人邮件往来 |
+| GET | `/candidates/{id}/timeline` | 获取候选人时间线 |
+| POST | `/candidates/{id}/reply` | 回复候选人 |
+| GET | `/messages/outbox` | 待发邮件列表 |
+| GET | `/messages/outbox/dead` | 死信队列 |
+| POST | `/messages/outbox/{id}/requeue` | 重新入队死信 |
+
+### 其他
+
+| 方法 | 路径 | 说明 |
+|------|------|------|
+| POST | `/ingest` | 批量导入邮件 |
+| GET | `/ai-config` | 获取 AI 配置 |
+| PUT | `/ai-config` | 更新 AI 配置 |
+| POST | `/ai-config/test` | 测试 AI 连接 |
+| GET | `/export/talents` | 导出人才数据 |
+
+---
+
+## 6. CLI 工具
 
 ```bash
-.venv/bin/qtadmin human config set-provider http://127.0.0.1:8080
+# 查看帮助
+python -m qtadmin --help
 
-# 查看配置
-.venv/bin/qtadmin human config show
-```
+# 导入招聘邮箱
+python -m qtadmin human import data/emails.json
 
-输出应类似：
-
-```
-当前配置：
-  provider_url: http://127.0.0.1:8080
-  lark_path: lark-cli
+# 管理队列
+python -m qtadmin human queue list
+python -m qtadmin human queue confirm <id> -r "招聘项目名"
+python -m qtadmin human queue ignore <id>
 ```
 
 ---
 
-## 5. 连接飞书邮箱
+## 7. 飞书集成
 
-连接飞书邮箱后，系统可以自动拉取招聘邮箱中的简历邮件。
-
-### 5.1 安装 lark-cli
+详见 `quanttide-hr-toolkit-main/integrations/feishu/`。
 
 ```bash
-# 全局安装飞书命令行工具
-npm install -g @larksuite/cli
+# 环境变量配置
+export FEISHU_APP_ID="cli_xxx"
+export FEISHU_APP_SECRET="xxx"
+export QTADMIN_MAILBOX="hr@company.feishu.cn"
 
-# 验证安装
-lark-cli --version
+# 启动后端（自动启用邮件轮询）
+python -m app
 ```
-
-### 5.2 登录飞书
-
-```bash
-lark login
-```
-
-浏览器会自动打开飞书登录页面，扫码登录即可。
-
-> 如果浏览器没有自动打开，复制终端显示的链接手动打开。
-
-### 5.3 验证登录
-
-```bash
-# 查看邮箱列表，确认你能访问目标邮箱
-lark-cli mail user_mailboxes profile --params '{"user_mailbox_id":"你的邮箱@example.com"}'
-```
-
-### 5.4 配置 CLI 使用 lark-cli
-
-```bash
-.venv/bin/qtadmin human config set-lark-path $(which lark-cli)
-```
-
-### 5.5 测试邮件拉取
-
-```bash
-# 列出收件箱最近 5 封邮件
-.venv/bin/qtadmin human list -n 5
-```
-
-如果能列出邮件，说明飞书集成成功。
-
----
-
-## 6. 配置 AI 智能分类
-
-AI 分类器可以自动判断一封邮件是简历、笔试、面试还是 Offer，并提取候选人姓名。
-
-### 6.1 准备工作
-
-你需要一个 **OpenAI 兼容的 API 密钥**。支持：
-- OpenAI：`sk-...`（需科学上网）
-- 国内替代：DeepSeek、智谱、通义千问等（无需科学上网）
-
-### 6.2 通过 API 配置（推荐）
-
-```bash
-# 启用 AI 并设置密钥（以 DeepSeek 为例）
-curl -X PATCH http://127.0.0.1:8080/ai/config \
-  -H "Content-Type: application/json" \
-  -d '{
-    "enabled": true,
-    "provider": "openai",
-    "base_url": "https://api.deepseek.com/v1",
-    "api_key": "sk-你的密钥",
-    "model": "deepseek-chat"
-  }'
-```
-
-国内常用 AI 服务：
-
-| 服务商 | base_url | model |
-|--------|----------|-------|
-| DeepSeek | `https://api.deepseek.com/v1` | `deepseek-chat` |
-| 智谱 | `https://open.bigmodel.cn/api/paas/v4` | `glm-4-flash` |
-| 通义千问 | `https://dashscope.aliyuncs.com/compatible-mode/v1` | `qwen-turbo` |
-| OpenAI | `https://api.openai.com/v1` | `gpt-4o-mini` |
-
-### 6.3 测试 AI 配置
-
-```bash
-curl -X POST http://127.0.0.1:8080/ai/test
-```
-
-返回 `{"status":"ok","message":"连接成功"}` 即配置正确。
-
-### 6.4 在 Web 页面配置
-
-打开 http://127.0.0.1:8000/ → 点击右侧 **⚙️ AI 配置** → 填入：
-1. 勾选"启用 AI 分类"
-2. 填入 API 地址（如 `https://api.deepseek.com/v1`）
-3. 填入 API 密钥
-4. 填入模型名（如 `deepseek-chat`）
-5. 点击保存
-
----
-
-## 7. 完整使用教程
-
-### 7.1 启动看板页面
-
-```bash
-# 新开一个终端
-cd qtadmin
-
-# 启动 Demo（使用 Provider 的虚拟环境）
-QTADMIN_MAILBOX=你的邮箱@example.com \
-  PYTHONPATH=src/provider \
-  src/provider/.venv/bin/python examples/human/demo.py
-```
-
-> 设置 `QTADMIN_MAILBOX` 后，系统会自动轮询该邮箱。
-
-打开浏览器访问 **http://127.0.0.1:8000/**。
-
-### 7.2 每日工作流程
-
-#### 步骤 1：拉取邮件并分类
-
-```bash
-# 查看收件箱有哪些邮件
-.venv/bin/qtadmin human list -n 20
-
-# 预览某封邮件的分类结果
-.venv/bin/qtadmin human classify <邮件ID>
-```
-
-#### 步骤 2：推送到确认队列
-
-```bash
-# 推送所有未处理邮件到待确认队列
-.venv/bin/qtadmin human ingest
-```
-
-#### 步骤 3：在 Web 页面确认
-
-打开 http://127.0.0.1:8000/ → 点击 **待确认队列**：
-- 查看邮件内容、附件、AI 分类结果
-- 点击 **确认入队** → 候选人自动进入管道
-- 点击 **忽略** → 丢弃该邮件
-
-#### 步骤 4：管理招聘管道
-
-管道看板将候选人按 8 个阶段排列：
-
-```
-新进 → 已联系 → 已发卷 → 已收卷 → 评卷中 → 面试 → 发Offer → 关闭
-```
-
-操作：
-- **拖拽** 候选人卡片到下一阶段
-- **点击候选人** 查看详情、时间线、消息记录
-- **查看附件** — PDF 直接预览，Word 文档自动转 PDF 在线预览
-
-#### 步骤 5：查看队列状态
-
-```bash
-# 查看待确认队列统计
-.venv/bin/qtadmin human status
-```
-
-### 7.3 自动轮询模式
-
-系统支持两种自动模式：
-
-**邮件拉取轮询**（在 Provider 或 Demo 中）：
-- 设置 `QTADMIN_MAILBOX` 环境变量后自动启用
-- 每 5 分钟检查一次新邮件
-- 新邮件自动推送至 `/ingest` 端点
-
-**发件箱轮询**（邮件发送守护进程）：
-```bash
-# 启动邮件发送循环（每 30 秒检查一次）
-.venv/bin/qtadmin human send-loop -i 30
-```
-
----
-
-## 8. 打包项目
-
-### 8.1 打包 CLI 工具
-
-```bash
-cd src/cli
-
-# 构建可分发的 wheel 包
-.venv/bin/pip install build
-.venv/bin/python -m build
-
-# 生成的包在 dist/ 目录
-ls dist/
-# qtadmin_cli-0.0.1-py3-none-any.whl
-
-# 安装到其他环境
-pip install dist/qtadmin_cli-0.0.1-py3-none-any.whl
-```
-
-### 8.2 打包 Provider
-
-```bash
-cd src/provider
-
-# 安装 build 工具
-.venv/bin/pip install build
-.venv/bin/python -m build
-
-# 查看生成的包
-ls dist/
-# qtadmin_provider-0.1.0-py3-none-any.whl
-```
-
-### 8.3 打包完整项目（含依赖）
-
-创建一个 requirements.txt 包含所有依赖：
-
-```bash
-cd src/provider
-.venv/bin/pip freeze > requirements.txt
-
-# 这样部署时只需：
-# python3 -m venv .venv
-# .venv/bin/pip install -r requirements.txt
-# .venv/bin/pip install dist/qtadmin_provider-0.1.0-py3-none-any.whl
-```
-
-### 8.4 配置开机自启（生产环境）
-
-```bash
-# 复制服务配置
-cp manifests/qtadmin-provider.service ~/.config/systemd/user/
-cp manifests/qtadmin-mail-sender.service ~/.config/systemd/user/
-
-# 重新加载 systemd
-systemctl --user daemon-reload
-
-# 启动服务
-systemctl --user start qtadmin-provider
-systemctl --user start qtadmin-mail-sender
-
-# 设置开机自启
-systemctl --user enable qtadmin-provider
-systemctl --user enable qtadmin-mail-sender
-```
-
----
-
-## 9. 常见问题
-
-### Q：端口被占用怎么办？
-
-```bash
-# 查看谁在用端口
-ss -tlnp | grep 8080
-
-# 杀掉进程
-kill -9 <PID>
-```
-
-### Q：lark-cli 找不到命令？
-
-确保 Node.js 全局 bin 目录在 PATH 中：
-
-```bash
-# 查看 npm 全局安装路径
-npm config get prefix
-# 例如输出 /home/你的用户名/.npm-global
-
-# 将 bin 目录加入 PATH
-export PATH=$PATH:/home/你的用户名/.npm-global/bin
-
-# 永久生效（加到 ~/.bashrc）
-echo 'export PATH=$PATH:/home/你的用户名/.npm-global/bin' >> ~/.bashrc
-```
-
-### Q：数据库被锁定？
-
-```bash
-# 删除数据库后重启 Provider（数据会重新初始化）
-rm src/provider/hr.db
-```
-
-### Q：AI 分类没生效？
-
-1. 确认 Provider 正在运行
-2. 调用 `GET /ai/config` 检查 `enabled` 是否为 `true`
-3. 调用 `POST /ai/test` 测试连接
-4. 检查 API 密钥是否正确
-
-### Q：如何重置所有数据？
-
-```bash
-# 停止 Provider
-# 删除数据库
-rm src/provider/hr.db
-# 重启 Provider（自动重新生成种子数据）
-```
-
-### Q：飞书邮件收不到？
-
-1. 确认 `lark login` 已成功登录
-2. 确认邮箱地址正确：`lark-cli mail user_mailboxes profile --params '{"user_mailbox_id":"你的邮箱"}'`
-3. 确认收件箱中有邮件：`lark-cli mail +triage --format json --max 5 --mailbox 你的邮箱`
-4. 检查 Provider 是否设置了 `QTADMIN_MAILBOX` 环境变量

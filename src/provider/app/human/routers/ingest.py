@@ -1,71 +1,46 @@
-"""Ingest endpoint — receive raw emails from CLI, classify server-side, queue for HR review."""
 import json
-import logging
+import os
 
 from fastapi import APIRouter, Depends
-from pydantic import BaseModel
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from app.human.database import get_db
+from app.human.models.application import Application
+from app.human.models.mail_message import MailMessage
 from app.human.models.pending_queue import PendingQueueItem
+from app.human.schemas.pending_queue import IngestItemResult, IngestRequest, IngestResponse
 from app.human.services.classifier import classify
+from app.human.services.email_matcher import effective_email, has_pending_queue_for_email, match_by_email
+from app.human.services.material_service import generate_attachment_artifact, generate_body_artifact
 
-logger = logging.getLogger(__name__)
+_DEFAULT_MATERIALS_DIR = os.environ.get("QTADMIN_MATERIALS_DIR", "")
 
 router = APIRouter(prefix="/ingest", tags=["human"])
 
 
-class IngestAttachment(BaseModel):
-    filename: str
-    size: int
-
-
-class IngestItem(BaseModel):
-    message_id: str
-    subject: str
-    sender_name: str | None = None
-    sender_email: str
-    suggested_status: str | None = None
-    confidence: str = "low"
-    suggested_recruitment_title: str | None = None
-    body: str | None = None
-    body_text: str | None = None
-    attachments: list[IngestAttachment] | None = None
-
-
-class IngestRequest(BaseModel):
-    source: str = "feishu_api"
-    batch_id: str | None = None
-    items: list[IngestItem]
-
-
-class IngestItemResult(BaseModel):
-    message_id: str
-    queue_id: int | None = None
-    action: str
-
-
-class IngestResponse(BaseModel):
-    batch_id: str | None = None
-    queued: int = 0
-    skipped: int = 0
-    errors: list[str] = []
-    items: list[IngestItemResult]
-
-
 @router.post("", response_model=IngestResponse, status_code=201)
 def ingest_items(body: IngestRequest, db: Session = Depends(get_db)):
-    existing = {
+    message_ids = [i.message_id for i in body.items]
+    existing_pq = {
         row[0]
         for row in db.query(PendingQueueItem.message_id)
-        .filter(PendingQueueItem.message_id.in_([i.message_id for i in body.items]))
+        .filter(PendingQueueItem.message_id.in_(message_ids))
         .all()
     }
+    existing_mm = {
+        row[0]
+        for row in db.query(MailMessage.message_id)
+        .filter(MailMessage.message_id.in_(message_ids))
+        .all()
+    }
+    existing = existing_pq | existing_mm
 
     queued = 0
     skipped = 0
     results: list[IngestItemResult] = []
     errors: list[str] = []
+    pending_emails_in_batch: set[str] = set()
 
     for item in body.items:
         if item.message_id in existing:
@@ -73,18 +48,63 @@ def ingest_items(body: IngestRequest, db: Session = Depends(get_db)):
             skipped += 1
             continue
 
-        attachments_json = None
-        if item.attachments:
-            attachments_json = json.dumps([a.model_dump() for a in item.attachments], ensure_ascii=False)
-
-        # Run server-side classification
-        classification = classify(
+        attachments_list = [a.model_dump() for a in item.attachments] if item.attachments else None
+        cl = classify(
             subject=item.subject,
             body_text=item.body_text,
             sender_name=item.sender_name,
             sender_email=item.sender_email,
             db=db,
+            attachments=attachments_list,
         )
+
+        if not (cl.merge_result == "existing_auto" and cl.match and cl.match.active_application_id):
+            rematch = match_by_email(item.sender_email, db, subject=item.subject)
+            if rematch.active_application_id:
+                cl.merge_result = "existing_auto"
+                cl.match = rematch
+
+        item_email = effective_email(item.extracted_email, item.sender_email)
+        if item_email and (
+            item_email in pending_emails_in_batch or has_pending_queue_for_email(db, item_email)
+        ):
+            results.append(IngestItemResult(message_id=item.message_id, action="skipped"))
+            skipped += 1
+            continue
+
+        attachments_json = json.dumps(attachments_list, ensure_ascii=False) if attachments_list else None
+
+        if cl.merge_result == "existing_auto" and cl.match and cl.match.active_application_id:
+            app = db.query(Application).filter(Application.id == cl.match.active_application_id).first()
+            mm = MailMessage(
+                source_queue_item_id=None,
+                candidate_id=cl.match.candidate_id,
+                application_id=cl.match.active_application_id,
+                message_id=item.message_id,
+                sender_email=item.sender_email,
+                recipient_email=item.recipient_email,
+                subject=item.subject,
+                body=item.body,
+                body_text=item.body_text,
+                attachments_json=attachments_json,
+                stage_snapshot=app.status.value if app else None,
+                direction="inbound",
+                occurred_at=func.now(),
+            )
+            db.add(mm)
+            db.flush()
+
+            if app:
+                app.last_message_id = mm.id
+                app.last_message_at = mm.occurred_at
+
+            candidate_id = cl.match.candidate_id
+            generate_body_artifact(db, None, candidate_id, item.body, item.body_text, _DEFAULT_MATERIALS_DIR)
+            generate_attachment_artifact(db, None, candidate_id, attachments_list, _DEFAULT_MATERIALS_DIR)
+
+            results.append(IngestItemResult(message_id=item.message_id, action="auto_merged"))
+            queued += 1
+            continue
 
         qi = PendingQueueItem(
             source=body.source,
@@ -92,17 +112,35 @@ def ingest_items(body: IngestRequest, db: Session = Depends(get_db)):
             subject=item.subject,
             sender_name=item.sender_name,
             sender_email=item.sender_email,
-            body=item.body,
-            body_text=item.body_text,
-            suggested_status=classification.suggested_status,
-            confidence=classification.confidence,
+            recipient_email=item.recipient_email,
+            suggested_status=cl.suggested_status,
+            confidence=cl.confidence,
             suggested_recruitment_title=item.suggested_recruitment_title,
             attachments_json=attachments_json,
+            body=item.body,
+            body_text=item.body_text,
+            extracted_name=cl.extracted_name or item.extracted_name,
+            extracted_email=item.extracted_email,
+            extracted_phone=item.extracted_phone,
+            classifier_source=cl.classifier_source,
+            classifier_reason=cl.classifier_reason,
+            merge_result=cl.merge_result,
         )
+        if cl.merge_result == "existing_auto" and cl.match and cl.match.active_application_id:
+            qi.hr_status = "auto_merged"
+
         db.add(qi)
         db.flush()
-        results.append(IngestItemResult(message_id=item.message_id, queue_id=qi.id, action="queued"))
+
+        candidate_id = cl.match.candidate_id if cl.match and cl.match.candidate_id else None
+        generate_body_artifact(db, qi.id, candidate_id, item.body, item.body_text, _DEFAULT_MATERIALS_DIR)
+        generate_attachment_artifact(db, qi.id, candidate_id, attachments_list, _DEFAULT_MATERIALS_DIR)
+
+        action = "auto_merged" if qi.hr_status == "auto_merged" else "queued"
+        results.append(IngestItemResult(message_id=item.message_id, queue_id=qi.id, action=action))
         queued += 1
+        if item_email:
+            pending_emails_in_batch.add(item_email)
 
     db.commit()
     return IngestResponse(

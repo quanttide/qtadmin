@@ -6,11 +6,25 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0
 
 ## [0.1.0] - 2026-05-09
 
+### Human
+
+独立发布 `v0.9.0`，详见 [CHANGELOG-human.md](CHANGELOG-human.md)。
+
+- **Admin CLI**: 命令行工具集（API 客户端、分类器、邮件发送、飞书集成）
+- **飞书集成**: 邮件读取/发送循环、管道看板推送
+
 ### Studio
 
 独立发布 `v0.1.0`，详见 [src/studio/CHANGELOG.md](src/studio/CHANGELOG.md)。
 
 ## [0.0.9] - 2026-05-09
+
+### Human
+
+独立发布 `v0.7.0` — Headcount Planning & Export。
+
+- **人数规划**: 招聘编制规划与跟踪服务
+- **数据导出**: 候选人数据导出端点与生成服务
 
 ### Studio
 
@@ -18,11 +32,30 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0
 
 ## [0.0.8] - 2026-05-08
 
+### Human
+
+独立发布 `v0.6.0` — AI 配置与设置页面。
+
+- **AI 配置模型与路由**: 供应商、模型、API 密钥、温度、提示词模板
+- **Flutter 设置页面**: AI 配置表单、服务端地址切换、连接测试
+- **主题系统**: `HrThemeExtension`，8 种状态色彩、间距/字号 token、深色主题
+
 ### Studio
 
 独立发布 `v0.0.6`，详见 [src/studio/CHANGELOG.md](src/studio/CHANGELOG.md)。
 
 ## [0.0.7] - 2026-05-08
+
+### Human
+
+独立发布 `v0.5.0` — 申请中心与邮件往来。
+
+- **Application 模型/路由**: Candidate + Recruitment 关联、人才池、来源追踪
+- **Candidate 模型/路由**: 候选人实体、邮箱唯一约束、更新同步
+- **消息系统**: MailMessage 模型、邮件往来列表、时间线、回复、发件箱、死信队列
+- **素材服务**: 简历附件关联与查询
+- **修正日志**: 字段级人工修正追踪
+- **Flutter 详情面板**: 邮件正文展示、附件预览、分类器信息、修正记录、时间线
 
 ### Added
 
@@ -45,6 +78,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0
 ### Docs
 
 - `ROADMAP.md`：项目路线规划文档
+
+### Human
+
+独立发布 `v0.4.0` — Flutter 看板（Pipeline + Queue + Pool）。
+
+- **Flutter 看板**: 响应式布局（NavigationRail/NavigationBar）、3 标签导航
+- **管道看板**: 候选人状态分组、停留天数、搜索、拖拽流转、详情面板
+- **队列**: 待处理邮件列表、置信度标签、确认/调整/忽略
+- **人才池**: 候选人池管理、重新入池分配
+- **Flutter 通用组件**: StatusBadge、EmptyState、ErrorView、InfoRow
 
 ### Studio
 
@@ -78,6 +121,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0
 独立发布 `v0.0.5`，详见 [src/studio/CHANGELOG.md](src/studio/CHANGELOG.md)。
 
 ## [0.0.5] - 2026-05-08
+
+### Human
+
+独立发布 `v0.3.0` — 邮件筛选网关。
+
+- **待处理队列**: PendingQueueItem 模型、邮件元数据/AI 提取字段/分类结果
+- **队列路由**: 列表（按邮箱去重）、确认/忽略/调整
+- **邮箱导入路由**: 批量导入、message_id 去重、自动匹配候选人
+- **分类器服务**: 关键词规则分类 + LLM AI 分类（可配置供应商/模型/回退）
+- **邮件匹配服务**: 邮箱规范化、去重检查、候选人匹配
 
 ### Added
 
@@ -149,6 +202,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0
 
 ## [0.0.2] - 2026-05-06
 
+### Human
+
+独立发布 `v0.2.0` — FastAPI 人才管道。
+
+- **Talent 状态机**: 8 状态（NEW→CONTACTED→EXAM_SENT→EXAM_RECEIVED→EVALUATING→INTERVIEW→OFFER→CLOSED）
+- **Recruitment 模型/路由**: 招聘项目 CRUD、Talent CRUD、状态流转校验
+- **管道路由**: 按状态聚合的管道视图
+- **种子数据**: DEMO_TALENTS 常量
+
 ### Added
 
 - `src/studio/`: 全景图今日看板（Flutter 实现）
@@ -166,6 +228,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0
 - 导航栏重构为自定义侧边栏（全景图 + 4 业务线）
 
 ## [0.0.1] - 2026-04-30
+
+### Human
+
+独立发布 `v0.1.0` — 领域模型与筛选引擎。
+
+- **Dart 招聘筛选**: Resume/JobPosition/ScreeningRules 模型、通过/优先/拒绝三态决策
+- **Dart 薪酬计算**: 净薪公式（base + overtime + bonus - deductions）、可配置规则
+- **FastAPI 后端骨架**: SQLAlchemy + SQLite、抽象 get_db 依赖
 
 ### Added
 

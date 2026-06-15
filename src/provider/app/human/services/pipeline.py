@@ -1,21 +1,29 @@
-"""Pipeline aggregation service."""
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
-from app.human.models.talent import Talent, TalentStatus
+from app.human.models.application import Application
+from app.human.models.talent import TalentStatus
 
 
 def get_pipeline(db: Session) -> dict:
     stages = {}
     total = 0
     for status in TalentStatus:
-        talents = (
-            db.query(Talent)
-            .filter(Talent.status == status)
-            .order_by(Talent.updated_at.desc())
+        apps = (
+            db.query(Application)
+            .options(joinedload(Application.candidate))
+            .filter(Application.status == status, Application.deactivated_at.is_(None))
+            .order_by(Application.updated_at.desc())
             .all()
         )
-        stages[status.value] = [_talent_to_card(t) for t in talents]
-        total += len(talents)
+        seen_candidates: set[int] = set()
+        cards = []
+        for app in apps:
+            if app.candidate_id in seen_candidates:
+                continue
+            seen_candidates.add(app.candidate_id)
+            cards.append(_application_to_card(app))
+        stages[status.value] = cards
+        total += len(cards)
 
     need_attention = len(stages.get("exam_received", [])) + len(stages.get("evaluating", []))
     return {
@@ -28,16 +36,17 @@ def get_pipeline(db: Session) -> dict:
     }
 
 
-def _talent_to_card(t: Talent) -> dict:
+def _application_to_card(a: Application) -> dict:
     return {
-        "id": t.id,
-        "email": t.email,
-        "real_name": t.real_name,
-        "recruitment_id": t.recruitment_id,
-        "status": t.status.value,
-        "sub_stage": t.sub_stage,
-        "quality": t.quality,
-        "stage_results": t.stage_results,
-        "created_at": t.created_at.isoformat() if t.created_at else "",
-        "updated_at": t.updated_at.isoformat() if t.updated_at else "",
+        "id": a.id,
+        "candidate_id": a.candidate_id,
+        "email": a.candidate.email,
+        "real_name": a.candidate.real_name,
+        "recruitment_id": a.recruitment_id,
+        "status": a.status.value,
+        "sub_stage": a.sub_stage,
+        "quality": a.quality,
+        "stage_results": a.stage_results,
+        "created_at": a.created_at.isoformat(),
+        "updated_at": a.updated_at.isoformat(),
     }
