@@ -4,6 +4,26 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/).
 
+## [0.2.0] - 2026-06-16
+
+### Human
+
+- `src/provider/` 人力资源模块 Provider API
+  - 邮件拉取与 AI 智能分类管道（飞书集成）
+  - 候选人管道管理（8 阶段状态机）
+  - 待确认队列（人工审核 → 自动入队）
+  - AI 配置管理（OpenAI 兼容 API）
+
+### Added
+
+- `src/provider/` 新增全量测试覆盖（health, pipeline, queue, recruitments, candidates）
+- `CHANGELOG-human.md`：人力资源模块独立变更日志
+
+### Fixed
+
+- `src/provider/app/__main__.py`：修复 CORS 配置（移除与通配符 origin 不兼容的 `allow_credentials=True`）
+- `src/provider/app/__main__.py`：裸异常块补充日志记录
+
 ## [0.1.0] - 2026-05-09
 
 ### Studio

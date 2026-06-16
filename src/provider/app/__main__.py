@@ -1,5 +1,6 @@
 import asyncio
 import json
+import logging
 import os
 import subprocess
 from contextlib import asynccontextmanager
@@ -9,6 +10,8 @@ import httpx
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+
+logger = logging.getLogger(__name__)
 
 from app.human.database import SessionLocal, init_db
 from app.human.models.processed_mail import ProcessedMail
@@ -61,6 +64,7 @@ def _download_attachment(message_id: str, attachment: dict, mailbox: str) -> str
         if not download_url:
             return None
     except Exception:
+        logger.warning("Failed to get download URL for message %s", message_id, exc_info=True)
         return None
 
     storage_dir = os.path.join(_ATTACHMENT_DIR, message_id)
@@ -75,6 +79,7 @@ def _download_attachment(message_id: str, attachment: dict, mailbox: str) -> str
         attachment["size"] = len(r.content)
         return file_path
     except Exception:
+        logger.warning("Failed to download attachment file for message %s", message_id, exc_info=True)
         return None
 
 
@@ -102,7 +107,7 @@ def _fetch_mail(mailbox: str) -> list[dict]:
                 attachments.append(att)
             item["attachments"] = attachments
         except Exception:
-            pass
+            logger.debug("Failed to fetch detail for message %s", item.get("message_id", "?"), exc_info=True)
     return items
 
 
@@ -149,7 +154,7 @@ async def _poll_mailbox():
                     )
                     resp.raise_for_status()
         except Exception:
-            pass
+            logger.warning("Mail poll cycle failed", exc_info=True)
         await asyncio.sleep(300)
 
 
@@ -173,7 +178,6 @@ app = FastAPI(title="qtadmin API", version="0.1.0", lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
