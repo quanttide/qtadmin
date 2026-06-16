@@ -1,8 +1,15 @@
 # CHANGELOG
 
-## [0.0.1] - 2026-04-07
+## [0.0.1] - 2026-06-16
 
-首个正式版本，提供数字资产管理工具集。
+首个正式版本，提供数字资产管理工具集（Rust 重构版）。
+
+### Changed
+- 从 Python (typer) 重构为 Rust (clap)，单二进制分发
+- `--version` 不再通过 Python importlib，由 clap 编译时常量提供
+
+### Removed
+- 移除 Python 源码（`app/`, `pyproject.toml`）
 
 ### Added
 - CLI 基础框架：使用 typer 构建命令行工具，支持 `--help` 和 `--version`

@@ -1,0 +1,16 @@
+[package]
+name = "qtadmin-cli"
+version = "0.0.1"
+edition = "2021"
+
+[dependencies]
+clap = { version = "4", features = ["derive"] }
+chrono = "0.4"
+walkdir = "2"
+anyhow = "1"
+thiserror = "1"
+regex = "1"
+
+[dev-dependencies]
+assert_cmd = "2"
+predicates = "3"
