@@ -1,5 +1,7 @@
 mod status;
 pub mod config;
+mod connect;
+mod human;
 
 use clap::Subcommand;
 
