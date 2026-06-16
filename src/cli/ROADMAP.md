@@ -1,95 +1,109 @@
-# Roadmap: Python → Rust 重构
+# Roadmap: v0.0.3 — `qtrecurit status` 子命令
 
 ## 动机
 
-- **分发简化**：Rust 编译为单二进制，消除 Python 运行时依赖和虚拟环境管理
-- **性能**：审计模块需执行大量文件扫描和 git 操作，Rust 能显著降低延迟
-- **类型安全**：Rust 所有权模型和类型系统从根本上消除整类运行时错误
-- **统一技术栈**：项目内 Rust 经验可复用于其他工具链
+- **业务扩展**：量潮招聘业务线（qtrecurit）需要 CLI 数据统计入口，集成到 qtadmin 统一入口
+- **统一入口**：所有 QuantTide 业务线运维工具集中到 `qtadmin`，避免分散的独立 CLI
+
+## 设计原则
+
+以 `examples/qtrecurit/stats.py` 为蓝本，保留其优秀脚本思维，在 Rust 重写中强化以下亮点：
+
+| 原亮点 | Rust 中继承 | 强化方向 |
+|--------|-------------|----------|
+| 调用 lark-cli 而非 SDK | `std::process::Command` | 保持工具链胶水思维，不引入飞书 SDK |
+| 分页拉取 + 上限保护 | 同上 | 保持 range(20) 防死循环 |
+| 区分可识别/不可识别投递 | 保留 identified 计算 | **强化**：输出未识别邮件样本，反哺分类规则 |
+| Markdown 表格输出 | 保留 | **强化**：加入趋势标记（日均值、最高峰、环比箭头） |
+| 职责单一的函数拆分 | 保持同样结构 | **强化**：分类规则从硬编码 if/elif 升级为配置化 |
 
 ## 版本策略
 
-重构全程保持 `cli/v0.0.x` 版本线，不引入 API-breaking change。每阶段交付可独立 release。
+保持 `cli/v0.0.x` 版本线，每阶段交付独立 release。v0.0.3 仅聚焦 `qtrecurit status` 一个子命令。
 
 ## 阶段划分
 
-### 阶段一：基础设施与 `asset backup`（1-2 周）
+### 阶段一：`qtrecurit status` 核心功能（3-5天）
 
-- 初始化 Rust 工作空间（Cargo workspace）
-- 选择 CLI 框架（**clap** v4，derive 模式）
-- 实现 `--help` / `--version` 回调
-- 完整移植 `asset backup`：
-  - `get_project_root` → 向上遍历查找 `docs/journal` + `docs/archive/journal`
-  - 正则解析日期文件名
-  - 递归扫描 + 分类 + 筛选 N 天前
-  - 移动文件（dry-run 支持）
-  - git 操作：status / add / commit / push（子模块 + 主仓库）
-- 移植备份相关测试
+基于 `examples/qtrecurit/stats.py` 功能升级为 Rust 子命令：
 
-**交付**：`qtadmin asset backup` 功能完整，与 Python 版命令兼容。
+- 创建 `src/qtrecurit/` 模块目录（mod.rs + status.rs）
+- 在 `main.rs` / `cli.rs` 注册 `qtrecurit` 顶级子命令
+- 实现 `qtrecurit status` 命令，包含以下功能：
 
-### 阶段二：`asset audit`（2-3 周）
+**1. 数据获取**
+- `fetch_all_mailbox` — 调用 `lark-cli mail` 分页拉取 HR 邮箱邮件
+- 设置分页上限（20轮）防止死循环
+- 超时处理（15s）
 
-- 移植 `GitRepoAuditor` 完整审计逻辑：
-  - 必需文件检查
-  - README / CONTRIBUTING / AGENTS / CHANGELOG / .gitignore 内容规范检查
-  - 子模块状态检查
-  - Conventional Commits 提交规范检查
-  - 版本发布一致性检查
-- 移植 `AuditReport` / `AuditResult` 数据模型及报告打印
-- 移植审计相关测试
+**2. 岗位分类（TOML 配置化）**
+- 岗位规则定义为 TOML 配置文件（`[[rules]]` 表数组），而非 `if/elif` 硬编码
+- 配置发现顺序：`QTRECURIT_CONFIG` 环境变量 → 项目根目录 `qtrecurit.toml` → `~/.config/qtadmin/qtrecurit.toml` → 内置默认规则（8个岗位兜底）
+- 每条规则：`name` / `keywords`（匹配关键词） / `exclude`（排除词） / `priority`（优先级权重）
+- 支持两级匹配：先尝试从 `[岗位]` 或 `岗位：` 格式中提取，再全主题降级匹配
+- 新增岗位只需改 TOML 文件，无需重新编译
 
-**交付**：`qtadmin asset audit` 功能完整，审计结果输出格式与 Python 版一致。
+**3. 日期筛选**
+- `--days <N>` — 最近 N 天
+- `--start <YYYY-MM-DD>` — 起始日期
+- `--end <YYYY-MM-DD>` — 结束日期
+- 默认：本月
+- 日期解析需兼容多种格式（ISO、RFC 2822 等），确保健壮性
 
-### 阶段三：质量加固与工程化（1 周）
+**4. 报告输出（Markdown）**
+- 投递总量 + 可识别岗位占比
+- 岗位分布表格（按投递数降序）
+- 投递趋势表格（含环比箭头 `↑` / `↓` / `-`）
+- 日均投递 + 最高峰日
+- 未识别邮件样本（前10条），辅助完善分类规则
 
-- 集成测试：用 `assert_cmd` / `predicates` 测试 CLI 端到端行为
-- CI 配置：`.github/workflows/` 添加 Rust 构建和测试
-- 依赖审计：检查是否仍需 `pyyaml` 对应能力（如需要，选 `serde_yaml`）
-- 错误处理统一：使用 `anyhow` + `thiserror`
-- README 更新安装方式为 cargo install / 预编译二进制
+### 阶段二：质量加固与发布（2天）
 
-### 阶段四：清理与收尾（0.5 周）
-
-- 删除 Python 源码和依赖（`app/`, `pyproject.toml`, `tests/`）
-- 更新 `CHANGELOG.md` 记录重构
-- 确认标签命名 `cli/v0.0.x` 不变
-- 文档更新：CONTRIBUTING.md 中构建/测试命令改为 Rust 方式
+- 集成测试（assert_cmd + predicates）
+- 更新 CHANGELOG.md
+- 更新 Cargo.toml 版本号到 0.0.3
+- 标签发布 `cli/v0.0.3`
 
 ## 非目标
 
-- 不引入新功能
-- 不改变命令名、参数名、行为语义
-- 不重构 audit 规则逻辑（仅移植）
+- 不引入数据库依赖
+- 不实现简历管理、面试管理、职位 CRUD
+- 不替代 `lark-cli`（保持 subprocess 胶水模式）
+- 不引入飞书 SDK / OAuth 认证
 
 ## Rust 技术选型
 
-| 领域         | 选型                             | 理由                             |
-| ------------ | -------------------------------- | -------------------------------- |
-| CLI 框架     | `clap` v4 (derive)               | 行业标准，对标 typer 体验        |
-| 错误处理     | `anyhow` + `thiserror`           | 最小样板代码                     |
-| Git 操作     | `git2` (libgit2 binding)         | 替代 subprocess，类型化 API      |
-| 文件系统     | `std::fs` + `walkdir`            | 替代 shutil / pathlib.rglob      |
-| 日期时间     | `chrono`                         | 日期解析和计算                   |
-| 序列化       | `serde` + `serde_yaml`（按需）    | 仅当需要 YAML 解析时引入         |
-| 测试         | `assert_cmd` + `predicates`      | CLI 端到端测试                   |
+| 领域 | 选型 | 理由 |
+| --- | --- | --- |
+| CLI 框架 | `clap` v4 (derive) | 已有，保持一致 |
+| 子进程 | `std::process::Command` | 调用 lark-cli |
+| JSON 解析 | `serde_json` | 解析 lark-cli 输出 |
+| 配置格式 | `toml` | 加载岗位规则配置文件 |
+| 日期时间 | `chrono` | 已有，强类型避免 Python 版日期陷阱 |
+| 错误处理 | `anyhow` + `thiserror` | 已有 |
+| 测试 | `assert_cmd` + `predicates` | 已有 |
 
-## 项目结构（目标）
+## 项目结构（v0.0.3 目标）
 
 ```
 cli/
 ├── Cargo.toml
 ├── src/
-│   ├── main.rs          # CLI 入口
-│   ├── cli.rs           # clap 定义
+│   ├── main.rs
+│   ├── cli.rs
+│   ├── git_utils.rs
 │   ├── asset/
 │   │   ├── mod.rs
-│   │   ├── backup.rs    # backup 命令逻辑
-│   │   └── audit.rs     # audit 命令逻辑
-│   └── git.rs           # git 操作封装
+│   │   ├── backup.rs
+│   │   └── audit.rs
+│   ├── qtrecurit/
+│   │   ├── mod.rs          # 命令枚举 + dispatch
+│   │   ├── status.rs       # status 命令全量逻辑
+│   │   └── config.rs       # TOML 配置加载 + PositionRule 数据结构
 ├── tests/
-│   ├── backup.rs
-│   └── audit.rs
+│   ├── test_backup.rs
+│   ├── test_audit.rs
+│   └── test_qtrecurit.rs
 ├── CHANGELOG.md
 ├── CONTRIBUTING.md
 └── ROADMAP.md
