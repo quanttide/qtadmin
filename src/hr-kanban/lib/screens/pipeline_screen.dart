@@ -276,7 +276,9 @@ class _PipelineScreenState extends State<PipelineScreen> {
         messages = await widget.api.getCandidateMessages(candidateId);
         timeline = await widget.api.getCandidateTimeline(candidateId);
       }
-    } catch (_) {}
+    } catch (e) {
+      debugPrint('_showDetail error: $e');
+    }
 
     if (!mounted) return;
     showModalBottomSheet(

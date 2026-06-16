@@ -49,23 +49,3 @@ class Headcount {
     );
   }
 }
-
-class TimelineItem {
-  final String action;
-  final String? detail;
-  final String createdAt;
-
-  const TimelineItem({
-    required this.action,
-    this.detail,
-    required this.createdAt,
-  });
-
-  factory TimelineItem.fromJson(Map<String, dynamic> json) {
-    return TimelineItem(
-      action: json['action'] as String,
-      detail: json['detail'] as String?,
-      createdAt: json['created_at'] as String,
-    );
-  }
-}
