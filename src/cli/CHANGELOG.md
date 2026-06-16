@@ -1,5 +1,25 @@
 # CHANGELOG
 
+## [0.0.2] - 2026-06-16
+
+### Added
+
+- `human` 命令组：招聘邮箱集成与 AI 智能分类
+  - `human list` — 列出飞书邮箱收件箱邮件
+  - `human classify` — AI 分类单封邮件
+  - `human ingest` — 推送邮件到待确认队列
+  - `human config` — 配置管理（Provider 地址、lark-cli 路径）
+  - `human send-loop` — 发件箱轮询发送守护进程
+- `app.human.lark_client` — 飞书 lark-cli 子进程封装
+- `app.human.api_client` — Provider API HTTP 客户端
+- `app.human.mail_sender` — 邮件发送逻辑 + 轮询循环
+- `app.human.classifier` — AI 分类结果预览
+- `app.human.config` — 本地配置管理
+
+### Fixed
+
+- `app.human.lark_client._run` 新增 `timeout=30` 和 `check_returncode()`
+
 ## [0.0.1] - 2026-04-07
 
 首个正式版本，提供数字资产管理工具集。

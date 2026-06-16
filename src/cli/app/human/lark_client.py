@@ -1,6 +1,9 @@
 """Wrapper around lark-cli subprocess."""
+import logging
 import subprocess
 from dataclasses import dataclass
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -20,7 +23,8 @@ class LarkClient:
         self._lark_path = lark_path
 
     def _run(self, cmd: list[str]) -> str:
-        result = subprocess.run(cmd, capture_output=True, text=True)
+        result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
+        result.check_returncode()
         return result.stdout
 
     def list_emails(self, limit: int = 20, since: str = "7d") -> list[LarkEmail]:

@@ -360,6 +360,7 @@ class TestGitRepoAuditorAgentsContent:
 | 测试 | README |
 
 快速索引
+如何更新 AGENTS 文件
 """
         mock_read_text.return_value = content
 
@@ -545,7 +546,7 @@ class TestGitRepoAuditorSubmodules:
         auditor._check_submodules()
 
         assert len(auditor._results) == 1
-        assert auditor._results[0].passed is True  # 超时视为通过（跳过检查）
+        assert auditor._results[0].passed is False  # 超时视为检查失败
 
 
 class TestGitRepoAuditorRecentCommits:
@@ -628,11 +629,6 @@ class TestAuditRepo:
     @patch("app.asset.audit.GitRepoAuditor")
     def test_audit_failure(self, mock_auditor_class):
         """测试审计失败"""
-        try:
-            from click.exceptions import Exit as ClickExit
-        except ImportError:
-            from click import ClickException as ClickExit
-        
         mock_report = MagicMock()
         mock_report.print_report.return_value = False
         mock_auditor = MagicMock()
@@ -640,5 +636,5 @@ class TestAuditRepo:
         mock_auditor_class.return_value = mock_auditor
 
         # 失败时抛出 Exit 异常
-        with pytest.raises(ClickExit):
+        with pytest.raises(typer.Exit):
             audit("/tmp/repo", verbose=False)
