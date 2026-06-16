@@ -86,6 +86,7 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
                   consultData: data.consultData,
                   classData: data.classData,
                   orgData: data.orgData,
+                  recruitmentData: data.recruitmentData,
                 );
                 return route.builder(ctx);
               },
