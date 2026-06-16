@@ -6,22 +6,20 @@ use std::time::Duration;
 use anyhow::{Context, Result};
 use serde::Deserialize;
 
+use super::{MailFetcher, Message};
+
 #[derive(Debug, Deserialize)]
 struct LarkResponse {
-    messages: Option<Vec<Message>>,
+    messages: Option<Vec<LarkMessage>>,
     page_token: Option<String>,
 }
 
-#[derive(Debug, Clone, Deserialize)]
-pub struct Message {
+#[derive(Debug, Deserialize)]
+struct LarkMessage {
     #[serde(default)]
-    pub subject: String,
+    subject: String,
     #[serde(default)]
-    pub date: String,
-}
-
-pub trait MailFetcher {
-    fn fetch_all(&self) -> Result<Vec<Message>>;
+    date: String,
 }
 
 pub struct LarkCliFetcher;
@@ -37,7 +35,9 @@ impl MailFetcher for LarkCliFetcher {
                 if batch.is_empty() {
                     break;
                 }
-                all.extend(batch);
+                for m in batch {
+                    all.push(Message { subject: m.subject, date: m.date });
+                }
             } else {
                 break;
             }
