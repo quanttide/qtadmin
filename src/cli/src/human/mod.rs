@@ -6,7 +6,7 @@ use clap::Subcommand;
 
 #[derive(Subcommand)]
 pub enum HumanCommands {
-    /// 招聘计划与进度
+    /// 招聘计划与进度（面向内部管理）
     Status(status::StatusArgs),
 }
 

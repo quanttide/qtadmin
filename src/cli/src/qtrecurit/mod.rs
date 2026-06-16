@@ -4,7 +4,7 @@ use clap::Subcommand;
 
 #[derive(Subcommand)]
 pub enum QtrecuritCommands {
-    /// 招聘数据统计
+    /// 招聘数据统计（面向公开发文）
     Status(status::StatusArgs),
 }
 

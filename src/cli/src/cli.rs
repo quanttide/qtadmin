@@ -17,7 +17,7 @@ pub enum Commands {
     Asset(asset::AssetArgs),
     /// 人力资源职能
     Human(human::HumanArgs),
-    /// 招聘业务线
+    /// 量潮招聘
     Qtrecurit(qtrecurit::QtrecuritArgs),
 }
 
