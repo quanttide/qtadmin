@@ -553,3 +553,420 @@ pub fn run(args: &AuditArgs) {
         std::process::exit(1);
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    // --- AuditResult tests ---
+
+    #[test]
+    fn test_audit_result_default() {
+        let r = AuditResult {
+            name: "Test".into(),
+            passed: true,
+            message: "OK".into(),
+            suggestion: None,
+        };
+        assert_eq!(r.name, "Test");
+        assert!(r.passed);
+        assert_eq!(r.message, "OK");
+        assert!(r.suggestion.is_none());
+    }
+
+    #[test]
+    fn test_audit_result_with_suggestion() {
+        let r = AuditResult {
+            name: "Test".into(),
+            passed: false,
+            message: "Failed".into(),
+            suggestion: Some("Fix it".into()),
+        };
+        assert!(!r.passed);
+        assert_eq!(r.suggestion.unwrap(), "Fix it");
+    }
+
+    // --- AuditReport tests ---
+
+    #[test]
+    fn test_audit_report_default() {
+        let report = AuditReport {
+            repo_path: "/tmp/repo".into(),
+            results: vec![],
+        };
+        assert_eq!(report.total_count(), 0);
+        assert_eq!(report.passed_count(), 0);
+        assert_eq!(report.failed_count(), 0);
+        assert_eq!(report.pass_rate(), 0.0);
+    }
+
+    #[test]
+    fn test_audit_report_counts() {
+        let report = AuditReport {
+            repo_path: "/tmp/repo".into(),
+            results: vec![
+                AuditResult { name: "A".into(), passed: true, message: "ok".into(), suggestion: None },
+                AuditResult { name: "B".into(), passed: false, message: "fail".into(), suggestion: Some("fix".into()) },
+                AuditResult { name: "C".into(), passed: true, message: "ok".into(), suggestion: None },
+            ],
+        };
+        assert_eq!(report.total_count(), 3);
+        assert_eq!(report.passed_count(), 2);
+        assert_eq!(report.failed_count(), 1);
+        assert!((report.pass_rate() - 66.667).abs() < 0.1);
+    }
+
+    #[test]
+    fn test_audit_report_print_success() {
+        let report = AuditReport {
+            repo_path: "/tmp/repo".into(),
+            results: vec![
+                AuditResult { name: "Test1".into(), passed: true, message: "OK".into(), suggestion: None },
+            ],
+        };
+        assert!(report.print_report(false));
+    }
+
+    #[test]
+    fn test_audit_report_print_failure() {
+        let report = AuditReport {
+            repo_path: "/tmp/repo".into(),
+            results: vec![
+                AuditResult { name: "Test1".into(), passed: false, message: "Failed".into(), suggestion: Some("Fix".into()) },
+            ],
+        };
+        assert!(!report.print_report(false));
+    }
+
+    // --- GitRepoAuditor tests ---
+
+    fn create_git_repo(dir: &Path) {
+        std::process::Command::new("git")
+            .args(["init"])
+            .current_dir(dir)
+            .output()
+            .unwrap();
+        std::process::Command::new("git")
+            .args(["config", "user.email", "test@test.com"])
+            .current_dir(dir)
+            .output()
+            .unwrap();
+        std::process::Command::new("git")
+            .args(["config", "user.name", "Test"])
+            .current_dir(dir)
+            .output()
+            .unwrap();
+    }
+
+    fn create_and_commit(dir: &Path, path: &str, content: &str, msg: &str) {
+        let full = dir.join(path);
+        if let Some(parent) = full.parent() {
+            std::fs::create_dir_all(parent).unwrap();
+        }
+        std::fs::write(&full, content).unwrap();
+        std::process::Command::new("git")
+            .args(["add", path])
+            .current_dir(dir)
+            .output()
+            .unwrap();
+        std::process::Command::new("git")
+            .args(["commit", "-m", msg])
+            .current_dir(dir)
+            .output()
+            .unwrap();
+    }
+
+    #[test]
+    fn test_auditor_new_with_string() {
+        let dir = tempfile::tempdir().unwrap();
+        let auditor = GitRepoAuditor::new(dir.path().to_str().unwrap());
+        assert!(auditor.repo_path.is_absolute());
+    }
+
+    #[test]
+    fn test_check_required_files_all_exist() {
+        let dir = tempfile::tempdir().unwrap();
+        create_git_repo(dir.path());
+        for (name, _) in GitRepoAuditor::REQUIRED_FILES {
+            std::fs::write(dir.path().join(name), "content").unwrap();
+        }
+
+        let mut auditor = GitRepoAuditor::new(dir.path().to_str().unwrap());
+        auditor.check_required_files();
+
+        assert_eq!(auditor.results.len(), 5);
+        for r in &auditor.results {
+            assert!(r.passed, "{} should pass", r.name);
+        }
+    }
+
+    #[test]
+    fn test_check_required_files_missing() {
+        let dir = tempfile::tempdir().unwrap();
+        create_git_repo(dir.path());
+
+        let mut auditor = GitRepoAuditor::new(dir.path().to_str().unwrap());
+        auditor.check_required_files();
+
+        assert_eq!(auditor.results.len(), 5);
+        for r in &auditor.results {
+            assert!(!r.passed);
+            assert!(r.message.contains("缺少"));
+        }
+    }
+
+    #[test]
+    fn test_check_optional_dir_exists() {
+        let dir = tempfile::tempdir().unwrap();
+        create_git_repo(dir.path());
+        std::fs::create_dir(dir.path().join("meta")).unwrap();
+
+        let mut auditor = GitRepoAuditor::new(dir.path().to_str().unwrap());
+        auditor.check_optional_dirs();
+
+        assert_eq!(auditor.results.len(), 1);
+        assert!(auditor.results[0].passed);
+    }
+
+    #[test]
+    fn test_check_optional_dir_missing() {
+        let dir = tempfile::tempdir().unwrap();
+        create_git_repo(dir.path());
+
+        let mut auditor = GitRepoAuditor::new(dir.path().to_str().unwrap());
+        auditor.check_optional_dirs();
+
+        assert_eq!(auditor.results.len(), 1);
+        assert!(!auditor.results[0].passed);
+    }
+
+    #[test]
+    fn test_check_readme_complete() {
+        let dir = tempfile::tempdir().unwrap();
+        create_git_repo(dir.path());
+        std::fs::write(
+            dir.path().join("README.md"),
+            "# Project\n\n项目简介\n\n## 目录结构\n\n```\nsrc/\n```\n\n## 快速开始\n\ninstall\n",
+        )
+        .unwrap();
+
+        let mut auditor = GitRepoAuditor::new(dir.path().to_str().unwrap());
+        auditor.check_readme_content();
+
+        assert_eq!(auditor.results.len(), 1);
+        assert!(auditor.results[0].passed);
+    }
+
+    #[test]
+    fn test_check_readme_incomplete() {
+        let dir = tempfile::tempdir().unwrap();
+        create_git_repo(dir.path());
+        std::fs::write(dir.path().join("README.md"), "# Only Title\n").unwrap();
+
+        let mut auditor = GitRepoAuditor::new(dir.path().to_str().unwrap());
+        auditor.check_readme_content();
+
+        assert_eq!(auditor.results.len(), 1);
+        assert!(!auditor.results[0].passed);
+    }
+
+    #[test]
+    fn test_check_readme_not_exists() {
+        let dir = tempfile::tempdir().unwrap();
+        create_git_repo(dir.path());
+
+        let mut auditor = GitRepoAuditor::new(dir.path().to_str().unwrap());
+        auditor.check_readme_content();
+
+        assert!(auditor.results.is_empty());
+    }
+
+    #[test]
+    fn test_check_contributing_complete() {
+        let dir = tempfile::tempdir().unwrap();
+        create_git_repo(dir.path());
+        std::fs::write(
+            dir.path().join("CONTRIBUTING.md"),
+            "# Contributing\n\n## 项目结构\n\n## 开发环境\n\n## 提交规范\n\n## 发布流程\n",
+        )
+        .unwrap();
+
+        let mut auditor = GitRepoAuditor::new(dir.path().to_str().unwrap());
+        auditor.check_contributing_content();
+
+        assert_eq!(auditor.results.len(), 1);
+        assert!(auditor.results[0].passed);
+    }
+
+    #[test]
+    fn test_check_contributing_missing_sections() {
+        let dir = tempfile::tempdir().unwrap();
+        create_git_repo(dir.path());
+        std::fs::write(dir.path().join("CONTRIBUTING.md"), "# Contributing\nsome text\n").unwrap();
+
+        let mut auditor = GitRepoAuditor::new(dir.path().to_str().unwrap());
+        auditor.check_contributing_content();
+
+        assert_eq!(auditor.results.len(), 1);
+        assert!(!auditor.results[0].passed);
+        assert!(auditor.results[0].message.contains("缺少章节"));
+    }
+
+    #[test]
+    fn test_check_agents_good() {
+        let dir = tempfile::tempdir().unwrap();
+        create_git_repo(dir.path());
+        std::fs::write(
+            dir.path().join("AGENTS.md"),
+            "# Agents\n\n| Task | Doc |\n|------|-----|\n| test | README |\n\n快速索引\n\n如何更新 AGENTS.md\n",
+        )
+        .unwrap();
+
+        let mut auditor = GitRepoAuditor::new(dir.path().to_str().unwrap());
+        auditor.check_agents_content();
+
+        assert_eq!(auditor.results.len(), 1);
+        assert!(auditor.results[0].passed);
+    }
+
+    #[test]
+    fn test_check_agents_too_long() {
+        let dir = tempfile::tempdir().unwrap();
+        create_git_repo(dir.path());
+        let content = "# Agents\n".to_string() + &(0..150).map(|i| format!("Line {i}")).collect::<Vec<_>>().join("\n");
+        std::fs::write(dir.path().join("AGENTS.md"), &content).unwrap();
+
+        let mut auditor = GitRepoAuditor::new(dir.path().to_str().unwrap());
+        auditor.check_agents_content();
+
+        assert_eq!(auditor.results.len(), 1);
+        assert!(!auditor.results[0].passed);
+    }
+
+    #[test]
+    fn test_check_changelog_valid() {
+        let dir = tempfile::tempdir().unwrap();
+        create_git_repo(dir.path());
+        std::fs::write(
+            dir.path().join("CHANGELOG.md"),
+            "# Changelog\n\n## [0.1.0] - 2024-01-15\n\n### Added\n- Feature\n",
+        )
+        .unwrap();
+
+        let mut auditor = GitRepoAuditor::new(dir.path().to_str().unwrap());
+        auditor.check_changelog_format();
+
+        assert_eq!(auditor.results.len(), 1);
+        assert!(auditor.results[0].passed);
+    }
+
+    #[test]
+    fn test_check_changelog_invalid() {
+        let dir = tempfile::tempdir().unwrap();
+        create_git_repo(dir.path());
+        std::fs::write(dir.path().join("CHANGELOG.md"), "random content\n").unwrap();
+
+        let mut auditor = GitRepoAuditor::new(dir.path().to_str().unwrap());
+        auditor.check_changelog_format();
+
+        assert_eq!(auditor.results.len(), 1);
+        assert!(!auditor.results[0].passed);
+    }
+
+    #[test]
+    fn test_check_gitignore_complete() {
+        let dir = tempfile::tempdir().unwrap();
+        create_git_repo(dir.path());
+        std::fs::write(
+            dir.path().join(".gitignore"),
+            "# Python\n.venv/\n__pycache__/\n*.pyc\n.env\n",
+        )
+        .unwrap();
+
+        let mut auditor = GitRepoAuditor::new(dir.path().to_str().unwrap());
+        auditor.check_gitignore_content();
+
+        assert_eq!(auditor.results.len(), 1);
+        assert!(auditor.results[0].passed);
+    }
+
+    #[test]
+    fn test_check_gitignore_minimal() {
+        let dir = tempfile::tempdir().unwrap();
+        create_git_repo(dir.path());
+        std::fs::write(dir.path().join(".gitignore"), "*.log\n").unwrap();
+
+        let mut auditor = GitRepoAuditor::new(dir.path().to_str().unwrap());
+        auditor.check_gitignore_content();
+
+        assert_eq!(auditor.results.len(), 1);
+        assert!(!auditor.results[0].passed);
+    }
+
+    #[test]
+    fn test_check_submodules_no_gitmodules() {
+        let dir = tempfile::tempdir().unwrap();
+        create_git_repo(dir.path());
+
+        let mut auditor = GitRepoAuditor::new(dir.path().to_str().unwrap());
+        auditor.check_submodules();
+
+        assert_eq!(auditor.results.len(), 1);
+        assert!(auditor.results[0].passed);
+        assert_eq!(auditor.results[0].message, "无子模块配置");
+    }
+
+    #[test]
+    fn test_check_submodules_with_gitmodules() {
+        let dir = tempfile::tempdir().unwrap();
+        create_git_repo(dir.path());
+        std::fs::write(dir.path().join(".gitmodules"), r#"[submodule "test"]"#).unwrap();
+
+        let mut auditor = GitRepoAuditor::new(dir.path().to_str().unwrap());
+        auditor.check_submodules();
+
+        assert_eq!(auditor.results.len(), 1);
+    }
+
+    #[test]
+    fn test_check_recent_commits_all_compliant() {
+        let dir = tempfile::tempdir().unwrap();
+        create_git_repo(dir.path());
+        create_and_commit(dir.path(), "a.txt", "a", "feat: add feature");
+        create_and_commit(dir.path(), "b.txt", "b", "fix: fix bug");
+        create_and_commit(dir.path(), "c.txt", "c", "docs: update docs");
+
+        let mut auditor = GitRepoAuditor::new(dir.path().to_str().unwrap());
+        auditor.check_recent_commits();
+
+        assert_eq!(auditor.results.len(), 1);
+        assert!(auditor.results[0].passed);
+    }
+
+    #[test]
+    fn test_check_recent_commits_none_compliant() {
+        let dir = tempfile::tempdir().unwrap();
+        create_git_repo(dir.path());
+        create_and_commit(dir.path(), "a.txt", "a", "bad commit 1");
+        create_and_commit(dir.path(), "b.txt", "b", "bad commit 2");
+
+        let mut auditor = GitRepoAuditor::new(dir.path().to_str().unwrap());
+        auditor.check_recent_commits();
+
+        assert_eq!(auditor.results.len(), 1);
+        assert!(!auditor.results[0].passed);
+    }
+
+    #[test]
+    fn test_check_release_consistency() {
+        let dir = tempfile::tempdir().unwrap();
+        create_git_repo(dir.path());
+        create_and_commit(dir.path(), "Cargo.toml", r#"version = "0.0.1""#, "chore: init");
+        create_and_commit(dir.path(), "CHANGELOG.md", "# Changelog\n\n## [0.0.1] - 2024-01-15\n", "chore: bump v0.0.1");
+
+        let mut auditor = GitRepoAuditor::new(dir.path().to_str().unwrap());
+        auditor.check_release_consistency();
+
+        assert_eq!(auditor.results.len(), 1);
+    }
+}
