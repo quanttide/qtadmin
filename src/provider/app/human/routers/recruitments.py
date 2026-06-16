@@ -2,13 +2,14 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 
 from app.human.database import get_db
-from app.human.models.talent import ALLOWED_STATUSES_FOR_SUB_STAGE, STATUS_TRANSITIONS, Talent, TalentStatus
-from app.human.models.recruitment import Recruitment
-from app.human.models.candidate import Candidate
 from app.human.models.application import Application
+from app.human.models.candidate import Candidate
+from app.human.models.recruitment import Recruitment
+from app.human.models.talent import ALLOWED_STATUSES_FOR_SUB_STAGE, Talent, TalentStatus
+from app.human.schemas.recruitment import HeadcountRead, RecruitmentCreate, RecruitmentRead
 from app.human.schemas.talent import SubStageUpdate, TalentCreate, TalentRead, TalentTransition, TalentUpdate
-from app.human.schemas.recruitment import HeadcountRead, RecruitmentRead
 from app.human.services.headcount import get_headcount
+from app.human.services.transition import sync_talent_from_application, transition_application
 
 router = APIRouter(prefix="/recruitments", tags=["human"])
 
@@ -31,8 +32,8 @@ def get_recruitment(recruitment_id: int, db: Session = Depends(get_db)):
 
 
 @router.post("", response_model=RecruitmentRead, status_code=201)
-def create_recruitment(db: Session = Depends(get_db)):
-    r = Recruitment()
+def create_recruitment(data: RecruitmentCreate, db: Session = Depends(get_db)):
+    r = Recruitment(title=data.title)
     db.add(r)
     db.commit()
     db.refresh(r)
@@ -88,17 +89,18 @@ def create_talent(recruitment_id: int, data: TalentCreate, db: Session = Depends
     if not recruitment:
         raise HTTPException(404, "Recruitment not found")
 
-    candidate = db.query(Candidate).filter(Candidate.email == data.email.lower()).first()
+    candidate = db.query(Candidate).filter(Candidate.email == data.email).first()
     if not candidate:
-        candidate = Candidate(email=data.email.lower(), real_name=data.real_name)
+        candidate = Candidate(email=data.email, real_name=data.real_name)
         db.add(candidate)
         db.flush()
     app = Application(candidate_id=candidate.id, recruitment_id=recruitment_id, source="manual_debug")
     db.add(app)
     db.flush()
 
-    t = Talent(recruitment_id=recruitment_id, email=data.email, real_name=data.real_name)
+    t = Talent(recruitment_id=recruitment_id, email=data.email, real_name=data.real_name, application_id=app.id)
     db.add(t)
+
     db.commit()
     db.refresh(t)
     return t
@@ -122,36 +124,26 @@ def transition_talent(recruitment_id: int, talent_id: int, data: TalentTransitio
     if not t:
         raise HTTPException(404, "Talent not found")
 
-    target = data.status
-    if target not in STATUS_TRANSITIONS.get(t.status, []):
-        raise HTTPException(400, f"Cannot transition from {t.status.value} to {target.value}")
+    # Find Application via bidirectional relationship or heuristic fallback
+    app = t.application
+    if not app:
+        candidate = db.query(Candidate).filter(Candidate.email == t.email).first()
+        if candidate:
+            app = (db.query(Application)
+                   .filter(Application.candidate_id == candidate.id,
+                           Application.recruitment_id == recruitment_id)
+                   .order_by(Application.created_at.desc())
+                   .first())
 
-    old_status = t.status
+    if not app:
+        raise HTTPException(400, "No associated Application found for this Talent")
 
-    candidate = db.query(Candidate).filter(Candidate.email == t.email).first()
-    if candidate:
-        app = (db.query(Application)
-               .filter(Application.candidate_id == candidate.id,
-                       Application.recruitment_id == recruitment_id)
-               .order_by(Application.created_at.desc())
-               .first())
-        if app:
-            app.status = target
-            if target != old_status:
-                app.sub_stage = None
-            if data.sub_stage is not None and target in ALLOWED_STATUSES_FOR_SUB_STAGE:
-                app.sub_stage = data.sub_stage
+    try:
+        transition_application(app, data.status, data.sub_stage)
+    except ValueError as e:
+        raise HTTPException(400, str(e))
 
-            stage_key = old_status.value
-            if stage_key in ("contacted", "evaluating", "interview", "offer"):
-                if not (stage_key == "evaluating" and target.value == "exam_sent"):
-                    if app.stage_results is None:
-                        app.stage_results = {}
-                    app.stage_results[stage_key] = "pass" if target.value != "closed" else "fail"
-
-            t.status = app.status
-            t.sub_stage = app.sub_stage
-            t.stage_results = app.stage_results
+    sync_talent_from_application(t, app)
 
     db.commit()
     db.refresh(t)
