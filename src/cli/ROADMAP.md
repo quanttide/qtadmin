@@ -1,64 +1,58 @@
 # Roadmap
 
-## ✅ v0.0.3 — `qtrecurit status` 子命令（已完成）
+## 定位
 
-**交付版本**：`cli/v0.0.3`  
-**交付日期**：2026-06-16  
-**标签**：https://github.com/quanttide/qtadmin/releases/tag/cli/v0.0.3
+qtadmin 是量潮管理后台，覆盖公司内部各业务线与职能领域。CLI 是其中的命令行接口。
 
-### 动机
+## 版本策略
 
-- **业务扩展**：量潮招聘业务线（qtrecurit）需要 CLI 数据统计入口，集成到 qtadmin 统一入口
-- **统一入口**：所有 QuantTide 业务线运维工具集中到 `qtadmin`，避免分散的独立 CLI
+- `v0.0.x` — 探索验证期，逐步补齐各领域最小可用能力
+- `v0.1.0` — 首个稳定版本，覆盖足够支撑日常管理
 
-### 设计原则
+## ✅ 已完成（v0.0.3 ~ v0.0.5）
 
-以 `examples/qtrecurit/stats.py` 为蓝本，保留其优秀脚本思维，在 Rust 重写中强化以下亮点：
+- `qtrecurit status` — 招聘数据统计（TOML 配置分类、Markdown 报告）
+- `human status` — 月度招聘计划与进度管理
+- `connect` — 沟通连接职能域，`email/lark` 邮件通道
+- 架构分层：业务域（qt-前缀）与职能域（无前缀）分离
+- XDG 规范：`QTRECURIT_CONFIG` / `QTRECURIT_DATA` 环境变量
 
-| 原亮点 | Rust 中继承 | 强化方向 |
-|--------|-------------|----------|
-| 调用 lark-cli 而非 SDK | `std::process::Command` | 保持工具链胶水思维，不引入飞书 SDK |
-| 分页拉取 + 上限保护 | 同上 | 保持 range(20) 防死循环 |
-| 区分可识别/不可识别投递 | 保留 identified 计算 | **强化**：输出未识别邮件样本，反哺分类规则 |
-| Markdown 表格输出 | 保留 | **强化**：加入趋势标记（日均值、最高峰、环比箭头） |
-| 职责单一的函数拆分 | 保持同样结构 | **强化**：分类规则从硬编码 if/elif 升级为配置化；再拆分为 connect/human/status 三层 |
+## v0.1.0 目标
 
-### 完成内容
+覆盖足够支撑日常管理的核心能力。具体规划：
 
-- `qtrecurit status` 命令：`--days` / `--start` / `--end` 日期筛选
-- TOML 配置化的岗位分类规则（9 个岗位兜底），`QTRECURIT_CONFIG` 环境变量发现
-- 两级匹配：`[岗位]` 提取 → 全主题关键词降级（exclude 排除词防误分）
-- Markdown 报告：总量 + 岗位分布 + 投递趋势（环比箭头）+ 未识别样本
-- 73 个测试（67 单元 + 6 集成）
+### human — 人力资源职能域
 
-### 项目结构（v0.0.3 实际）
+覆盖人事管理核心链路，不限于招聘。
 
-```
-cli/
-├── Cargo.toml
-├── src/
-│   ├── main.rs
-│   ├── cli.rs
-│   ├── git_utils.rs
-│   ├── asset/
-│   │   ├── mod.rs
-│   │   ├── backup.rs
-│   │   └── audit.rs
-│   ├── qtrecurit/
-│   │   ├── mod.rs          # 命令枚举 + dispatch
-│   │   ├── connect.rs      # 数据连接层（lark-cli，可复用）
-│   │   ├── human.rs        # HR 领域层（分类 + 报告，可复用）
-│   │   ├── status.rs       # 编排层
-│   │   └── config.rs       # TOML 配置加载
-├── tests/
-│   ├── test_backup.rs
-│   ├── test_audit.rs
-│   └── test_qtrecurit.rs
-├── CHANGELOG.md
-├── CONTRIBUTING.md
-└── ROADMAP.md
-```
+- [ ] 人事档案：员工信息增删查改
+- [ ] 考勤管理：打卡记录、请假审批
+- [ ] 绩效管理：考核周期、评分录入
+- [ ] 招聘计划深化：offer 管理、入职流程
 
-## 下一步规划
+### asset — 数字资产职能域
 
-（v0.0.4 待定）
+从日志归档/审计扩展为资产管理。
+
+- [ ] 资产台账：硬件/软件/许可证登记
+- [ ] 资产生命周期：领用、归还、报废
+- [ ] 费用追踪：采购记录、预算关联
+
+### connect — 沟通连接职能域
+
+打通多渠道通知与协作。
+
+- [ ] `email/wecom` — 企业微信邮件通道
+- [ ] `message/lark` — Lark IM 通知
+- [ ] 审批流对接：飞书审批、企业微信审批
+
+### qtrecurit — 量潮招聘业务域
+
+- [ ] 简历管理：一键导入、阶段流转
+- [ ] 面试管理：排期、反馈、结果通知
+
+### 质量要求
+
+- [ ] 测试覆盖率 ≥ 85%
+- [ ] 所有命令有 `--help` 完整文档
+- [ ] CI 通过方可合入
