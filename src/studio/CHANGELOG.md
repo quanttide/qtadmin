@@ -1,5 +1,23 @@
 # Changelog
 
+## v0.1.3
+
+### Feat
+
+- 招聘计划模块：新增 RecruitmentPlan 模型、数据加载、显示屏幕
+- CLI + Studio 数据共享：读取同源 recruitment.json，两端格式对齐
+
+### Test
+
+- 模型测试：RecruitmentPlan / AppState / RouteConfig / 主题工具函数
+- UI 测试：招聘计划屏幕 5 个 widget 测试
+- 集成测试：招聘计划真实渲染验证（溢出检测、大列表压力）
+- 契约测试：tests/contract/recruitment.json 跨 CLI 端结构校验
+
+### Chore
+
+- 更新 AGENTS.md 维护原则
+
 ## v0.1.2
 
 ### Refactor
