@@ -4,6 +4,8 @@ import 'package:qtadmin_think/think.dart';
 import 'package:qtadmin_qtconsult/consult.dart';
 import 'package:qtadmin_qtclass/class.dart';
 import 'package:qtadmin_org/org_barrel.dart';
+import 'package:qtadmin_studio/models/recruitment.dart';
+import 'package:qtadmin_studio/screens/recruitment_screen.dart';
 
 class ScreenContext {
   final Dashboard dashboard;
@@ -13,6 +15,7 @@ class ScreenContext {
   final QtConsult? consultData;
   final QtClass? classData;
   final OrgDashboard? orgData;
+  final RecruitmentPlan? recruitmentData;
 
   ScreenContext({
     required this.dashboard,
@@ -22,6 +25,7 @@ class ScreenContext {
     this.consultData,
     this.classData,
     this.orgData,
+    this.recruitmentData,
   });
 }
 
@@ -122,6 +126,10 @@ class RouteConfig {
         );
         return FuncDetailScreen(card: card);
       },
+    ),
+    'recruitment': RouteConfig(
+      id: 'recruitment', label: '招聘计划', icon: Icons.people_outline,
+      builder: (ctx) => RecruitmentScreen(data: ctx.recruitmentData!),
     ),
   };
 

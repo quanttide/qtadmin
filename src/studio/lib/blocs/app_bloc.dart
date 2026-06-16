@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:qtadmin_studio/models/metadata.dart';
+import 'package:qtadmin_studio/models/recruitment.dart';
 import 'package:qtadmin_qtconsult/qtconsult.dart';
 import 'package:qtadmin_qtclass/qtclass.dart';
 import 'package:qtadmin_think/thinking.dart';
@@ -22,6 +23,8 @@ final _thinkingLoader =
     DataLoader<Thinking>(_source, 'data/founder/thinking.json', Thinking.fromJson);
 final _orgLoader =
     DataLoader<OrgDashboard>(_source, 'data/company/org.json', OrgDashboard.fromJson);
+final _recruitmentLoader =
+    DataLoader<RecruitmentPlan>(_source, 'data/recruitment.json', RecruitmentPlan.fromJson);
 
 // Events
 
@@ -61,6 +64,7 @@ class AppData {
   final QtClass classData;
   final Thinking thinkingData;
   final OrgDashboard orgData;
+  final RecruitmentPlan? recruitmentData;
 
   const AppData({
     required this.workspaces,
@@ -70,6 +74,7 @@ class AppData {
     required this.classData,
     required this.thinkingData,
     required this.orgData,
+    this.recruitmentData,
   });
 }
 
@@ -88,6 +93,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
       _classLoader.load(),
       _thinkingLoader.load(),
       _orgLoader.load(),
+      _recruitmentLoader.load(),
     ]);
 
     for (final r in results) {
@@ -98,6 +104,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     }
 
     final root = (results[0] as DataSuccess<RootMetadata>).data;
+    final recruitmentResult = results[7] as DataResult<RecruitmentPlan>;
     emit(AppLoaded(AppData(
       workspaces: root.workspaces,
       sectionDefs: {for (final s in root.sections) s.id: s},
@@ -109,6 +116,10 @@ class AppBloc extends Bloc<AppEvent, AppState> {
       classData: (results[4] as DataSuccess<QtClass>).data,
       thinkingData: (results[5] as DataSuccess<Thinking>).data,
       orgData: (results[6] as DataSuccess<OrgDashboard>).data,
+      recruitmentData: switch (recruitmentResult) {
+        DataSuccess(:final data) => data,
+        DataError() => null,
+      },
     )));
   }
 }
