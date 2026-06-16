@@ -23,14 +23,18 @@ pub fn extract_date(date_str: &str) -> Option<NaiveDate> {
     NaiveDate::parse_from_str(cap.as_str(), "%Y-%m-%d").ok()
 }
 
-use super::connect::Message;
+pub struct MailItem {
+    pub subject: String,
+    pub date: String,
+}
 
 pub fn filter_by_date<'a>(
-    msgs: &'a [Message],
+    items: &'a [MailItem],
     start: Option<NaiveDate>,
     end: Option<NaiveDate>,
-) -> Vec<&'a Message> {
-    msgs.iter()
+) -> Vec<&'a MailItem> {
+    items
+        .iter()
         .filter(|m| {
             let date = extract_date(&m.date);
             match (date, start, end) {
@@ -61,13 +65,17 @@ pub fn build_title(start: Option<NaiveDate>, end: Option<NaiveDate>, days: Optio
     }
 }
 
-pub fn print_report(msgs: &[&Message], rules: &[config::PositionRule], title: &str) {
-    let total = msgs.len();
+pub fn format_report(
+    items: &[&MailItem],
+    rules: &[config::PositionRule],
+    title: &str,
+) -> String {
+    let total = items.len();
     let mut positions: BTreeMap<&str, usize> = BTreeMap::new();
     let mut unnamed_subjects: Vec<&str> = Vec::new();
     let mut daily: BTreeMap<String, usize> = BTreeMap::new();
 
-    for m in msgs {
+    for m in items {
         let subj = m.subject.trim();
         let cat = if subj.is_empty() {
             None
@@ -89,6 +97,8 @@ pub fn print_report(msgs: &[&Message], rules: &[config::PositionRule], title: &s
         }
     }
 
+    let mut out = String::new();
+
     let identified = total - unnamed_subjects.len();
     let identified_pct = if total > 0 {
         identified * 100 / total
@@ -96,37 +106,37 @@ pub fn print_report(msgs: &[&Message], rules: &[config::PositionRule], title: &s
         0
     };
 
-    println!("# {}\n", title);
-    println!("{} 封投递。", total);
+    out.push_str(&format!("# {}\n\n", title));
+    out.push_str(&format!("{} 封投递。\n", total));
     if total > 0 {
-        println!(
-            "其中可识别岗位 {} 封（{}%），其余为自动回复、空主题等。",
+        out.push_str(&format!(
+            "其中可识别岗位 {} 封（{}%），其余为自动回复、空主题等。\n",
             identified, identified_pct
-        );
+        ));
     }
-    println!();
+    out.push('\n');
 
-    println!("## 岗位分布\n");
-    println!("| 岗位 | 人数 |");
-    println!("|------|------|");
+    out.push_str("## 岗位分布\n\n");
+    out.push_str("| 岗位 | 人数 |\n");
+    out.push_str("|------|------|\n");
     let mut sorted: Vec<_> = positions.into_iter().collect();
     sorted.sort_by(|a, b| b.1.cmp(&a.1));
     for (pos, count) in &sorted {
-        println!("| {} | {} |", pos, count);
+        out.push_str(&format!("| {} | {} |\n", pos, count));
     }
-    println!();
+    out.push('\n');
 
     if !daily.is_empty() {
         let avg = daily.values().sum::<usize>() as f64 / daily.len() as f64;
         let max_day = daily.iter().max_by_key(|(_, &c)| c).unwrap();
-        println!("## 投递趋势\n");
-        println!(
-            "> 日均投递：{:.1} 封，最高峰：{}（{} 封）\n",
+        out.push_str("## 投递趋势\n\n");
+        out.push_str(&format!(
+            "> 日均投递：{:.1} 封，最高峰：{}（{} 封）\n\n",
             avg, max_day.0, max_day.1
-        );
+        ));
 
-        println!("| 日期 | 投递数 | 趋势 |");
-        println!("|------|--------|------|");
+        out.push_str("| 日期 | 投递数 | 趋势 |\n");
+        out.push_str("|------|--------|------|\n");
         let mut prev_count: Option<usize> = None;
         for (d, count) in &daily {
             let arrow = match prev_count {
@@ -134,30 +144,35 @@ pub fn print_report(msgs: &[&Message], rules: &[config::PositionRule], title: &s
                 Some(prev) if *count < prev => "↓",
                 _ => "-",
             };
-            println!("| {} | {} | {} |", d, count, arrow);
+            out.push_str(&format!("| {} | {} | {} |\n", d, count, arrow));
             prev_count = Some(*count);
         }
-        println!();
+        out.push('\n');
     }
 
     if !unnamed_subjects.is_empty() {
-        println!(
-            "## 未识别邮件样本（前{}条）\n",
+        out.push_str(&format!(
+            "## 未识别邮件样本（前{}条）\n\n",
             unnamed_subjects.len().min(10)
-        );
-        println!("建议根据以下样本调整分类规则：\n");
+        ));
+        out.push_str("建议根据以下样本调整分类规则：\n\n");
         for subj in unnamed_subjects.iter().take(10) {
             let display = if subj.is_empty() { "【空主题】" } else { subj };
-            println!("- {}", display);
+            out.push_str(&format!("- {}\n", display));
         }
-        println!();
+        out.push('\n');
     }
+
+    out
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::qtrecurit::connect::Message;
+
+    fn test_rules() -> Vec<config::PositionRule> {
+        config::load_config().rules
+    }
 
     #[test]
     fn test_extract_date_iso8601() {
@@ -187,36 +202,73 @@ mod tests {
 
     #[test]
     fn test_filter_by_date() {
-        let msgs = vec![
-            Message {
-                subject: "a".into(),
-                date: "2026-06-14".into(),
-            },
-            Message {
-                subject: "b".into(),
-                date: "2026-06-15".into(),
-            },
-            Message {
-                subject: "c".into(),
-                date: "2026-06-16".into(),
-            },
+        let items = vec![
+            MailItem { subject: "a".into(), date: "2026-06-14".into() },
+            MailItem { subject: "b".into(), date: "2026-06-15".into() },
+            MailItem { subject: "c".into(), date: "2026-06-16".into() },
         ];
         let start = NaiveDate::from_ymd_opt(2026, 6, 15);
         let end = NaiveDate::from_ymd_opt(2026, 6, 15);
-        let filtered = filter_by_date(&msgs, start, end);
+        let filtered = filter_by_date(&items, start, end);
         assert_eq!(filtered.len(), 1);
         assert_eq!(filtered[0].subject, "b");
     }
 
     #[test]
     fn test_filter_by_date_no_match() {
-        let msgs = vec![Message {
-            subject: "a".into(),
-            date: "2026-06-14".into(),
-        }];
+        let items = vec![MailItem { subject: "a".into(), date: "2026-06-14".into() }];
         let start = NaiveDate::from_ymd_opt(2026, 6, 15);
         let end = NaiveDate::from_ymd_opt(2026, 6, 15);
-        let filtered = filter_by_date(&msgs, start, end);
+        let filtered = filter_by_date(&items, start, end);
         assert!(filtered.is_empty());
+    }
+
+    #[test]
+    fn test_format_report_contains_title() {
+        let rules = test_rules();
+        let report = format_report(&[], &rules, "测试报告");
+        assert!(report.contains("# 测试报告"));
+        assert!(report.contains("0 封投递。"));
+    }
+
+    #[test]
+    fn test_format_report_with_data() {
+        use crate::human::config;
+        let rules = config::load_config().rules;
+        let items = vec![
+            MailItem { subject: "应聘全栈工程师 - 张三".into(), date: "2026-06-15".into() },
+            MailItem { subject: "【后端开发】李四".into(), date: "2026-06-16".into() },
+        ];
+        let refs: Vec<&MailItem> = items.iter().collect();
+        let report = format_report(&refs, &rules, "测试报告");
+        assert!(report.contains("2 封投递。"));
+        assert!(report.contains("岗位分布"));
+        assert!(report.contains("全栈工程师"));
+        assert!(report.contains("投递趋势"));
+        assert!(report.contains("2026-06-15"));
+        assert!(report.contains("2026-06-16"));
+    }
+
+    #[test]
+    fn test_format_report_unnamed_samples() {
+        let rules = test_rules();
+        let items = vec![
+            MailItem { subject: "自动回复：感谢投递".into(), date: "2026-06-15".into() },
+        ];
+        let refs: Vec<&MailItem> = items.iter().collect();
+        let report = format_report(&refs, &rules, "测试");
+        assert!(report.contains("未识别邮件样本"));
+        assert!(report.contains("自动回复：感谢投递"));
+    }
+
+    #[test]
+    fn test_format_report_empty_subject() {
+        let rules = test_rules();
+        let items = vec![
+            MailItem { subject: "".into(), date: "2026-06-15".into() },
+        ];
+        let refs: Vec<&MailItem> = items.iter().collect();
+        let report = format_report(&refs, &rules, "测试");
+        assert!(report.contains("【空主题】"));
     }
 }

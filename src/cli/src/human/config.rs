@@ -16,7 +16,7 @@ fn default_priority() -> i32 {
 }
 
 #[derive(Debug, Clone, Deserialize)]
-pub struct QtrecuritConfig {
+pub struct HumanConfig {
     #[serde(default)]
     pub rules: Vec<PositionRule>,
 }
@@ -77,6 +77,18 @@ fn builtin_rules() -> Vec<PositionRule> {
             exclude: vec![],
             priority: 0,
         },
+        PositionRule {
+            name: "咨询助理".into(),
+            keywords: vec!["咨询助理".into(), "咨询".into()],
+            exclude: vec![],
+            priority: 0,
+        },
+        PositionRule {
+            name: "执行助理".into(),
+            keywords: vec!["执行助理".into(), "助理".into()],
+            exclude: vec!["咨询".into(), "课程".into()],
+            priority: 0,
+        },
     ]
 }
 
@@ -102,12 +114,12 @@ fn dirs_next_or_fallback() -> Option<PathBuf> {
     std::env::var("HOME").ok().map(PathBuf::from)
 }
 
-fn load_from_file(path: &PathBuf) -> Option<QtrecuritConfig> {
+fn load_from_file(path: &PathBuf) -> Option<HumanConfig> {
     let content = std::fs::read_to_string(path).ok()?;
     toml::from_str(&content).ok()
 }
 
-pub fn load_config() -> QtrecuritConfig {
+pub fn load_config() -> HumanConfig {
     for path in config_paths() {
         if let Some(config) = load_from_file(&path) {
             if !config.rules.is_empty() {
@@ -115,7 +127,7 @@ pub fn load_config() -> QtrecuritConfig {
             }
         }
     }
-    QtrecuritConfig {
+    HumanConfig {
         rules: builtin_rules(),
     }
 }
@@ -125,7 +137,6 @@ pub fn classify<'a>(subject: &str, rules: &'a [PositionRule]) -> Option<&'a str>
         return None;
     }
 
-    // Level 1: extract from [position] or 岗位： format
     let re = regex::Regex::new(r"[\[【](.*?)[\]】]|岗位[：:]\s*(.*?)\s*[,，|]").ok();
     if let Some(ref re) = re {
         if let Some(caps) = re.captures(subject) {
@@ -141,7 +152,6 @@ pub fn classify<'a>(subject: &str, rules: &'a [PositionRule]) -> Option<&'a str>
         }
     }
 
-    // Level 2: full subject keyword matching
     match_by_priority(subject, rules)
 }
 
@@ -186,7 +196,6 @@ mod tests {
     #[test]
     fn test_classify_exclude_priority() {
         let rules = test_rules();
-        // "数据运营" contains both "数据" and "运营", should be excluded from 数据工程师
         assert_eq!(classify("数据运营实习申请", &rules), Some("新媒体运营"));
     }
 
@@ -208,12 +217,11 @@ mod tests {
     fn test_builtin_rules_not_empty() {
         let rules = builtin_rules();
         assert!(!rules.is_empty());
-        assert_eq!(rules.len(), 9);
+        assert_eq!(rules.len(), 11);
     }
 
     #[test]
     fn test_config_loading_fallback_to_builtin() {
-        // No config file path set, should return built-in rules
         let config = load_config();
         assert!(!config.rules.is_empty());
     }

@@ -12,12 +12,43 @@ struct LarkResponse {
     page_token: Option<String>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Clone, Deserialize)]
 pub struct Message {
     #[serde(default)]
     pub subject: String,
     #[serde(default)]
     pub date: String,
+}
+
+pub trait MailFetcher {
+    fn fetch_all(&self) -> Result<Vec<Message>>;
+}
+
+pub struct LarkCliFetcher;
+
+impl MailFetcher for LarkCliFetcher {
+    fn fetch_all(&self) -> Result<Vec<Message>> {
+        let mut all = Vec::new();
+        let mut token: Option<String> = None;
+
+        for _ in 0..20 {
+            let resp = run_lark_cli(token.as_deref())?;
+            if let Some(batch) = resp.messages {
+                if batch.is_empty() {
+                    break;
+                }
+                all.extend(batch);
+            } else {
+                break;
+            }
+            match resp.page_token {
+                Some(t) if !t.is_empty() => token = Some(t),
+                _ => break,
+            }
+        }
+
+        Ok(all)
+    }
 }
 
 fn run_lark_cli(page_token: Option<&str>) -> Result<LarkResponse> {
@@ -61,27 +92,4 @@ fn run_lark_cli(page_token: Option<&str>) -> Result<LarkResponse> {
     let data: LarkResponse =
         serde_json::from_slice(&output.stdout).context("lark-cli 返回数据格式异常")?;
     Ok(data)
-}
-
-pub fn fetch_all_mailbox() -> Result<Vec<Message>> {
-    let mut all = Vec::new();
-    let mut token: Option<String> = None;
-
-    for _ in 0..20 {
-        let resp = run_lark_cli(token.as_deref())?;
-        if let Some(batch) = resp.messages {
-            if batch.is_empty() {
-                break;
-            }
-            all.extend(batch);
-        } else {
-            break;
-        }
-        match resp.page_token {
-            Some(t) if !t.is_empty() => token = Some(t),
-            _ => break,
-        }
-    }
-
-    Ok(all)
 }
