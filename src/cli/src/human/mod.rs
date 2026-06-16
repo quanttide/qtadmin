@@ -1,23 +1,24 @@
+pub mod config;
+pub mod report;
 mod status;
-mod connect;
 
 use clap::Subcommand;
 
 #[derive(Subcommand)]
-pub enum QtrecuritCommands {
-    /// 招聘数据统计
+pub enum HumanCommands {
+    /// 招聘计划与进度
     Status(status::StatusArgs),
 }
 
 #[derive(clap::Args)]
-pub struct QtrecuritArgs {
+pub struct HumanArgs {
     #[command(subcommand)]
-    pub command: QtrecuritCommands,
+    pub command: HumanCommands,
 }
 
-pub fn dispatch(args: &QtrecuritArgs) {
+pub fn dispatch(args: &HumanArgs) {
     match &args.command {
-        QtrecuritCommands::Status(status_args) => {
+        HumanCommands::Status(status_args) => {
             if let Err(e) = status::run(status_args) {
                 eprintln!("错误: {}", e);
             }

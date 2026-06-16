@@ -1,10 +1,9 @@
 use anyhow::Result;
-use chrono::NaiveDate;
 use chrono::Datelike;
 
+use crate::human;
+
 use super::connect;
-use super::human;
-use super::config;
 
 #[derive(clap::Args)]
 pub struct StatusArgs {
@@ -19,10 +18,10 @@ pub struct StatusArgs {
     pub end: Option<String>,
 }
 
-fn resolve_date_range(args: &StatusArgs) -> (Option<NaiveDate>, Option<NaiveDate>) {
+fn resolve_date_range(args: &StatusArgs) -> (Option<chrono::NaiveDate>, Option<chrono::NaiveDate>) {
     if let (Some(start), Some(end)) = (&args.start, &args.end) {
-        let s = NaiveDate::parse_from_str(start, "%Y-%m-%d").ok();
-        let e = NaiveDate::parse_from_str(end, "%Y-%m-%d").ok();
+        let s = chrono::NaiveDate::parse_from_str(start, "%Y-%m-%d").ok();
+        let e = chrono::NaiveDate::parse_from_str(end, "%Y-%m-%d").ok();
         return (s, e);
     }
 
@@ -33,35 +32,77 @@ fn resolve_date_range(args: &StatusArgs) -> (Option<NaiveDate>, Option<NaiveDate
     }
 
     let now = chrono::Local::now().date_naive();
-    let start = NaiveDate::from_ymd_opt(now.year(), now.month(), 1).unwrap_or(now);
+    let start = chrono::NaiveDate::from_ymd_opt(now.year(), now.month(), 1).unwrap_or(now);
     (Some(start), Some(now))
 }
 
-pub fn run(args: &StatusArgs) -> Result<()> {
-    let cfg = config::load_config();
+pub fn format_status(fetcher: &dyn connect::MailFetcher, args: &StatusArgs) -> Result<String> {
+    let cfg = human::config::load_config();
+    let msgs = fetcher.fetch_all()?;
 
-    let msgs = connect::fetch_all_mailbox()?;
+    let items: Vec<human::report::MailItem> = msgs
+        .into_iter()
+        .map(|m| human::report::MailItem {
+            subject: m.subject,
+            date: m.date,
+        })
+        .collect();
 
     let (start, end) = resolve_date_range(args);
-    let filtered = human::filter_by_date(&msgs, start, end);
+    let filtered = human::report::filter_by_date(&items, start, end);
 
-    let title = human::build_title(start, end, args.days);
-    human::print_report(&filtered, &cfg.rules, &title);
+    let title = human::report::build_title(start, end, args.days);
+    Ok(human::report::format_report(&filtered, &cfg.rules, &title))
+}
 
+pub fn run(args: &StatusArgs) -> Result<()> {
+    let fetcher = connect::LarkCliFetcher;
+    print!("{}", format_status(&fetcher, args)?);
     Ok(())
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::qtrecurit::connect::Message;
+
+    struct MockFetcher {
+        messages: Vec<Message>,
+    }
+
+    impl connect::MailFetcher for MockFetcher {
+        fn fetch_all(&self) -> Result<Vec<Message>> {
+            Ok(self.messages.clone())
+        }
+    }
+
+    #[test]
+    fn test_format_status_with_data() {
+        let fetcher = MockFetcher {
+            messages: vec![
+                Message { subject: "应聘全栈工程师".into(), date: "2026-06-15".into() },
+                Message { subject: "自动回复".into(), date: "2026-06-16".into() },
+            ],
+        };
+        let args = StatusArgs { days: None, start: None, end: None };
+        let output = format_status(&fetcher, &args).unwrap();
+        assert!(output.contains("2 封投递。"));
+        assert!(output.contains("全栈工程师"));
+        assert!(output.contains("未识别邮件样本"));
+        assert!(output.contains("自动回复"));
+    }
+
+    #[test]
+    fn test_format_status_empty() {
+        let fetcher = MockFetcher { messages: vec![] };
+        let args = StatusArgs { days: None, start: None, end: None };
+        let output = format_status(&fetcher, &args).unwrap();
+        assert!(output.contains("0 封投递。"));
+    }
 
     #[test]
     fn test_resolve_date_range_default_this_month() {
-        let args = StatusArgs {
-            days: None,
-            start: None,
-            end: None,
-        };
+        let args = StatusArgs { days: None, start: None, end: None };
         let (s, e) = resolve_date_range(&args);
         assert!(s.is_some());
         assert!(e.is_some());
@@ -73,11 +114,7 @@ mod tests {
 
     #[test]
     fn test_resolve_date_range_with_days() {
-        let args = StatusArgs {
-            days: Some(7),
-            start: None,
-            end: None,
-        };
+        let args = StatusArgs { days: Some(7), start: None, end: None };
         let (s, e) = resolve_date_range(&args);
         assert!(s.is_some());
         assert!(e.is_some());
