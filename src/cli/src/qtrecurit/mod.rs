@@ -1,5 +1,4 @@
 mod status;
-mod connect;
 
 use clap::Subcommand;
 

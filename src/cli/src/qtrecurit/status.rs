@@ -1,9 +1,8 @@
 use anyhow::Result;
 use chrono::Datelike;
 
+use crate::connect;
 use crate::human;
-
-use super::connect;
 
 #[derive(clap::Args)]
 pub struct StatusArgs {
@@ -56,7 +55,7 @@ pub fn format_status(fetcher: &dyn connect::MailFetcher, args: &StatusArgs) -> R
 }
 
 pub fn run(args: &StatusArgs) -> Result<()> {
-    let fetcher = connect::LarkCliFetcher;
+    let fetcher = connect::lark::LarkCliFetcher;
     print!("{}", format_status(&fetcher, args)?);
     Ok(())
 }
@@ -64,7 +63,7 @@ pub fn run(args: &StatusArgs) -> Result<()> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::qtrecurit::connect::Message;
+    use crate::connect::Message;
 
     struct MockFetcher {
         messages: Vec<Message>,
