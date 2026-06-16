@@ -46,6 +46,8 @@ Thumbs.db
 .metadata
 src/studio/build/
 src/studio/.dart_tool/
+src/hr-kanban/.dart_tool/
+src/hr-kanban/*.log
 
 # Terraform
 .terraform/
