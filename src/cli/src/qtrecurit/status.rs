@@ -55,7 +55,7 @@ pub fn format_status(fetcher: &dyn connect::MailFetcher, args: &StatusArgs) -> R
 }
 
 pub fn run(args: &StatusArgs) -> Result<()> {
-    let fetcher = connect::lark::LarkCliFetcher;
+    let fetcher = connect::lark::mail::LarkCliFetcher;
     print!("{}", format_status(&fetcher, args)?);
     Ok(())
 }
