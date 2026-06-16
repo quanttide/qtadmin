@@ -2,6 +2,7 @@ use anyhow::Result;
 use chrono::Datelike;
 
 use crate::connect;
+use crate::connect::email;
 use crate::human;
 
 #[derive(clap::Args)]
@@ -35,7 +36,7 @@ fn resolve_date_range(args: &StatusArgs) -> (Option<chrono::NaiveDate>, Option<c
     (Some(start), Some(now))
 }
 
-pub fn format_status(fetcher: &dyn connect::MailFetcher, args: &StatusArgs) -> Result<String> {
+pub fn format_status(fetcher: &dyn connect::EmailFetcher, args: &StatusArgs) -> Result<String> {
     let cfg = human::config::load_config();
     let msgs = fetcher.fetch_all()?;
 
@@ -55,7 +56,7 @@ pub fn format_status(fetcher: &dyn connect::MailFetcher, args: &StatusArgs) -> R
 }
 
 pub fn run(args: &StatusArgs) -> Result<()> {
-    let fetcher = connect::lark::mail::LarkCliFetcher;
+    let fetcher = email::lark::LarkCliFetcher;
     print!("{}", format_status(&fetcher, args)?);
     Ok(())
 }
@@ -69,7 +70,7 @@ mod tests {
         messages: Vec<Message>,
     }
 
-    impl connect::MailFetcher for MockFetcher {
+    impl connect::EmailFetcher for MockFetcher {
         fn fetch_all(&self) -> Result<Vec<Message>> {
             Ok(self.messages.clone())
         }

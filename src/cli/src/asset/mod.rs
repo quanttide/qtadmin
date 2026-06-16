@@ -19,7 +19,20 @@ pub struct AssetArgs {
 
 pub fn dispatch(args: &AssetArgs) {
     match &args.command {
-        AssetCommands::Backup(backup_args) => backup::run(backup_args),
-        AssetCommands::Audit(audit_args) => audit::run(audit_args),
+        AssetCommands::Backup(backup_args) => {
+            if let Err(e) = backup::run(backup_args) {
+                eprintln!("错误：{e}");
+            }
+        }
+        AssetCommands::Audit(audit_args) => {
+            match audit::run(audit_args) {
+                Ok(true) => {}
+                Ok(false) => std::process::exit(1),
+                Err(e) => {
+                    eprintln!("错误：{e}");
+                    std::process::exit(1);
+                }
+            }
+        }
     }
 }

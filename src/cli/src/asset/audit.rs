@@ -1,5 +1,6 @@
 use std::path::{Path, PathBuf};
 
+use anyhow::Result;
 use clap::Args;
 use regex::Regex;
 
@@ -10,7 +11,6 @@ pub struct AuditArgs {
     /// 要审计的 Git 仓库路径
     #[arg(default_value = ".")]
     pub repo_path: String,
-
     /// 显示所有通过的项目
     #[arg(short, long)]
     pub verbose: bool,
@@ -49,28 +49,29 @@ impl AuditReport {
         self.passed_count() as f64 / self.total_count() as f64 * 100.0
     }
 
-    pub fn print_report(&self, verbose: bool) -> bool {
-        println!();
-        println!("{}", "=".repeat(60));
-        println!("Git 仓库资产审计报告");
-        println!("{}", "=".repeat(60));
-        println!("仓库路径：{}", self.repo_path);
-        println!(
-            "审计结果：{}/{} 通过 ({:.1}%)",
+    pub fn format_report(&self, verbose: bool) -> String {
+        let mut out = String::new();
+
+        out.push_str(&format!("\n{}\n", "=".repeat(60)));
+        out.push_str("Git 仓库资产审计报告\n");
+        out.push_str(&format!("{}\n", "=".repeat(60)));
+        out.push_str(&format!("仓库路径：{}\n", self.repo_path));
+        out.push_str(&format!(
+            "审计结果：{}/{} 通过 ({:.1}%)\n",
             self.passed_count(),
             self.total_count(),
             self.pass_rate()
-        );
-        println!("{}", "-".repeat(60));
+        ));
+        out.push_str(&format!("{}\n", "-".repeat(60)));
 
         let failed: Vec<_> = self.results.iter().filter(|r| !r.passed).collect();
         if !failed.is_empty() {
-            println!("\n❌ 未通过项目:");
+            out.push_str("\n❌ 未通过项目:\n");
             for result in &failed {
-                println!("\n  [{}]", result.name);
-                println!("  {}", result.message);
+                out.push_str(&format!("\n  [{}]\n", result.name));
+                out.push_str(&format!("  {}\n", result.message));
                 if let Some(suggestion) = &result.suggestion {
-                    println!("  💡 建议：{suggestion}");
+                    out.push_str(&format!("  💡 建议：{suggestion}\n"));
                 }
             }
         }
@@ -78,22 +79,22 @@ impl AuditReport {
         if verbose {
             let passed: Vec<_> = self.results.iter().filter(|r| r.passed).collect();
             if !passed.is_empty() {
-                println!("\n✅ 通过项目:");
+                out.push_str("\n✅ 通过项目:\n");
                 for result in &passed {
-                    println!("  ✓ {}", result.name);
+                    out.push_str(&format!("  ✓ {}\n", result.name));
                 }
             }
         }
 
-        println!("\n{}", "=".repeat(60));
+        out.push_str(&format!("\n{}\n", "=".repeat(60)));
 
         if self.failed_count() > 0 {
-            println!("⚠️  审计未通过，请根据建议修复问题");
-            false
+            out.push_str("⚠️  审计未通过，请根据建议修复问题\n");
         } else {
-            println!("✅ 审计通过，仓库符合标准资产体系规范");
-            true
+            out.push_str("✅ 审计通过，仓库符合标准资产体系规范\n");
         }
+
+        out
     }
 }
 
@@ -112,26 +113,23 @@ impl GitRepoAuditor {
     ];
 
     const OPTIONAL_DIRS: &'static [(&'static str, &'static str)] =
-        &[("meta", "元数据目录")];
+        &[(".quanttide", "量潮平台配置目录")];
 
     pub fn new(repo_path: &str) -> Self {
         Self {
-            repo_path: PathBuf::from(repo_path).canonicalize().unwrap_or_else(|_| {
-                PathBuf::from(repo_path)
-            }),
+            repo_path: PathBuf::from(repo_path)
+                .canonicalize()
+                .unwrap_or_else(|_| PathBuf::from(repo_path)),
             results: Vec::new(),
         }
     }
 
-    pub fn audit(&mut self) -> AuditReport {
+    pub fn audit(&mut self) -> Result<AuditReport> {
         if !self.repo_path.exists() {
-            eprintln!("错误：路径不存在 - {}", self.repo_path.display());
-            std::process::exit(1);
+            anyhow::bail!("路径不存在 - {}", self.repo_path.display());
         }
-
         if !self.repo_path.join(".git").exists() {
-            eprintln!("错误：不是 Git 仓库 - {}", self.repo_path.display());
-            std::process::exit(1);
+            anyhow::bail!("不是 Git 仓库 - {}", self.repo_path.display());
         }
 
         self.check_required_files();
@@ -145,10 +143,10 @@ impl GitRepoAuditor {
         self.check_recent_commits();
         self.check_release_consistency();
 
-        AuditReport {
+        Ok(AuditReport {
             repo_path: self.repo_path.display().to_string(),
             results: std::mem::take(&mut self.results),
-        }
+        })
     }
 
     fn add_result(&mut self, result: AuditResult) {
@@ -193,7 +191,7 @@ impl GitRepoAuditor {
                     format!("缺少 {dirname}/ 目录")
                 },
                 suggestion: if !passed {
-                    Some(format!("考虑创建 {dirname}/ 目录用于存储元数据"))
+                    Some(format!("考虑创建 {dirname}/ 目录用于存储配置"))
                 } else {
                     None
                 },
@@ -209,8 +207,13 @@ impl GitRepoAuditor {
         };
 
         let lines: Vec<&str> = content.lines().collect();
-        let has_intro = lines.first().map(|l| l.replace('#', "").trim().len() > 0).unwrap_or(false);
-        let has_structure = content.contains("目录") || content.contains("结构") || content.contains("```");
+        let has_intro = lines
+            .first()
+            .map(|l| l.replace('#', "").trim().len() > 0)
+            .unwrap_or(false);
+        let has_structure = content.contains("目录")
+            || content.contains("结构")
+            || content.contains("```");
         let has_quickstart = content.contains("快速")
             || content.contains("开始")
             || content.contains("Quick")
@@ -297,12 +300,17 @@ impl GitRepoAuditor {
             name: "AGENTS.md 内容规范".to_string(),
             passed,
             message: if passed {
-                format!("简洁 ({line_count}行)，包含使用场景、快速索引和自我更新说明")
+                format!(
+                    "简洁 ({line_count}行)，包含使用场景、快速索引和自我更新说明"
+                )
             } else {
                 format!("需要优化 (共{line_count}行)")
             },
             suggestion: if !passed {
-                Some("保持简洁 (~50 行)，添加使用场景表格、快速索引，以及「如何更新 AGENTS.md」的说明".to_string())
+                Some(
+                    "保持简洁 (~50 行)，添加使用场景表格、快速索引，以及「如何更新 AGENTS.md」的说明"
+                        .to_string(),
+                )
             } else {
                 None
             },
@@ -317,9 +325,8 @@ impl GitRepoAuditor {
         };
 
         let has_header = content.contains("# Changelog") || content.contains("# CHANGELOG");
-        let has_version = Regex::new(r"## \[?v?\d+\.\d+\.\d+")
-            .unwrap()
-            .is_match(&content);
+        let has_version =
+            Regex::new(r"## \[?v?\d+\.\d+\.\d+").unwrap().is_match(&content);
         let passed = has_header && has_version;
         self.add_result(AuditResult {
             name: "CHANGELOG.md 格式规范".to_string(),
@@ -330,7 +337,10 @@ impl GitRepoAuditor {
                 "格式不规范".to_string()
             },
             suggestion: if !passed {
-                Some("添加 # Changelog 标题和版本号，使用 ### Added/Changed/Fixed/Removed 分类".to_string())
+                Some(
+                    "添加 # Changelog 标题和版本号，使用 ### Added/Changed/Fixed/Removed 分类"
+                        .to_string(),
+                )
             } else {
                 None
             },
@@ -345,10 +355,10 @@ impl GitRepoAuditor {
         };
 
         let common = [
-            (".venv", "Python 虚拟环境"),
-            ("__pycache__", "Python 缓存"),
-            ("*.pyc", "Python 编译文件"),
+            ("target", "Rust 构建输出"),
+            ("node_modules", "Node 依赖"),
             (".env", "环境变量文件"),
+            (".DS_Store", "macOS 元数据"),
         ];
 
         let found: Vec<_> = common
@@ -366,7 +376,7 @@ impl GitRepoAuditor {
                 "规则较少".to_string()
             },
             suggestion: if !passed {
-                Some("添加常见的忽略规则：.venv, __pycache__, *.pyc, .env 等".to_string())
+                Some("添加常见的忽略规则：target/, node_modules/, .env, .DS_Store 等".to_string())
             } else {
                 None
             },
@@ -392,14 +402,13 @@ impl GitRepoAuditor {
         };
         let has_submodule = content.contains("[submodule");
 
-        let submodule_status = git_utils::run_git_cmd(
-            &["submodule", "status"],
-            &self.repo_path,
-        );
+        let submodule_status =
+            git_utils::run_git_cmd(&["submodule", "status"], &self.repo_path);
 
         let passed = match submodule_status {
             Ok(out) => {
-                let unpushed = out.lines().any(|line| line.starts_with('-') || line.starts_with('+'));
+                let unpushed =
+                    out.lines().any(|line| line.starts_with('-') || line.starts_with('+'));
                 has_submodule && !unpushed
             }
             Err(_) => has_submodule,
@@ -422,7 +431,8 @@ impl GitRepoAuditor {
     }
 
     fn check_recent_commits(&mut self) {
-        let log_result = git_utils::run_git_cmd(&["log", "--oneline", "-10"], &self.repo_path);
+        let log_result =
+            git_utils::run_git_cmd(&["log", "--oneline", "-10"], &self.repo_path);
 
         let commits = match log_result {
             Ok(out) => {
@@ -439,9 +449,10 @@ impl GitRepoAuditor {
             Err(_) => return,
         };
 
-        let conventional_re =
-            Regex::new(r"^(feat|fix|docs|test|refactor|chore|style|perf)(\([a-z0-9-]+\))?:\s.+")
-                .unwrap();
+        let conventional_re = Regex::new(
+            r"^(feat|fix|docs|test|refactor|chore|style|perf)(\([a-z0-9-]+\))?:\s.+",
+        )
+        .unwrap();
 
         let compliant_count = commits
             .iter()
@@ -459,12 +470,13 @@ impl GitRepoAuditor {
             passed,
             message: format!(
                 "{}/{} 符合 Conventional Commits ({:.0}%)",
-                compliant_count,
-                commits.len(),
-                compliance_rate
+                compliant_count, commits.len(), compliance_rate
             ),
             suggestion: if !passed {
-                Some("使用 `cz commit` 创建规范提交，或手动遵循 <type>: <description> 格式".to_string())
+                Some(
+                    "使用 `cz commit` 创建规范提交，或手动遵循 <type>: <description> 格式"
+                        .to_string(),
+                )
             } else {
                 None
             },
@@ -478,19 +490,17 @@ impl GitRepoAuditor {
             None => return,
         };
 
-        // Try pyproject.toml first, then Cargo.toml
         let version = self
             .read_version_from_pyproject()
             .or_else(|| self.read_version_from_cargo());
-
-        let pyproject_version = match version {
+        let version = match version {
             Some(v) => v,
             None => return,
         };
 
         let changelog_has_version = Regex::new(&format!(
             r"## \[?{}]?",
-            regex::escape(&pyproject_version)
+            regex::escape(&version)
         ))
         .unwrap()
         .is_match(&changelog);
@@ -499,8 +509,8 @@ impl GitRepoAuditor {
             .map(|out| {
                 let pattern = format!(
                     r"bump.*{}|v{}",
-                    regex::escape(&pyproject_version),
-                    regex::escape(&pyproject_version),
+                    regex::escape(&version),
+                    regex::escape(&version),
                 );
                 Regex::new(&pattern)
                     .ok()
@@ -516,10 +526,13 @@ impl GitRepoAuditor {
             message: if passed {
                 "CHANGELOG 和版本文件一致，且有版本提交".to_string()
             } else {
-                format!("CHANGELOG 缺少 v{pyproject_version} 或缺少版本提交")
+                format!("CHANGELOG 缺少 v{version} 或缺少版本提交")
             },
             suggestion: if !passed {
-                Some("发布前确保：1) 更新 CHANGELOG.md 2) 更新版本文件 3) 提交版本更新".to_string())
+                Some(
+                    "发布前确保：1) 更新 CHANGELOG.md 2) 更新版本文件 3) 提交版本更新"
+                        .to_string(),
+                )
             } else {
                 None
             },
@@ -545,20 +558,17 @@ impl GitRepoAuditor {
     }
 }
 
-pub fn run(args: &AuditArgs) {
+pub fn run(args: &AuditArgs) -> Result<bool> {
     let mut auditor = GitRepoAuditor::new(&args.repo_path);
-    let report = auditor.audit();
-    let passed = report.print_report(args.verbose);
-    if !passed {
-        std::process::exit(1);
-    }
+    let report = auditor.audit()?;
+    let output = report.format_report(args.verbose);
+    print!("{output}");
+    Ok(report.failed_count() == 0)
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    // --- AuditResult tests ---
 
     #[test]
     fn test_audit_result_default() {
@@ -585,8 +595,6 @@ mod tests {
         assert!(!r.passed);
         assert_eq!(r.suggestion.unwrap(), "Fix it");
     }
-
-    // --- AuditReport tests ---
 
     #[test]
     fn test_audit_report_default() {
@@ -617,28 +625,44 @@ mod tests {
     }
 
     #[test]
-    fn test_audit_report_print_success() {
+    fn test_format_report_success() {
         let report = AuditReport {
             repo_path: "/tmp/repo".into(),
             results: vec![
                 AuditResult { name: "Test1".into(), passed: true, message: "OK".into(), suggestion: None },
             ],
         };
-        assert!(report.print_report(false));
+        let output = report.format_report(false);
+        assert!(output.contains("审计通过"));
+        assert!(!output.contains("❌"));
     }
 
     #[test]
-    fn test_audit_report_print_failure() {
+    fn test_format_report_failure() {
         let report = AuditReport {
             repo_path: "/tmp/repo".into(),
             results: vec![
                 AuditResult { name: "Test1".into(), passed: false, message: "Failed".into(), suggestion: Some("Fix".into()) },
             ],
         };
-        assert!(!report.print_report(false));
+        let output = report.format_report(false);
+        assert!(output.contains("审计未通过"));
+        assert!(output.contains("❌"));
     }
 
-    // --- GitRepoAuditor tests ---
+    #[test]
+    fn test_format_report_verbose() {
+        let report = AuditReport {
+            repo_path: "/tmp/repo".into(),
+            results: vec![
+                AuditResult { name: "Pass".into(), passed: true, message: "OK".into(), suggestion: None },
+                AuditResult { name: "Fail".into(), passed: false, message: "Bad".into(), suggestion: Some("Fix".into()) },
+            ],
+        };
+        let output = report.format_report(true);
+        assert!(output.contains("✅"));
+        assert!(output.contains("❌"));
+    }
 
     fn create_git_repo(dir: &Path) {
         std::process::Command::new("git")
@@ -719,7 +743,7 @@ mod tests {
     fn test_check_optional_dir_exists() {
         let dir = tempfile::tempdir().unwrap();
         create_git_repo(dir.path());
-        std::fs::create_dir(dir.path().join("meta")).unwrap();
+        std::fs::create_dir(dir.path().join(".quanttide")).unwrap();
 
         let mut auditor = GitRepoAuditor::new(dir.path().to_str().unwrap());
         auditor.check_optional_dirs();
@@ -833,7 +857,8 @@ mod tests {
     fn test_check_agents_too_long() {
         let dir = tempfile::tempdir().unwrap();
         create_git_repo(dir.path());
-        let content = "# Agents\n".to_string() + &(0..150).map(|i| format!("Line {i}")).collect::<Vec<_>>().join("\n");
+        let content = "# Agents\n".to_string()
+            + &(0..150).map(|i| format!("Line {i}")).collect::<Vec<_>>().join("\n");
         std::fs::write(dir.path().join("AGENTS.md"), &content).unwrap();
 
         let mut auditor = GitRepoAuditor::new(dir.path().to_str().unwrap());
@@ -879,7 +904,7 @@ mod tests {
         create_git_repo(dir.path());
         std::fs::write(
             dir.path().join(".gitignore"),
-            "# Python\n.venv/\n__pycache__/\n*.pyc\n.env\n",
+            "target/\nnode_modules/\n.env\n.DS_Store\n",
         )
         .unwrap();
 

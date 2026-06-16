@@ -13,15 +13,12 @@ pub struct BackupArgs {
     /// 归档 N 天前的日志（默认 3）
     #[arg(long, default_value = "3")]
     pub days: u32,
-
     /// 预览模式，不执行实际变更
     #[arg(long)]
     pub dry_run: bool,
-
     /// 仅提交不推送
     #[arg(long)]
     pub no_push: bool,
-
     /// 跳过确认直接执行
     #[arg(short, long)]
     pub yes: bool,
@@ -36,7 +33,7 @@ fn get_project_root() -> Result<PathBuf> {
             return Ok(current);
         }
         if !current.pop() {
-            return Ok(std::env::current_dir()?);
+            anyhow::bail!("未找到项目根目录（需包含 docs/journal 和 docs/archive/journal）");
         }
     }
 }
@@ -128,17 +125,23 @@ fn move_files(
 
         let target = if rel_parts.len() > 1 {
             let sub_path: PathBuf = rel_parts[1..rel_parts.len() - 1].iter().collect();
-            archive_dir.join(category).join(&sub_path).join(
-                source.file_name().unwrap(),
-            )
+            archive_dir
+                .join(category)
+                .join(&sub_path)
+                .join(source.file_name().unwrap())
         } else {
-            archive_dir.join(category).join(source.file_name().unwrap())
+            archive_dir
+                .join(category)
+                .join(source.file_name().unwrap())
         };
 
         if target.exists() {
             println!(
                 "跳过（已存在）：{}",
-                target.strip_prefix(project_root).unwrap_or(&target).display()
+                target
+                    .strip_prefix(project_root)
+                    .unwrap_or(&target)
+                    .display()
             );
             continue;
         }
@@ -146,8 +149,14 @@ fn move_files(
         if dry_run {
             println!(
                 "[DRY-RUN] {} -> {}",
-                source.strip_prefix(project_root).unwrap_or(source).display(),
-                target.strip_prefix(project_root).unwrap_or(&target).display()
+                source
+                    .strip_prefix(project_root)
+                    .unwrap_or(source)
+                    .display(),
+                target
+                    .strip_prefix(project_root)
+                    .unwrap_or(&target)
+                    .display()
             );
         } else {
             if let Some(parent) = target.parent() {
@@ -155,8 +164,13 @@ fn move_files(
             }
             if let Err(e) = std::fs::rename(source, &target) {
                 if e.kind() == std::io::ErrorKind::CrossesDevices {
-                    std::fs::copy(source, &target)
-                        .with_context(|| format!("复制文件失败: {} -> {}", source.display(), target.display()))?;
+                    std::fs::copy(source, &target).with_context(|| {
+                        format!(
+                            "复制文件失败: {} -> {}",
+                            source.display(),
+                            target.display()
+                        )
+                    })?;
                     std::fs::remove_file(source)
                         .with_context(|| format!("删除源文件失败: {}", source.display()))?;
                 } else {
@@ -165,8 +179,14 @@ fn move_files(
             }
             println!(
                 "已移动：{} -> {}",
-                source.strip_prefix(project_root).unwrap_or(source).display(),
-                target.strip_prefix(project_root).unwrap_or(&target).display()
+                source
+                    .strip_prefix(project_root)
+                    .unwrap_or(source)
+                    .display(),
+                target
+                    .strip_prefix(project_root)
+                    .unwrap_or(&target)
+                    .display()
             );
         }
 
@@ -176,29 +196,30 @@ fn move_files(
     Ok(moved)
 }
 
-pub fn run(args: &BackupArgs) {
-    let project_root = get_project_root().unwrap_or_else(|e| {
-        eprintln!("错误：{e}");
-        std::process::exit(1);
-    });
+fn format_summary(project_root: &Path, journal_dir: &Path, archive_dir: &Path, days: u32) -> String {
+    format!(
+        "项目根目录：{}\nJournal 目录：{}\nArchive 目录：{}\n归档条件：{} 天前\n",
+        project_root.display(),
+        journal_dir.display(),
+        archive_dir.display(),
+        days,
+    )
+}
+
+pub fn run(args: &BackupArgs) -> Result<()> {
+    let project_root = get_project_root()?;
     let journal_dir = project_root.join("docs").join("journal");
     let archive_dir = project_root.join("docs").join("archive").join("journal");
 
-    println!("项目根目录：{}", project_root.display());
-    println!("Journal 目录：{}", journal_dir.display());
-    println!("Archive 目录：{}", archive_dir.display());
-    println!("归档条件：{} 天前\n", args.days);
+    print!("{}", format_summary(&project_root, &journal_dir, &archive_dir, args.days));
 
-    let all_files = scan_journal_files(&journal_dir).unwrap_or_else(|e| {
-        eprintln!("错误：{e}");
-        std::process::exit(1);
-    });
+    let all_files = scan_journal_files(&journal_dir)?;
     println!("扫描到 {} 个日志文件", all_files.len());
 
     let old_files = filter_old_files(all_files, args.days);
     if old_files.is_empty() {
         println!("没有 {} 天前的日志需要归档。", args.days);
-        return;
+        return Ok(());
     }
 
     if !args.dry_run && !args.yes {
@@ -216,25 +237,27 @@ pub fn run(args: &BackupArgs) {
         std::io::stdin().read_line(&mut input).unwrap();
         if input.trim().to_lowercase() != "y" {
             println!("已取消。");
-            return;
+            return Ok(());
         }
     }
 
     println!("\n开始归档...");
-    let moved = move_files(&old_files, &archive_dir, &journal_dir, &project_root, args.dry_run)
-        .unwrap_or_else(|e| {
-            eprintln!("错误：{e}");
-            std::process::exit(1);
-        });
+    let moved = move_files(
+        &old_files,
+        &archive_dir,
+        &journal_dir,
+        &project_root,
+        args.dry_run,
+    )?;
 
     if args.dry_run {
         println!("\n[DRY-RUN] 共 {} 个文件将被归档。", moved.len());
-        return;
+        return Ok(());
     }
 
     if moved.is_empty() {
         println!("没有文件被移动。");
-        return;
+        return Ok(());
     }
 
     println!("\n提交子模块变更...");
@@ -267,6 +290,7 @@ pub fn run(args: &BackupArgs) {
     }
 
     println!("\n归档完成！");
+    Ok(())
 }
 
 #[cfg(test)]
@@ -470,7 +494,6 @@ mod tests {
         let moved = move_files(&files, &archive_dir, &journal_dir, project_root, true).unwrap();
         assert_eq!(moved.len(), 1);
         assert!(source.exists());
-        // target should not exist in dry-run
         assert!(!moved[0].1.exists());
     }
 
