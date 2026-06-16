@@ -1,5 +1,18 @@
 # CHANGELOG
 
+## [0.0.6] - 2026-06-16
+
+### Added
+
+- `project status` 命令：项目交付状态总览，五阶段流程（调研→谈判→执行→交付→复盘）
+- `business status` 命令：商务拓展订单总览，四阶段流程（商机→报价→谈判→签约）
+- `qtconsult status` / `qtclass status` / `qtcloud status` / `qtdata status` 命令：四个业务域各自的项目总览
+- 业务域与职能域分层架构正式成型：4 职能域 + 5 业务域 = 9 个顶级命令
+
+### Changed
+
+- 项目总纲章程同步更新为五阶段（`docs/bylaw` v0.6.0）
+
 ## [0.0.5] - 2026-06-16
 
 ### Added
