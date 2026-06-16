@@ -1,5 +1,14 @@
 # CHANGELOG
 
+## [0.0.3] - 2026-06-16
+
+### Added
+- `qtrecurit status` 命令：招聘数据统计，支持 TOML 配置化的岗位分类规则
+- 新增 `serde` / `serde_json` / `toml` 依赖
+
+### Changed
+- CLI 版本从 0.0.2 升到 0.0.3
+
 ## [0.0.2] - 2026-06-16
 
 Rust 重构版本，Python → Rust 全量迁移。

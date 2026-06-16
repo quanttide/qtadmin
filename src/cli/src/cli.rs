@@ -1,4 +1,5 @@
 use crate::asset;
+use crate::qtrecurit;
 
 use clap::{Parser, Subcommand};
 
@@ -13,6 +14,8 @@ pub struct Cli {
 pub enum Commands {
     /// 数字资产职能
     Asset(asset::AssetArgs),
+    /// 招聘业务线
+    Qtrecurit(qtrecurit::QtrecuritArgs),
 }
 
 pub fn run() {
@@ -20,6 +23,7 @@ pub fn run() {
 
     match &cli.command {
         Some(Commands::Asset(args)) => asset::dispatch(args),
+        Some(Commands::Qtrecurit(args)) => qtrecurit::dispatch(args),
         None => {
             // --version and --help are handled by clap automatically
         }
