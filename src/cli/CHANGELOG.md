@@ -1,5 +1,20 @@
 # CHANGELOG
 
+## [0.0.4] - 2026-06-16
+
+### Added
+- `human status` 命令：月度招聘计划与进度管理，按岗位展示编制/已入职/进行中/空缺
+- `connect::email::EmailFetcher` trait，支持 Lark Mail 等多渠道邮件接入
+
+### Changed
+- 架构重组：`human`/`connect` 独立为顶层职能域，`qtrecurit` 业务域通过 trait 注入复用
+- `asset::audit` 遵循 12-factor 改造：`format_report` 返回 String，`run` 返回 Result，移除 `pyproject.toml` 硬编码
+- 提升可测试性：提取 `PlanStore`/`EmailFetcher` 接口，覆盖率从 60% 提升至 73%
+- 硬编码更新：`.gitignore` 规则适配当前技术栈，可选目录从 `meta` 改为 `.quanttide`
+
+### Removed
+- `asset::audit` 移除 `pyproject.toml` 版本检测优先逻辑（与 `Cargo.toml` 并列保留）
+
 ## [0.0.3] - 2026-06-16
 
 ### Added
