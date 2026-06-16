@@ -6,7 +6,7 @@ use std::time::Duration;
 use anyhow::{Context, Result};
 use serde::Deserialize;
 
-use super::{MailFetcher, Message};
+use super::super::{MailFetcher, Message};
 
 #[derive(Debug, Deserialize)]
 struct LarkResponse {
