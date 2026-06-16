@@ -52,11 +52,18 @@ impl PlanStore for FilePlanStore {
 }
 
 fn plan_path() -> PathBuf {
+    if let Ok(dir) = std::env::var("QTRECURIT_DATA") {
+        let p = PathBuf::from(dir);
+        return p.join("recruitment_plan.json");
+    }
     if let Ok(dir) = std::env::var("QTRECURIT_CONFIG") {
         let p = PathBuf::from(dir);
         if let Some(parent) = p.parent() {
             return parent.join("recruitment_plan.json");
         }
+    }
+    if let Some(data_dir) = dirs::data_dir() {
+        return data_dir.join("qtadmin").join("recruitment_plan.json");
     }
     if let Ok(cwd) = std::env::current_dir() {
         return cwd.join("recruitment_plan.json");

@@ -1,5 +1,16 @@
 # CHANGELOG
 
+## [0.0.5] - 2026-06-16
+
+### Added
+- XDG 规范支持：配置走 `QTRECURIT_CONFIG`（`~/.config/qtadmin/qtrecurit.toml`），数据走 `QTRECURIT_DATA`（`~/.local/share/qtadmin/`)
+- `qtrecurit.toml` 配置文件，岗位规则可编辑无需重编译
+- `dirs` 依赖用于 XDG 路径解析
+
+### Changed
+- 分类规则补充：`技术实习生`/`技术实习` 归入数据工程师
+- CLI 描述更新：`qtrecurit` → 量潮招聘
+
 ## [0.0.4] - 2026-06-16
 
 ### Added

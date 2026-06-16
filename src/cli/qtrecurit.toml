@@ -1,0 +1,56 @@
+[[rules]]
+name = "全栈工程师"
+keywords = ["全栈", "后端开发", "后端", "AI应用"]
+priority = 10
+
+[[rules]]
+name = "数据工程师"
+keywords = ["数据", "技术实习生", "技术实习"]
+exclude = ["运营"]
+priority = 0
+
+[[rules]]
+name = "新媒体运营"
+keywords = ["新媒体运营", "运营"]
+priority = 0
+
+[[rules]]
+name = "商务经理"
+keywords = ["商务", "BD"]
+priority = 0
+
+[[rules]]
+name = "项目经理"
+keywords = ["PM", "项目经理"]
+priority = 0
+
+[[rules]]
+name = "产品经理"
+keywords = ["产品"]
+priority = 0
+
+[[rules]]
+name = "课程助教"
+keywords = ["课程助教", "助教"]
+priority = 0
+
+[[rules]]
+name = "销售经理"
+keywords = ["销售"]
+priority = 0
+
+[[rules]]
+name = "人事经理"
+keywords = ["HR", "人力资源"]
+priority = 0
+
+[[rules]]
+name = "咨询助理"
+keywords = ["咨询助理", "咨询"]
+priority = 0
+
+[[rules]]
+name = "执行助理"
+keywords = ["执行助理", "助理"]
+exclude = ["咨询", "课程"]
+priority = 0

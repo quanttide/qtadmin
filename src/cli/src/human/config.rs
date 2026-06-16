@@ -31,7 +31,7 @@ fn builtin_rules() -> Vec<PositionRule> {
         },
         PositionRule {
             name: "数据工程师".into(),
-            keywords: vec!["数据".into()],
+            keywords: vec!["数据".into(), "技术实习生".into(), "技术实习".into()],
             exclude: vec!["运营".into()],
             priority: 0,
         },
@@ -103,15 +103,11 @@ fn config_paths() -> Vec<PathBuf> {
         paths.push(cwd.join("qtrecurit.toml"));
     }
 
-    if let Some(home) = dirs_next_or_fallback() {
-        paths.push(home.join(".config").join("qtadmin").join("qtrecurit.toml"));
+    if let Some(config_dir) = dirs::config_dir() {
+        paths.push(config_dir.join("qtadmin").join("qtrecurit.toml"));
     }
 
     paths
-}
-
-fn dirs_next_or_fallback() -> Option<PathBuf> {
-    std::env::var("HOME").ok().map(PathBuf::from)
 }
 
 fn load_from_file(path: &PathBuf) -> Option<HumanConfig> {
