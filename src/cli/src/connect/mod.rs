@@ -1,4 +1,4 @@
-pub mod lark;
+pub mod email;
 
 use anyhow::Result;
 
@@ -8,6 +8,6 @@ pub struct Message {
     pub date: String,
 }
 
-pub trait MailFetcher {
+pub trait EmailFetcher {
     fn fetch_all(&self) -> Result<Vec<Message>>;
 }
