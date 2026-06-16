@@ -1,0 +1,13 @@
+{
+  "month": "2026-06",
+  "positions": [
+    { "name": "数据工程师", "headcount": 2, "filled": 0, "in_progress": 0, "note": "" },
+    { "name": "项目经理", "headcount": 1, "filled": 0, "in_progress": 0, "note": "" },
+    { "name": "销售经理", "headcount": 1, "filled": 0, "in_progress": 0, "note": "" },
+    { "name": "新媒体运营", "headcount": 1, "filled": 0, "in_progress": 0, "note": "" },
+    { "name": "课程助教", "headcount": 1, "filled": 0, "in_progress": 0, "note": "" },
+    { "name": "咨询助理", "headcount": 1, "filled": 0, "in_progress": 0, "note": "" },
+    { "name": "商务经理", "headcount": 1, "filled": 0, "in_progress": 0, "note": "" },
+    { "name": "执行助理", "headcount": 2, "filled": 0, "in_progress": 0, "note": "" }
+  ]
+}
