@@ -36,6 +36,9 @@ data/
 .DS_Store
 Thumbs.db
 
+# Rust
+src/cli/target/
+
 # Terraform
 .terraform/
 terraform/terraform.tfstate
