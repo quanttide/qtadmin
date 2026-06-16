@@ -238,11 +238,7 @@ flutter run -d chrome
 - 10 条待处理邮件队列
 - 部分候选人有邮件往来记录
 
-如果数据库被清空，可随时通过 API 重新填充：
-
-```bash
-curl -X POST http://localhost:8080/seed
-```
+如果数据库被清空，重启服务会自动重新填充种子数据。
 
 ### 3.4 CLI 命令行工具
 
