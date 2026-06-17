@@ -1,5 +1,25 @@
 # CHANGELOG
 
+## [0.0.10] - 2026-06-17
+
+### Added
+
+- `business quote` 报价计算命令（支持 hours/level/premium 参数）
+- `knowl acquire` 知识获取命令（基于 quanttide-agent 库的 LLM 提取）
+- 法务实习生岗位识别规则
+- knowl 单元测试 + 14 集成测试，总测试 131 个
+
+### Changed
+
+- 命令名称从 `qtadmin-cli` 改为 `qtadmin`
+- 依赖：移除 reqwest/tokio，改用 quanttide-agent（ureq 同步）
+- 吸收 examples/business 和 examples/knowl 到 CLI
+
+### Fixed
+
+- 集成测试二进制名称未同步改名导致 CI 失败
+- 使用 quanttide-agent 替换手写 HTTP 调用
+
 ## [0.0.9] - 2026-06-17
 
 ### Fixed
