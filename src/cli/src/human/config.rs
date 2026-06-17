@@ -89,6 +89,12 @@ fn builtin_rules() -> Vec<PositionRule> {
             exclude: vec!["咨询".into(), "课程".into()],
             priority: 0,
         },
+        PositionRule {
+            name: "法务实习生".into(),
+            keywords: vec!["法务".into(), "法律".into(), "合规".into()],
+            exclude: vec![],
+            priority: 0,
+        },
     ]
 }
 
@@ -213,7 +219,7 @@ mod tests {
     fn test_builtin_rules_not_empty() {
         let rules = builtin_rules();
         assert!(!rules.is_empty());
-        assert_eq!(rules.len(), 11);
+        assert_eq!(rules.len(), 12);
     }
 
     #[test]
