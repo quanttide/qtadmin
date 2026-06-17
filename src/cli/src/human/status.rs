@@ -160,4 +160,44 @@ mod tests {
         assert_eq!(plan.month, "2026-06");
         assert_eq!(plan.positions.len(), 8);
     }
+
+    #[test]
+    fn test_format_status_with_filled() {
+        let plan = RecruitmentPlan {
+            month: "2026-06".into(),
+            positions: vec![
+                PositionPlan { name: "数据工程师".into(), headcount: 2, filled: 1, in_progress: 1, note: "试用期".into() },
+            ],
+        };
+        let store = MockPlanStore { plan };
+        let output = format_status(&store);
+        assert!(output.contains("1 | 1 | 试用期"));
+        assert!(output.contains("编制 2 人 · 已入职 1 人"));
+    }
+
+    #[test]
+    fn test_format_status_empty_positions() {
+        let plan = RecruitmentPlan {
+            month: "2026-06".into(),
+            positions: vec![],
+        };
+        let store = MockPlanStore { plan };
+        let output = format_status(&store);
+        assert!(output.contains("编制 0 人"));
+    }
+
+    #[test]
+    fn test_format_status_with_multiple_notes() {
+        let plan = RecruitmentPlan {
+            month: "2026-06".into(),
+            positions: vec![
+                PositionPlan { name: "全栈工程师".into(), headcount: 1, filled: 0, in_progress: 0, note: "急招".into() },
+                PositionPlan { name: "数据工程师".into(), headcount: 2, filled: 2, in_progress: 0, note: "已满".into() },
+            ],
+        };
+        let store = MockPlanStore { plan };
+        let output = format_status(&store);
+        assert!(output.contains("全栈工程师 | 1 | 0 | 0 | 急招"));
+        assert!(output.contains("数据工程师 | 2 | 2 | 0 | 已满"));
+    }
 }
