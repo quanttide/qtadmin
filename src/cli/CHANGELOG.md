@@ -1,24 +1,25 @@
 # CHANGELOG
 
-## [0.0.10] - 2026-06-17
+## [0.0.11] - 2026-06-18
 
 ### Added
 
-- `business quote` 报价计算命令（支持 hours/level/premium 参数）
-- `knowl acquire` 知识获取命令（基于 quanttide-agent 库的 LLM 提取）
-- 法务实习生岗位识别规则
-- knowl 单元测试 + 14 集成测试，总测试 131 个
+- `auth user` 用户档案 CRUD 命令
+- `auth::perm` 权限审计工具模块（含 7 个单元测试）
+- `connect notice` 飞书群通知命令
+- `human position` 岗位管理 CRUD 命令
 
 ### Changed
 
-- 命令名称从 `qtadmin-cli` 改为 `qtadmin`
-- 依赖：移除 reqwest/tokio，改用 quanttide-agent（ureq 同步）
-- 吸收 examples/business 和 examples/knowl 到 CLI
+- examples/org → examples/human，从 Axum API 改为 CLI
+- 已吸收的示例目录（auth、connect、human）全部清理
 
-### Fixed
+### Tests
 
-- 集成测试二进制名称未同步改名导致 CI 失败
-- 使用 quanttide-agent 替换手写 HTTP 调用
+- 新增 auth/perm 单元测试 7 个
+- 新增新模块 help 集成测试 6 个
+
+## [0.0.10] - 2026-06-17
 
 ## [0.0.9] - 2026-06-17
 
