@@ -1,35 +1,45 @@
-# p03-auth-demo：权限体系端到端验证
+# Auth — 身份认证系统
 
-## 目的
+包含权限体系验证和用户档案 CRUD API。
 
-验证剩余权限原则和三轨审计在 qtadmin CLI 中的可行性。
-
-## 文件说明
+## 模块
 
 | 文件 | 说明 |
 |------|------|
-| `src/auth.rs` | Role 枚举、权限表、审计日志模块。复制到 `cli/src/auth.rs` |
-| `cli.patch` | 对 `cli.rs` 和 `main.rs` 的修改。添加 `--role` 参数、权限守卫、审计写入 |
+| `src/auth.rs` | Role 枚举、权限表、审计日志模块 |
+| `src/main.rs` | 用户档案 REST API（axum + sqlx + sqlite） |
 
-## 应用方式
+## API
 
-将 `src/auth.rs` 复制到 `cli/src/auth.rs`，在 `main.rs` 添加 `mod auth;`，按 `cli.patch` 修改 `cli.rs`。
+| 端点 | 方法 | 说明 |
+|------|------|------|
+| `/health` | GET | 健康检查 |
+| `/user-profiles` | GET | 列出（支持 q/email 过滤） |
+| `/user-profiles` | POST | 创建 |
+| `/user-profiles/{id}` | GET | 详情 |
+| `/user-profiles/{id}` | PATCH | 更新 |
+| `/user-profiles/{id}` | DELETE | 删除 |
 
-## 验证结果
+## 运行
 
 ```bash
-# SuperAdmin 可运行 human status → 审计日志记录
-$ qtadmin-cli --role super_admin human status
-
-# Operator 运行受限命令被拒绝
-$ qtadmin-cli --role operator asset audit
-# → "角色 `operator` 无权执行 `asset` 命令"
-
-# 审计日志
-$ cat ~/.local/share/qtadmin/audit.log
-{"t":...,"role":"super_admin","cmd":"human","mode":"exec","result":"success"}
+cargo run
 ```
 
-## 发现的架构问题
+监听 `http://0.0.0.0:3000`，数据存储在 `qtcloud-auth.db`。
 
-子命令级别的权限无法在顶层统一做守卫——`asset audit` 和 `asset backup` 共享 `asset` 权限，无法在 `cli.rs` 中区分。细粒度权限需要各模块的 `dispatch()` 各自守卫。
+## 权限体系
+
+验证剩余权限原则和三轨审计。`auth.rs` 定义了 `SuperAdmin` 和 `Operator` 两种角色，通过权限表控制命令访问，审计日志写入本地文件。
+
+## 字段
+
+| 字段 | 说明 |
+|------|------|
+| `real_name` | 真实姓名 |
+| `email` | 邮箱（唯一） |
+| `phone` | 电话 |
+| `school` | 学校 |
+| `major` | 专业 |
+| `avatar_url` | 头像 |
+| `resume_url` | 简历地址 |
