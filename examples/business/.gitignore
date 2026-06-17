@@ -1,6 +1,4 @@
-__pycache__/
-*.pyc
-.pytest_cache/
+/target/
 
 # 覆盖父级 data/ 过滤，本示例的数据需要跟踪
 !data/

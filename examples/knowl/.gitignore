@@ -1,5 +1,4 @@
-__pycache__/
-*.pyc
+/target/
 
 # 覆盖父级 data/ 过滤，本示例的数据需要跟踪
 !data/
