@@ -34,6 +34,13 @@ pytest
 
 主仓库与 studio 子标签版本号同步，升则同升。
 
+### Release 标签格式
+
+- CLI 发布用 `cli/vX.X.X` 标签，CHANGELOG 在 `src/cli/CHANGELOG.md`，版本号在 `src/cli/Cargo.toml`
+- Studio 发布用 `studio/vX.X.X` 标签，CHANGELOG 在 `src/studio/CHANGELOG.md`
+- 不修改项目根目录 `CHANGELOG.md` 记录 CLI/Studio 变更
+- 不删除已有标签或 release，除非用户明确要求
+
 ## Documentation
 
 - `docs/dev/` — 开发文档
