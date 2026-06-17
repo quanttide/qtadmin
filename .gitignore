@@ -24,6 +24,7 @@ ENV/
 
 # Data
 data/
+!examples/business/data/
 .env
 
 # IDE
