@@ -9,6 +9,7 @@ mod qtclass;
 mod qtconsult;
 mod qtdata;
 mod qtrecurit;
+mod knowl;
 mod git_utils;
 
 fn main() {

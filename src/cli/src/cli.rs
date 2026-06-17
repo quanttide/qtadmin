@@ -6,6 +6,7 @@ use crate::qtcloud;
 use crate::qtclass;
 use crate::qtconsult;
 use crate::qtdata;
+use crate::knowl;
 use crate::qtrecurit;
 
 use clap::{Parser, Subcommand};
@@ -37,6 +38,8 @@ pub enum Commands {
     Qtdata(qtdata::QtdataArgs),
     /// 量潮招聘
     Qtrecurit(qtrecurit::QtrecuritArgs),
+    /// 知识工程
+    Knowl(knowl::KnowlArgs),
 }
 
 pub fn run() {
@@ -52,6 +55,7 @@ pub fn run() {
         Some(Commands::Qtcloud(args)) => qtcloud::dispatch(args),
         Some(Commands::Qtdata(args)) => qtdata::dispatch(args),
         Some(Commands::Qtrecurit(args)) => qtrecurit::dispatch(args),
+        Some(Commands::Knowl(args)) => knowl::dispatch(args),
         None => {
             // --version and --help are handled by clap automatically
         }

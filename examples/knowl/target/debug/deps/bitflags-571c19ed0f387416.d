@@ -1,0 +1,11 @@
+/home/iguo/repos/quanttide/default/quanttide-tech/apps/qtadmin/examples/knowl/target/debug/deps/bitflags-571c19ed0f387416.d: /home/iguo/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/bitflags-2.13.0/src/lib.rs /home/iguo/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/bitflags-2.13.0/src/iter.rs /home/iguo/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/bitflags-2.13.0/src/parser.rs /home/iguo/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/bitflags-2.13.0/src/traits.rs /home/iguo/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/bitflags-2.13.0/src/public.rs /home/iguo/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/bitflags-2.13.0/src/internal.rs /home/iguo/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/bitflags-2.13.0/src/external.rs
+
+/home/iguo/repos/quanttide/default/quanttide-tech/apps/qtadmin/examples/knowl/target/debug/deps/libbitflags-571c19ed0f387416.rmeta: /home/iguo/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/bitflags-2.13.0/src/lib.rs /home/iguo/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/bitflags-2.13.0/src/iter.rs /home/iguo/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/bitflags-2.13.0/src/parser.rs /home/iguo/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/bitflags-2.13.0/src/traits.rs /home/iguo/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/bitflags-2.13.0/src/public.rs /home/iguo/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/bitflags-2.13.0/src/internal.rs /home/iguo/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/bitflags-2.13.0/src/external.rs
+
+/home/iguo/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/bitflags-2.13.0/src/lib.rs:
+/home/iguo/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/bitflags-2.13.0/src/iter.rs:
+/home/iguo/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/bitflags-2.13.0/src/parser.rs:
+/home/iguo/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/bitflags-2.13.0/src/traits.rs:
+/home/iguo/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/bitflags-2.13.0/src/public.rs:
+/home/iguo/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/bitflags-2.13.0/src/internal.rs:
+/home/iguo/.cargo/registry/src/mirrors.ustc.edu.cn-38d0e5eb5da2abae/bitflags-2.13.0/src/external.rs:
