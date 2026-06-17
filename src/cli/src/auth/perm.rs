@@ -98,3 +98,62 @@ pub fn write_audit_log(command: &str, role: Role, mode: &str, result: &str) {
         let _ = writeln!(file, "{}", line);
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_superadmin_has_all_permissions() {
+        assert!(check_permission("asset", Role::SuperAdmin));
+        assert!(check_permission("asset audit", Role::SuperAdmin));
+        assert!(check_permission("human", Role::SuperAdmin));
+        assert!(check_permission("auth", Role::SuperAdmin));
+        assert!(check_permission("connect", Role::SuperAdmin));
+    }
+
+    #[test]
+    fn test_operator_has_common_permissions() {
+        assert!(check_permission("asset", Role::Operator));
+        assert!(check_permission("human", Role::Operator));
+        assert!(check_permission("human position", Role::Operator));
+        assert!(check_permission("auth", Role::Operator));
+        assert!(check_permission("auth user", Role::Operator));
+        assert!(check_permission("connect", Role::Operator));
+        assert!(check_permission("connect notice", Role::Operator));
+    }
+
+    #[test]
+    fn test_operator_cannot_audit() {
+        assert!(!check_permission("asset audit", Role::Operator));
+    }
+
+    #[test]
+    fn test_unknown_command_falls_to_superadmin() {
+        assert!(check_permission("unknown command", Role::SuperAdmin));
+        assert!(!check_permission("unknown command", Role::Operator));
+    }
+
+    #[test]
+    fn test_top_level_fallback() {
+        assert!(check_permission("asset backup", Role::Operator));
+        assert!(check_permission("human status", Role::Operator));
+    }
+
+    #[test]
+    fn test_role_from_str() {
+        assert_eq!(Role::from_str("super_admin"), Role::SuperAdmin);
+        assert_eq!(Role::from_str("admin"), Role::SuperAdmin);
+        assert_eq!(Role::from_str("operator"), Role::Operator);
+        assert_eq!(Role::from_str("unknown"), Role::Operator);
+    }
+
+    #[test]
+    fn test_audit_log_path_uses_env() {
+        let dir = std::env::temp_dir().join("qtadmin-test-audit");
+        std::env::set_var("QTRECURIT_DATA", dir.to_str().unwrap());
+        let path = audit_log_path();
+        assert_eq!(path, dir.join("audit.log"));
+        std::env::remove_var("QTRECURIT_DATA");
+    }
+}

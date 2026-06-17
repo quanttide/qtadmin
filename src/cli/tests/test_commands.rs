@@ -81,3 +81,33 @@ fn test_asset_help() {
     let mut cmd = assert_cmd::Command::cargo_bin("qtadmin").unwrap();
     cmd.args(["asset", "--help"]).assert().success();
 }
+
+#[test]
+fn test_auth_help() {
+    let mut cmd = assert_cmd::Command::cargo_bin("qtadmin").unwrap();
+    cmd.args(["auth", "--help"]).assert().success();
+}
+
+#[test]
+fn test_auth_user_help() {
+    let mut cmd = assert_cmd::Command::cargo_bin("qtadmin").unwrap();
+    cmd.args(["auth", "user", "--help"]).assert().success();
+}
+
+#[test]
+fn test_connect_help() {
+    let mut cmd = assert_cmd::Command::cargo_bin("qtadmin").unwrap();
+    cmd.args(["connect", "--help"]).assert().success();
+}
+
+#[test]
+fn test_connect_notice_help() {
+    let mut cmd = assert_cmd::Command::cargo_bin("qtadmin").unwrap();
+    cmd.args(["connect", "notice", "--help"]).assert().success();
+}
+
+#[test]
+fn test_human_position_help() {
+    let mut cmd = assert_cmd::Command::cargo_bin("qtadmin").unwrap();
+    cmd.args(["human", "position", "--help"]).assert().success();
+}
