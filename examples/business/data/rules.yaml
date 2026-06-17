@@ -1,0 +1,75 @@
+rules:
+  - name: 首席企业客户定价
+    source: assets/profile/index.md
+    codifiable: true
+    condition: 定价为确定数值 2000 元/小时，无主观判断
+
+  - name: 高级企业客户定价
+    source: assets/profile/index.md
+    codifiable: true
+    condition: 定价为确定数值 1000 元/小时，无主观判断
+
+  - name: 溢价条件判断
+    source: assets/bylaw.md#第六条+assets/handbook.md#场景三
+    codifiable: true
+    condition: 条件为确定的枚举值（微专业共建/长期课程开发/企业内训体系设计/高复杂度高定制化项目）
+
+  - name: 溢价幅度
+    source: assets/profile/index.md
+    codifiable: true
+    condition: 幅度为确定范围 30-50%
+
+  - name: 让利规则（满10h）
+    source: assets/profile/index.md
+    codifiable: true
+    condition: "满 10 小时→9 折"为确定性规则
+
+  - name: 让利规则（满20h）
+    source: assets/profile/index.md
+    codifiable: true
+    condition: "满 20 小时→8.5 折"为确定性规则
+
+  - name: 首次合作保本线
+    source: assets/profile/index.md
+    codifiable: false
+    reason: "保本线"数值未定义，依赖各业务线成本核算
+
+  - name: 审批层级判断
+    source: assets/handbook.md#场景五
+    codifiable: true
+    condition: 三类审批条件的判断逻辑为确定性规则
+
+  - name: 报价单结构比例
+    source: assets/handbook.md#场景二
+    codifiable: true
+    condition: 设计30%/实施40%/交付30%为固定比例
+
+  - name: 稀缺性评估
+    source: assets/bylaw.md#第十一条
+    codifiable: false
+    reason: 四个维度（技术难度/资源稀缺/替代成本/时效压力）均依赖主观判断，无量化标准
+
+  - name: 创新溢价评估
+    source: assets/bylaw.md#第十二条
+    codifiable: false
+    reason: 模式创新/先发优势/品牌价值为定性评估，无量化标准
+
+  - name: 长期合作价值评估
+    source: assets/bylaw.md#第十三条
+    codifiable: false
+    reason: 客户战略价值/持续合作潜力/示范效应为定性判断
+
+  - name: 人员匹配（资深/中级/初级）
+    source: assets/profile/index.md
+    codifiable: false
+    reason: 资深/中级/初级人员的对应人选和定价均为"待补充"
+
+  - name: 高校客户定价
+    source: assets/profile/index.md
+    codifiable: false
+    reason: "按合作协议"非确定数值，依赖个案谈判
+
+  - name: 其他客户定价
+    source: assets/profile/index.md
+    codifiable: false
+    reason: "一事一议"无规则可编码

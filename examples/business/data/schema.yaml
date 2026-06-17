@@ -1,0 +1,25 @@
+# 报价业务实体定义
+
+Customer:
+  type: enum [企业, 高校, 学生, 其他]
+
+Personnel:
+  level: enum [首席, 资深, 高级, 中级, 初级]
+
+ServiceItem:
+  name: string
+  hours: number
+  personnel_level: enum [首席, 资深, 高级, 中级, 初级]
+
+Quotation:
+  items: list
+  subtotal: number
+  premium_rate: number
+  premium_amount: number
+  discount_rate: number
+  discount_amount: number
+  total: number
+
+Approval:
+  type: enum [标准, 重大, 让利]
+  approver: enum [业务线负责人, 管理层]
