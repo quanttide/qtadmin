@@ -1,4 +1,5 @@
 mod status;
+mod quote;
 
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
@@ -54,6 +55,8 @@ use clap::Subcommand;
 pub enum BusinessCommands {
     /// 商务拓展总览
     Status(status::StatusArgs),
+    /// 报价计算
+    Quote(quote::QuoteArgs),
 }
 
 #[derive(clap::Args)]
@@ -66,6 +69,11 @@ pub fn dispatch(args: &BusinessArgs) {
     match &args.command {
         BusinessCommands::Status(status_args) => {
             if let Err(e) = status::run(status_args) {
+                eprintln!("错误: {}", e);
+            }
+        }
+        BusinessCommands::Quote(quote_args) => {
+            if let Err(e) = quote::run(quote_args) {
                 eprintln!("错误: {}", e);
             }
         }
