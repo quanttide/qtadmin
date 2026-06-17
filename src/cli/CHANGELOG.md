@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## [0.0.8] - 2026-06-17
+
+### Changed
+
+- 命令名称从 `qtadmin-cli` 改为 `qtadmin`
+
 ## [0.0.7] - 2026-06-17
 
 ### Added
