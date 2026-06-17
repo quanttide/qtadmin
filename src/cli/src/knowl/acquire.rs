@@ -6,6 +6,10 @@ use std::path::PathBuf;
 use quanttide_agent::llm::{CompleteOptions, LLM};
 use quanttide_agent::message::Message;
 
+#[cfg(test)]
+#[path = "acquire_test.rs"]
+mod acquire_test;
+
 const SYSTEM_PROMPT: &str = r#"你是一个知识提取工具。从原始文档中提取业务规则并评估其可编码性。
 
 输出 JSON，包含：
