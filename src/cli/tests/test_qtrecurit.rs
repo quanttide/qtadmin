@@ -1,6 +1,6 @@
 #[test]
 fn test_qtrecurit_help() {
-    let mut cmd = assert_cmd::Command::cargo_bin("qtadmin-cli").unwrap();
+    let mut cmd = assert_cmd::Command::cargo_bin("qtadmin").unwrap();
     cmd.args(["qtrecurit", "--help"])
         .assert()
         .success();
@@ -8,7 +8,7 @@ fn test_qtrecurit_help() {
 
 #[test]
 fn test_status_help() {
-    let mut cmd = assert_cmd::Command::cargo_bin("qtadmin-cli").unwrap();
+    let mut cmd = assert_cmd::Command::cargo_bin("qtadmin").unwrap();
     cmd.args(["qtrecurit", "status", "--help"])
         .assert()
         .success();

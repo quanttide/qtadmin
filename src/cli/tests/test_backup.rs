@@ -1,7 +1,7 @@
 /// Test that the binary compiles and --help works
 #[test]
 fn test_help() {
-    let mut cmd = assert_cmd::Command::cargo_bin("qtadmin-cli").unwrap();
+    let mut cmd = assert_cmd::Command::cargo_bin("qtadmin").unwrap();
     cmd.arg("--help")
         .assert()
         .success();
@@ -9,7 +9,7 @@ fn test_help() {
 
 #[test]
 fn test_version() {
-    let mut cmd = assert_cmd::Command::cargo_bin("qtadmin-cli").unwrap();
+    let mut cmd = assert_cmd::Command::cargo_bin("qtadmin").unwrap();
     cmd.arg("--version")
         .assert()
         .success();
@@ -17,7 +17,7 @@ fn test_version() {
 
 #[test]
 fn test_asset_help() {
-    let mut cmd = assert_cmd::Command::cargo_bin("qtadmin-cli").unwrap();
+    let mut cmd = assert_cmd::Command::cargo_bin("qtadmin").unwrap();
     cmd.args(["asset", "--help"])
         .assert()
         .success();
