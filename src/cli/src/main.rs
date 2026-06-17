@@ -1,5 +1,6 @@
 mod cli;
 mod asset;
+mod auth;
 mod business;
 mod connect;
 mod human;
