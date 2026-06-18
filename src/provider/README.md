@@ -7,24 +7,52 @@ cd src/provider
 ADMIN_PASSWORD=your-password JWT_SECRET=any-random-string go run ./cmd/server
 ```
 
-也可用 JSON 配置文件：
+默认监听 `:8000`，可通过 `ADDR` 或配置文件的 `server.addr` 修改。
 
-```json
-{
-  "server": { "addr": ":8000" },
-  "store": { "driver": "file", "path": "data" },
-  "auth": {
-    "jwt_secret": "any-random-string",
-    "admin_password": "your-password"
-  }
-}
-```
+## 数据存储
+
+数据文件存放在 `/home/iguo/data/qtadmin/`，所有本地副本通过 `STORE_PATH` 指向此目录，数据统一存储。
 
 ```bash
-CONFIG_PATH=config.json go run ./cmd/server
+STORE_PATH=/home/iguo/data/qtadmin go run ./cmd/server
 ```
 
-默认监听 `:8000`，可通过 `ADDR` 或配置文件的 `server.addr` 修改。
+### 环境变量配置
+
+在 `/home/iguo/data/.env` 中统一管理配置，各副本 source 即可：
+
+```bash
+# /home/iguo/data/.env
+ADDR=:8000
+STORE_PATH=/home/iguo/data/qtadmin
+JWT_SECRET=your-secret
+ADMIN_PASSWORD=your-password
+LOG_LEVEL=info
+LOG_FORMAT=text
+```
+
+所有副本共用：
+
+```bash
+set -a; source /home/iguo/data/.env; set +a
+cd src/provider
+go run ./cmd/server
+```
+
+### 备份到对象存储
+
+```bash
+cd /home/iguo/data
+tar czf qtadmin-$(date +%Y%m%d).tar.gz qtadmin/
+aws s3 cp qtadmin-*.tar.gz s3://my-bucket/qtadmin/
+```
+
+恢复：
+
+```bash
+aws s3 cp s3://my-bucket/qtadmin/qtadmin-20260101.tar.gz .
+tar xzf qtadmin-20260101.tar.gz -C /home/iguo/data/
+```
 
 ## 认证
 
