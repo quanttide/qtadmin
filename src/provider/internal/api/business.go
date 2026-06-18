@@ -121,43 +121,6 @@ func (h *BusinessHandler) DeleteProject(w http.ResponseWriter, r *http.Request) 
 	w.WriteHeader(http.StatusNoContent)
 }
 
-func (h *BusinessHandler) UpdateProjectStage(w http.ResponseWriter, r *http.Request) {
-	id := r.PathValue("id")
-
-	data, err := h.store.Get("qtconsult/projects", id)
-	if err != nil {
-		WriteError(w, "NOT_FOUND", "project not found", http.StatusNotFound)
-		return
-	}
-	var item model.QtConsultProject
-	if err := json.Unmarshal(data, &item); err != nil {
-		slog.Error("parse project", "error", err)
-		WriteError(w, "INTERNAL_ERROR", "failed to parse project", http.StatusInternalServerError)
-		return
-	}
-
-	var body struct {
-		Stage string `json:"stage"`
-	}
-	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
-		WriteError(w, "INVALID_INPUT", "invalid request body", http.StatusBadRequest)
-		return
-	}
-	item.Stage = body.Stage
-
-	data, err = json.Marshal(item)
-	if err != nil {
-		slog.Error("encode project", "error", err)
-		WriteError(w, "INTERNAL_ERROR", "failed to encode data", http.StatusInternalServerError)
-		return
-	}
-	if err := h.store.Update("qtconsult/projects", id, data); err != nil {
-		WriteError(w, "INTERNAL_ERROR", "failed to update project", http.StatusInternalServerError)
-		return
-	}
-	WriteJSON(w, item, http.StatusOK)
-}
-
 // --- QtClass Courses ---
 
 func (h *BusinessHandler) ListCourses(w http.ResponseWriter, r *http.Request) {
@@ -262,38 +225,6 @@ func (h *BusinessHandler) DeleteCourse(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
-func (h *BusinessHandler) ListSchedules(w http.ResponseWriter, r *http.Request) {
-	data, err := h.store.List("qtclass/courses")
-	if err != nil {
-		slog.Error("list schedules", "error", err)
-		WriteError(w, "INTERNAL_ERROR", "failed to list schedules", http.StatusInternalServerError)
-		return
-	}
-	var items []model.QtClassCourse
-	if err := json.Unmarshal(data, &items); err != nil {
-		slog.Error("parse schedules", "error", err)
-		WriteError(w, "INTERNAL_ERROR", "failed to parse schedules", http.StatusInternalServerError)
-		return
-	}
-	WriteJSON(w, items, http.StatusOK)
-}
-
-func (h *BusinessHandler) CreateEnrollment(w http.ResponseWriter, r *http.Request) {
-	var body struct {
-		CourseID string `json:"course_id"`
-		Student  string `json:"student"`
-	}
-	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
-		WriteError(w, "INVALID_INPUT", "invalid request body", http.StatusBadRequest)
-		return
-	}
-	if body.CourseID == "" || body.Student == "" {
-		WriteError(w, "VALIDATION_ERROR", "course_id and student are required", http.StatusBadRequest)
-		return
-	}
-	WriteJSON(w, body, http.StatusCreated)
-}
-
 // --- QtCloud Resources ---
 
 func (h *BusinessHandler) ListResources(w http.ResponseWriter, r *http.Request) {
@@ -396,43 +327,6 @@ func (h *BusinessHandler) DeleteResource(w http.ResponseWriter, r *http.Request)
 		return
 	}
 	w.WriteHeader(http.StatusNoContent)
-}
-
-func (h *BusinessHandler) UpdateResourceStatus(w http.ResponseWriter, r *http.Request) {
-	id := r.PathValue("id")
-
-	data, err := h.store.Get("qtcloud/resources", id)
-	if err != nil {
-		WriteError(w, "NOT_FOUND", "resource not found", http.StatusNotFound)
-		return
-	}
-	var item model.QtCloudResource
-	if err := json.Unmarshal(data, &item); err != nil {
-		slog.Error("parse resource", "error", err)
-		WriteError(w, "INTERNAL_ERROR", "failed to parse resource", http.StatusInternalServerError)
-		return
-	}
-
-	var body struct {
-		Status string `json:"status"`
-	}
-	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
-		WriteError(w, "INVALID_INPUT", "invalid request body", http.StatusBadRequest)
-		return
-	}
-	item.Status = body.Status
-
-	data, err = json.Marshal(item)
-	if err != nil {
-		slog.Error("encode resource", "error", err)
-		WriteError(w, "INTERNAL_ERROR", "failed to encode data", http.StatusInternalServerError)
-		return
-	}
-	if err := h.store.Update("qtcloud/resources", id, data); err != nil {
-		WriteError(w, "INTERNAL_ERROR", "failed to update resource", http.StatusInternalServerError)
-		return
-	}
-	WriteJSON(w, item, http.StatusOK)
 }
 
 // --- QtData Datasets ---
@@ -580,43 +474,6 @@ func (h *BusinessHandler) ImportResume(w http.ResponseWriter, r *http.Request) {
 	WriteJSON(w, item, http.StatusCreated)
 }
 
-func (h *BusinessHandler) UpdateResumeStage(w http.ResponseWriter, r *http.Request) {
-	id := r.PathValue("id")
-
-	data, err := h.store.Get("qtrecurit/resumes", id)
-	if err != nil {
-		WriteError(w, "NOT_FOUND", "resume not found", http.StatusNotFound)
-		return
-	}
-	var item model.QtRecuritResume
-	if err := json.Unmarshal(data, &item); err != nil {
-		slog.Error("parse resume", "error", err)
-		WriteError(w, "INTERNAL_ERROR", "failed to parse resume", http.StatusInternalServerError)
-		return
-	}
-
-	var body struct {
-		Stage string `json:"stage"`
-	}
-	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
-		WriteError(w, "INVALID_INPUT", "invalid request body", http.StatusBadRequest)
-		return
-	}
-	item.Stage = body.Stage
-
-	data, err = json.Marshal(item)
-	if err != nil {
-		slog.Error("encode resume", "error", err)
-		WriteError(w, "INTERNAL_ERROR", "failed to encode data", http.StatusInternalServerError)
-		return
-	}
-	if err := h.store.Update("qtrecurit/resumes", id, data); err != nil {
-		WriteError(w, "INTERNAL_ERROR", "failed to update resume", http.StatusInternalServerError)
-		return
-	}
-	WriteJSON(w, item, http.StatusOK)
-}
-
 func (h *BusinessHandler) CreateInterview(w http.ResponseWriter, r *http.Request) {
 	var item model.QtRecuritInterview
 	if err := json.NewDecoder(r.Body).Decode(&item); err != nil {
@@ -656,39 +513,36 @@ func (h *BusinessHandler) CreateInterview(w http.ResponseWriter, r *http.Request
 	WriteJSON(w, item, http.StatusCreated)
 }
 
-func (h *BusinessHandler) UpdateInterviewFeedback(w http.ResponseWriter, r *http.Request) {
-	id := r.PathValue("id")
+// --- QtClass Schedules ---
 
-	data, err := h.store.Get("qtrecurit/interviews", id)
+func (h *BusinessHandler) ListSchedules(w http.ResponseWriter, r *http.Request) {
+	data, err := h.store.List("qtclass/courses")
 	if err != nil {
-		WriteError(w, "NOT_FOUND", "interview not found", http.StatusNotFound)
+		slog.Error("list schedules", "error", err)
+		WriteError(w, "INTERNAL_ERROR", "failed to list schedules", http.StatusInternalServerError)
 		return
 	}
-	var item model.QtRecuritInterview
-	if err := json.Unmarshal(data, &item); err != nil {
-		slog.Error("parse interview", "error", err)
-		WriteError(w, "INTERNAL_ERROR", "failed to parse interview", http.StatusInternalServerError)
+	var items []model.QtClassCourse
+	if err := json.Unmarshal(data, &items); err != nil {
+		slog.Error("parse schedules", "error", err)
+		WriteError(w, "INTERNAL_ERROR", "failed to parse schedules", http.StatusInternalServerError)
 		return
 	}
+	WriteJSON(w, items, http.StatusOK)
+}
 
+func (h *BusinessHandler) CreateEnrollment(w http.ResponseWriter, r *http.Request) {
 	var body struct {
-		Feedback string `json:"feedback"`
+		CourseID string `json:"course_id"`
+		Student  string `json:"student"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 		WriteError(w, "INVALID_INPUT", "invalid request body", http.StatusBadRequest)
 		return
 	}
-	item.Feedback = body.Feedback
-
-	data, err = json.Marshal(item)
-	if err != nil {
-		slog.Error("encode interview", "error", err)
-		WriteError(w, "INTERNAL_ERROR", "failed to encode data", http.StatusInternalServerError)
+	if body.CourseID == "" || body.Student == "" {
+		WriteError(w, "VALIDATION_ERROR", "course_id and student are required", http.StatusBadRequest)
 		return
 	}
-	if err := h.store.Update("qtrecurit/interviews", id, data); err != nil {
-		WriteError(w, "INTERNAL_ERROR", "failed to update interview", http.StatusInternalServerError)
-		return
-	}
-	WriteJSON(w, item, http.StatusOK)
+	WriteJSON(w, body, http.StatusCreated)
 }
