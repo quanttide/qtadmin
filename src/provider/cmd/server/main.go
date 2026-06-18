@@ -58,10 +58,10 @@ func main() {
 	mux.HandleFunc("PUT /api/v1/positions/{id}", humanHandler.UpdatePosition)
 	mux.HandleFunc("DELETE /api/v1/positions/{id}", humanHandler.DeletePosition)
 
-	mux.HandleFunc("GET /api/v1/human/rules", humanHandler.ListRules)
-	mux.HandleFunc("POST /api/v1/human/rules", humanHandler.CreateRule)
-	mux.HandleFunc("PUT /api/v1/human/rules/{id}", humanHandler.UpdateRule)
-	mux.HandleFunc("DELETE /api/v1/human/rules/{id}", humanHandler.DeleteRule)
+	mux.HandleFunc("GET /api/v1/connect/rules", connectHandler.ListRules)
+	mux.HandleFunc("POST /api/v1/connect/rules", connectHandler.CreateRule)
+	mux.HandleFunc("PUT /api/v1/connect/rules/{id}", connectHandler.UpdateRule)
+	mux.HandleFunc("DELETE /api/v1/connect/rules/{id}", connectHandler.DeleteRule)
 
 	mux.HandleFunc("GET /api/v1/connect/notifications", connectHandler.ListNotifications)
 	mux.HandleFunc("GET /api/v1/connect/notifications/{id}", connectHandler.GetNotification)
