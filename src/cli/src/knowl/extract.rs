@@ -916,19 +916,19 @@ fn extract_annotate(
 
 // ── worldbuilding: fiction → worldbuilding.yaml ──
 
-const WORLDBUILDING_PROMPT_BASE: &str = r#"你是一个世界观分析助手。从以下小说片段中提取结构化世界观要素。
+const WORLDBUILDING_PROMPT_BASE: &str = r#"你是一个叙事世界观分析助手。从以下小说片段中提取结构化世界观要素。
 
 {format_instructions}
 
 规则：
 - 所有要素必须基于原文推断，不编造不补充
-- cosmology 识别世界的基本规则和力量来源
-- geography 提取所有地点，含自然地貌和人工建筑
-- societies 识别组织、阵营、利益团体及其内部张力
-- characters 提取有动机或决策行为的角色
-- magic_system 识别超自然力量及其运作方式和代价
-- history 提取提及的过往事件及其影响
-- tensions 识别推动叙事的世界级矛盾
+- characters 识别角色的身份、性格特征、动机与弧光
+- relationship 分析角色之间的动态关系与张力
+- setting 提取场景空间及其氛围和叙事意义
+- emotional_geography 识别情感在空间中的投射和记忆绑定
+- timeline 梳理叙事的过去、现在与未来线索
+- themes 提炼作品的核心意涵与情感母题
+- tensions 识别推动叙事的情感矛盾
 
 - 如果某类不存在，输出空数组
 - 纯 JSON。"#;
