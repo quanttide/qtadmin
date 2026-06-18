@@ -19,12 +19,14 @@ flutter test
 dart run build_runner build   # freezed codegen
 ```
 
-## Provider（维护态）
+## Provider（维护态，已重构为 Go）
 
 ```bash
 cd src/provider
-pdm run uvicorn app:app --reload
-pytest
+go run ./cmd/server            # 启动服务 (默认 :8000)
+ADDR=:8000 go run ./cmd/server # 指定端口
+go build ./cmd/server          # 编译
+go test ./...                  # 测试
 ```
 
 ## 版本约定
