@@ -1,4 +1,3 @@
-pub mod perm;
 pub mod user;
 
 use clap::Subcommand;

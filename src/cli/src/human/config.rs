@@ -134,27 +134,6 @@ pub fn load_config() -> HumanConfig {
     }
 }
 
-/// 从 Provider 加载分类规则，失败时回退到内置规则。
-pub async fn load_rules(client: &crate::provider::ProviderClient) -> Vec<PositionRule> {
-    match client.list_rules().await {
-        Ok(rules) => {
-            if rules.is_empty() {
-                return builtin_rules();
-            }
-            rules
-                .into_iter()
-                .map(|r| PositionRule {
-                    name: r.name,
-                    keywords: r.keywords,
-                    exclude: r.exclude,
-                    priority: r.priority,
-                })
-                .collect()
-        }
-        Err(_) => builtin_rules(),
-    }
-}
-
 pub fn classify<'a>(subject: &str, rules: &'a [PositionRule]) -> Option<&'a str> {
     if subject.is_empty() {
         return None;
