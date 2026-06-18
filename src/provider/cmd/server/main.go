@@ -34,6 +34,7 @@ func main() {
 	slog.Info("store initialized", "driver", cfg.Store.Driver, "path", cfg.Store.Path)
 
 	humanHandler := api.NewHumanHandler(st)
+	businessHandler := api.NewBusinessHandler(st)
 	connectHandler := api.NewConnectHandler(st)
 	authHandler := api.NewAuthHandler(st, cfg.Auth.JWTSecret)
 
@@ -57,6 +58,44 @@ func main() {
 	mux.HandleFunc("GET /api/v1/positions/{id}", humanHandler.GetPosition)
 	mux.HandleFunc("PUT /api/v1/positions/{id}", humanHandler.UpdatePosition)
 	mux.HandleFunc("DELETE /api/v1/positions/{id}", humanHandler.DeletePosition)
+
+	// qtconsult
+	mux.HandleFunc("GET /api/v1/qtconsult/projects", businessHandler.ListProjects)
+	mux.HandleFunc("POST /api/v1/qtconsult/projects", businessHandler.CreateProject)
+	mux.HandleFunc("GET /api/v1/qtconsult/projects/{id}", businessHandler.GetProject)
+	mux.HandleFunc("PUT /api/v1/qtconsult/projects/{id}", businessHandler.UpdateProject)
+	mux.HandleFunc("DELETE /api/v1/qtconsult/projects/{id}", businessHandler.DeleteProject)
+	mux.HandleFunc("PUT /api/v1/qtconsult/projects/{id}/stage", businessHandler.UpdateProjectStage)
+
+	// qtclass
+	mux.HandleFunc("GET /api/v1/qtclass/courses", businessHandler.ListCourses)
+	mux.HandleFunc("POST /api/v1/qtclass/courses", businessHandler.CreateCourse)
+	mux.HandleFunc("GET /api/v1/qtclass/courses/{id}", businessHandler.GetCourse)
+	mux.HandleFunc("PUT /api/v1/qtclass/courses/{id}", businessHandler.UpdateCourse)
+	mux.HandleFunc("DELETE /api/v1/qtclass/courses/{id}", businessHandler.DeleteCourse)
+	mux.HandleFunc("GET /api/v1/qtclass/schedules", businessHandler.ListSchedules)
+	mux.HandleFunc("POST /api/v1/qtclass/enrollments", businessHandler.CreateEnrollment)
+
+	// qtcloud
+	mux.HandleFunc("GET /api/v1/qtcloud/resources", businessHandler.ListResources)
+	mux.HandleFunc("POST /api/v1/qtcloud/resources", businessHandler.CreateResource)
+	mux.HandleFunc("GET /api/v1/qtcloud/resources/{id}", businessHandler.GetResource)
+	mux.HandleFunc("PUT /api/v1/qtcloud/resources/{id}", businessHandler.UpdateResource)
+	mux.HandleFunc("DELETE /api/v1/qtcloud/resources/{id}", businessHandler.DeleteResource)
+	mux.HandleFunc("PUT /api/v1/qtcloud/resources/{id}/status", businessHandler.UpdateResourceStatus)
+
+	// qtdata
+	mux.HandleFunc("GET /api/v1/qtdata/datasets", businessHandler.ListDatasets)
+	mux.HandleFunc("POST /api/v1/qtdata/datasets", businessHandler.CreateDataset)
+	mux.HandleFunc("GET /api/v1/qtdata/datasets/{id}", businessHandler.GetDataset)
+	mux.HandleFunc("PUT /api/v1/qtdata/datasets/{id}", businessHandler.UpdateDataset)
+	mux.HandleFunc("DELETE /api/v1/qtdata/datasets/{id}", businessHandler.DeleteDataset)
+
+	// qtrecurit
+	mux.HandleFunc("POST /api/v1/qtrecurit/resumes", businessHandler.ImportResume)
+	mux.HandleFunc("PUT /api/v1/qtrecurit/resumes/{id}/stage", businessHandler.UpdateResumeStage)
+	mux.HandleFunc("POST /api/v1/qtrecurit/interviews", businessHandler.CreateInterview)
+	mux.HandleFunc("POST /api/v1/qtrecurit/interviews/{id}/feedback", businessHandler.UpdateInterviewFeedback)
 
 	mux.HandleFunc("POST /api/v1/connect/notify", connectHandler.Notify)
 	mux.HandleFunc("GET /api/v1/connect/notifications", connectHandler.ListNotifications)
