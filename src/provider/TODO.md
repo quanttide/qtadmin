@@ -37,43 +37,40 @@
 - [x] 创建 `internal/api/response.go`，定义 `WriteError` / `WriteJSON` helper
 - [x] 中间件或 helper 函数处理 panic 和验证错误
 
-## v0.0.3 — human 域 API
+## v0.0.3 — human 域 API ✅
 
 ### 数据模型
 
-- [ ] `internal/model/employee.go`：员工模型（姓名、部门、岗位、入职日期、状态）
-- [ ] `internal/model/department.go`：部门模型
-- [ ] `internal/model/position.go`：岗位模型
+- [x] `internal/model/employee.go`：员工模型（姓名、部门、岗位、入职日期、状态）
+- [x] `internal/model/department.go`：部门模型
+- [x] `internal/model/position.go`：岗位模型
 - [ ] `internal/model/attendance.go`：考勤记录模型
-- [ ] 数据库迁移脚本
+- [ ] 数据迁移（挂起，先做核心 CRUD）
 
 ### Handler
 
-- [ ] `GET /api/v1/employees` — 员工列表（支持分页、搜索）
-- [ ] `POST /api/v1/employees` — 创建员工
-- [ ] `GET /api/v1/employees/{id}` — 员工详情
-- [ ] `PUT /api/v1/employees/{id}` — 更新员工
-- [ ] `DELETE /api/v1/employees/{id}` — 删除员工
-- [ ] `GET /api/v1/departments` — 部门列表（树形结构）
-- [ ] `POST /api/v1/departments` — 创建部门
-- [ ] `PUT /api/v1/departments/{id}` — 更新部门
-- [ ] `GET /api/v1/positions` — 岗位列表
-- [ ] `POST /api/v1/positions` — 创建岗位
-- [ ] `PUT /api/v1/positions/{id}` — 更新岗位
+- [x] `GET /api/v1/employees` — 员工列表
+- [x] `POST /api/v1/employees` — 创建员工
+- [x] `GET /api/v1/employees/{id}` — 员工详情
+- [x] `PUT /api/v1/employees/{id}` — 更新员工
+- [x] `DELETE /api/v1/employees/{id}` — 删除员工
+- [x] `GET /api/v1/departments` — 部门列表
+- [x] `POST /api/v1/departments` — 创建部门
+- [x] `PUT /api/v1/departments/{id}` — 更新部门
+- [x] `GET /api/v1/positions` — 岗位列表
+- [x] `POST /api/v1/positions` — 创建岗位
+- [x] `PUT /api/v1/positions/{id}` — 更新岗位
 - [ ] `GET /api/v1/attendance` — 考勤记录查询（按日期范围、员工）
 - [ ] `POST /api/v1/attendance` — 打卡记录导入/录入
 
 ### 数据迁移
 
-- [ ] CLI 本地数据格式分析：`~/.local/share/qtadmin/` 目录结构
-- [ ] 导入命令或启动时自动迁移
-- [ ] 迁移后的数据校验
+- [ ] CLI 本地数据格式分析（挂起，核心 API 优先）
 
 ### 测试
 
-- [ ] `internal/model/` 模型单元测试
-- [ ] `internal/api/human_test.go` handler 集成测试（内存数据库）
-- [ ] 测试覆盖率 ≥ 60%
+- [ ] `internal/api/human_test.go` handler 集成测试（文件存储）
+- [ ] 测试覆盖率
 
 ## v0.0.4 — connect 域 API
 
