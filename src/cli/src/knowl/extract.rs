@@ -914,6 +914,68 @@ fn extract_annotate(
     Ok(())
 }
 
+// ── worldbuilding: fiction → worldbuilding.yaml ──
+
+const WORLDBUILDING_PROMPT_BASE: &str = r#"你是一个世界观分析助手。从以下小说片段中提取结构化世界观要素。
+
+{format_instructions}
+
+规则：
+- 所有要素必须基于原文推断，不编造不补充
+- cosmology 识别世界的基本规则和力量来源
+- geography 提取所有地点，含自然地貌和人工建筑
+- societies 识别组织、阵营、利益团体及其内部张力
+- characters 提取有动机或决策行为的角色
+- magic_system 识别超自然力量及其运作方式和代价
+- history 提取提及的过往事件及其影响
+- tensions 识别推动叙事的世界级矛盾
+
+- 如果某类不存在，输出空数组
+- 纯 JSON。"#;
+
+fn extract_worldbuilding(
+    data: &Value,
+    output: &Path,
+    model_schema: Option<&Value>,
+    limit: Option<usize>,
+) -> Result<()> {
+    let entries = data["entries"]
+        .as_array()
+        .context("输入数据缺少 'entries' 字段")?;
+
+    let prompt = if let Some(schema) = model_schema {
+        let fmt = format_schema_for_prompt(schema);
+        WORLDBUILDING_PROMPT_BASE.replace("{format_instructions}", &fmt)
+    } else {
+        return Err(anyhow::anyhow!("worldbuilding 类型需要 --model 参数"));
+    };
+
+    let llm = get_llm()?;
+    let mut all_results: Vec<Value> = Vec::new();
+
+    let entries_iter: Vec<&Value> = match limit {
+        Some(n) => entries.iter().take(n).collect(),
+        None => entries.iter().collect(),
+    };
+
+    for entry in &entries_iter {
+        let text = entry["text"].as_str().unwrap_or("");
+        let source = entry.get("source").and_then(|v| v.as_str()).unwrap_or("");
+
+        let mut result = call_llm(&prompt, text, &llm, 4096)?;
+        if let Some(obj) = result.as_object_mut() {
+            obj.insert("_source".into(), Value::String(source.into()));
+        }
+        all_results.push(result);
+    }
+
+    let out_file = output.join("worldbuilding.yaml");
+    write_yaml(&serde_json::json!({"worldbuilding": all_results}), &out_file)?;
+    println!("世界观结果: {:?} ({} 条)", out_file, all_results.len());
+
+    Ok(())
+}
+
 // ── 分发 ──
 
 fn extract_by_type(
@@ -928,8 +990,9 @@ fn extract_by_type(
         "todo" => extract_todo(data, output, model_schema, limit),
         "motif" => extract_motif(data, output, model_schema, limit),
         "annotate" => extract_annotate(data, output, model_schema, limit),
+        "worldbuilding" => extract_worldbuilding(data, output, model_schema, limit),
         _ => anyhow::bail!(
-            "错误: 未知抽取类型 '{}'，可用: cognition, todo, motif, annotate",
+            "错误: 未知抽取类型 '{}'，可用: cognition, todo, motif, annotate, worldbuilding",
             extract_type
         ),
     }
@@ -960,7 +1023,7 @@ pub fn run(args: &ExtractArgs) -> Result<()> {
 
     let model_schema = if let Some(model_path) = &args.model {
         let model_raw = read_yaml(Path::new(model_path))?;
-        let top_keys = ["cognition", "motif", "style", "situation"];
+        let top_keys = ["cognition", "motif", "style", "situation", "worldbuilding"];
         let model_key = top_keys
             .iter()
             .find(|k| model_raw.get(*k).is_some())
