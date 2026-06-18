@@ -4,46 +4,51 @@
 
 ```bash
 cd src/provider
-ADMIN_PASSWORD=your-password JWT_SECRET=any-random-string go run ./cmd/server
+go run ./cmd/server
 ```
 
-默认监听 `:8000`，可通过 `ADDR` 或配置文件的 `server.addr` 修改。
+配置通过环境变量设定（见下方说明），代码自动读取。
 
 ## 数据存储
 
-数据文件存放在 `/home/iguo/data/qtadmin/`，所有本地副本通过 `STORE_PATH` 指向此目录，数据统一存储。
+Provider 的数据文件存放在 `/home/iguo/data/`，通过 `STORE_PATH` 环境变量指定。
+
+### 系统环境变量配置
+
+编辑 `~/.bashrc`（或其他 shell 配置），加入以下内容：
 
 ```bash
-STORE_PATH=/home/iguo/data/qtadmin go run ./cmd/server
+export STORE_PATH=/home/iguo/data
+export JWT_SECRET=your-secret
+export ADMIN_PASSWORD=your-password
+export ADDR=:8000
+export LOG_LEVEL=info
 ```
 
-### 环境变量配置
-
-在 `/home/iguo/data/.env` 中统一管理配置，各副本 source 即可：
-
 ```bash
-# /home/iguo/data/.env
-ADDR=:8000
-STORE_PATH=/home/iguo/data/qtadmin
-JWT_SECRET=your-secret
-ADMIN_PASSWORD=your-password
-LOG_LEVEL=info
-LOG_FORMAT=text
-```
-
-所有副本共用：
-
-```bash
-set -a; source /home/iguo/data/.env; set +a
+source ~/.bashrc
 cd src/provider
 go run ./cmd/server
 ```
+
+所有命令行副本共用同一份环境变量，数据统一读写 `/home/iguo/data/`。
+
+### 可用环境变量
+
+| 变量 | 默认值 | 说明 |
+|:-----|:-------|:-----|
+| `ADDR` | `:8000` | 监听地址 |
+| `STORE_PATH` | `data` | 数据存储目录 |
+| `JWT_SECRET` | — | JWT 签名密钥 |
+| `ADMIN_PASSWORD` | — | 管理员密码，启动时自动创建 admin 用户 |
+| `LOG_LEVEL` | `info` | 日志级别 |
+| `LOG_FORMAT` | `text` | 日志格式，`text` 或 `json` |
 
 ### 备份到对象存储
 
 ```bash
 cd /home/iguo/data
-tar czf qtadmin-$(date +%Y%m%d).tar.gz qtadmin/
+tar czf qtadmin-$(date +%Y%m%d).tar.gz .
 aws s3 cp qtadmin-*.tar.gz s3://my-bucket/qtadmin/
 ```
 
