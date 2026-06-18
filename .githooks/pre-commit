@@ -1,18 +1,18 @@
 #!/bin/bash
-# pre-commit hook: quick check for studio and cli
-# Full test suite runs in CI (.github/workflows/studio.yml, cli.yml)
+# pre-commit hook
 
 STUDIO="src/studio"
 CLI="src/cli"
+PROVIDER="src/provider"
 
 if git diff --cached --name-only | grep -q "^$STUDIO/"; then
-  (cd "$STUDIO" && dart analyze lib/ test/)
+  (cd "$STUDIO" && flutter pub get && dart analyze lib/ test/ && flutter test)
   rc=$?
   if [ $rc -ne 0 ]; then
-    echo "✗ dart analyze 失败，提交终止"
+    echo "✗ studio 检查失败，提交终止"
     exit 1
   fi
-  echo "✓ dart analyze 通过"
+  echo "✓ studio 检查通过 (pub get, analyze, test)"
 fi
 
 if git diff --cached --name-only | grep -q "^$CLI/"; then
@@ -31,4 +31,14 @@ if git diff --cached --name-only | grep -q "^$CLI/"; then
     exit 1
   fi
   echo "✓ cargo test 通过"
+fi
+
+if git diff --cached --name-only | grep -q "^$PROVIDER/"; then
+  (cd "$PROVIDER" && go build ./cmd/server && go vet ./... && go test ./...)
+  rc=$?
+  if [ $rc -ne 0 ]; then
+    echo "✗ provider 检查失败，提交终止"
+    exit 1
+  fi
+  echo "✓ provider 检查通过 (build, vet, test)"
 fi
