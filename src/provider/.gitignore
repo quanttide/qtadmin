@@ -10,7 +10,7 @@
 # IDE
 .idea/
 *.out
-server
+/server
 *.so
 *.swo
 *.swp
