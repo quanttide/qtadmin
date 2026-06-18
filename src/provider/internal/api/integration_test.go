@@ -18,6 +18,9 @@ func newTestServer(t *testing.T) (*httptest.Server, string) {
 	connectHandler := NewConnectHandler(s)
 	secret := "test-integration-secret"
 	authHandler := NewAuthHandler(s, secret)
+	if err := authHandler.EnsureAdmin("adminpass"); err != nil {
+		t.Fatalf("seed admin: %v", err)
+	}
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /health", Health)
@@ -42,7 +45,6 @@ func newTestServer(t *testing.T) (*httptest.Server, string) {
 	mux.HandleFunc("GET /api/v1/connect/notifications/{id}", connectHandler.GetNotification)
 
 	mux.HandleFunc("POST /api/v1/auth/login", authHandler.Login)
-	mux.HandleFunc("POST /api/v1/auth/register", authHandler.Register)
 	authMW := AuthMiddleware(secret)
 	mux.Handle("POST /api/v1/auth/refresh", authMW(http.HandlerFunc(authHandler.Refresh)))
 	mux.Handle("GET /api/v1/auth/me", authMW(http.HandlerFunc(authHandler.Me)))
@@ -212,10 +214,10 @@ func TestIntegration_AuthFlow(t *testing.T) {
 	ts, secret := newTestServer(t)
 	var token string
 
-	t.Run("Register new user", func(t *testing.T) {
-		resp := request(t, ts, "POST", "/api/v1/auth/register", `{"username":"intuser","password":"intpass"}`)
-		if resp.StatusCode != http.StatusCreated {
-			t.Fatalf("expected 201, got %d", resp.StatusCode)
+	t.Run("Login as admin", func(t *testing.T) {
+		resp := request(t, ts, "POST", "/api/v1/auth/login", `{"username":"admin","password":"adminpass"}`)
+		if resp.StatusCode != http.StatusOK {
+			t.Fatalf("expected 200, got %d", resp.StatusCode)
 		}
 		m := readBody(t, resp)
 		token = m["token"].(string)
@@ -230,8 +232,8 @@ func TestIntegration_AuthFlow(t *testing.T) {
 			t.Fatalf("expected 200, got %d", resp.StatusCode)
 		}
 		m := readBody(t, resp)
-		if m["username"] != "intuser" {
-			t.Errorf("expected intuser, got %v", m["username"])
+		if m["username"] != "admin" {
+			t.Errorf("expected admin, got %v", m["username"])
 		}
 	})
 
@@ -247,14 +249,14 @@ func TestIntegration_AuthFlow(t *testing.T) {
 	})
 
 	t.Run("Login with correct password", func(t *testing.T) {
-		resp := request(t, ts, "POST", "/api/v1/auth/login", `{"username":"intuser","password":"intpass"}`)
+		resp := request(t, ts, "POST", "/api/v1/auth/login", `{"username":"admin","password":"adminpass"}`)
 		if resp.StatusCode != http.StatusOK {
 			t.Fatalf("expected 200, got %d", resp.StatusCode)
 		}
 	})
 
 	t.Run("Login with wrong password returns 401", func(t *testing.T) {
-		resp := request(t, ts, "POST", "/api/v1/auth/login", `{"username":"intuser","password":"wrong"}`)
+		resp := request(t, ts, "POST", "/api/v1/auth/login", `{"username":"admin","password":"wrong"}`)
 		if resp.StatusCode != http.StatusUnauthorized {
 			t.Errorf("expected 401, got %d", resp.StatusCode)
 		}
@@ -264,13 +266,6 @@ func TestIntegration_AuthFlow(t *testing.T) {
 		resp := request(t, ts, "GET", "/api/v1/auth/me", "")
 		if resp.StatusCode != http.StatusUnauthorized {
 			t.Errorf("expected 401, got %d", resp.StatusCode)
-		}
-	})
-
-	t.Run("Duplicate registration returns 409", func(t *testing.T) {
-		resp := request(t, ts, "POST", "/api/v1/auth/register", `{"username":"intuser","password":"intpass"}`)
-		if resp.StatusCode != http.StatusConflict {
-			t.Errorf("expected 409, got %d", resp.StatusCode)
 		}
 	})
 

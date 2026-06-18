@@ -27,11 +27,6 @@ type loginRequest struct {
 	Password string `json:"password"`
 }
 
-type registerRequest struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
-}
-
 type authResponse struct {
 	Token string      `json:"token"`
 	User  model.User `json:"user"`
@@ -96,72 +91,39 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 	WriteJSON(w, authResponse{Token: token, User: *user}, http.StatusOK)
 }
 
-func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
-	var req registerRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		WriteError(w, "INVALID_INPUT", "invalid request body", http.StatusBadRequest)
-		return
-	}
-	if req.Username == "" || req.Password == "" {
-		WriteError(w, "VALIDATION_ERROR", "username and password are required", http.StatusBadRequest)
-		return
-	}
-
-	existing, err := h.findUserByUsername(req.Username)
+func (h *AuthHandler) EnsureAdmin(password string) error {
+	existing, err := h.findUserByUsername("admin")
 	if err != nil {
-		slog.Error("find user", "error", err)
-		WriteError(w, "INTERNAL_ERROR", "failed to check username", http.StatusInternalServerError)
-		return
+		return err
 	}
 	if existing != nil {
-		WriteError(w, "CONFLICT", "username already exists", http.StatusConflict)
-		return
+		slog.Info("admin user already exists, skipping seed")
+		return nil
 	}
 
 	user := model.User{
-		Username:     req.Username,
-		PasswordHash: hashPassword(req.Username, req.Password),
+		Username:     "admin",
+		PasswordHash: hashPassword("admin", password),
 		CreatedAt:    time.Now().Format(time.RFC3339),
 	}
-
 	data, err := json.Marshal(user)
 	if err != nil {
-		slog.Error("encode user", "error", err)
-		WriteError(w, "INTERNAL_ERROR", "failed to encode data", http.StatusInternalServerError)
-		return
+		return err
 	}
-
 	id, err := h.store.Create("auth/users", data)
 	if err != nil {
-		slog.Error("create user", "error", err)
-		WriteError(w, "INTERNAL_ERROR", "failed to create user", http.StatusInternalServerError)
-		return
+		return err
 	}
-
 	user.ID = id
 	data, err = json.Marshal(user)
 	if err != nil {
-		slog.Error("encode user with id", "error", err)
-		WriteError(w, "INTERNAL_ERROR", "failed to encode data", http.StatusInternalServerError)
-		return
+		return err
 	}
 	if err := h.store.Update("auth/users", id, data); err != nil {
-		slog.Error("persist user id", "error", err)
+		return err
 	}
-
-	claims := map[string]any{
-		"sub":  user.ID,
-		"role": user.RoleID,
-		"exp":  time.Now().Add(24 * time.Hour).Unix(),
-	}
-	token, err := auth.Sign(claims, h.secret)
-	if err != nil {
-		slog.Error("sign token", "error", err)
-		WriteError(w, "INTERNAL_ERROR", "failed to generate token", http.StatusInternalServerError)
-		return
-	}
-
-	WriteJSON(w, authResponse{Token: token, User: user}, http.StatusCreated)
+	slog.Info("admin user created")
+	return nil
 }
 
 func (h *AuthHandler) Refresh(w http.ResponseWriter, r *http.Request) {

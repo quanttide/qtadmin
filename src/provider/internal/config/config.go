@@ -35,7 +35,8 @@ type LogConfig struct {
 }
 
 type AuthConfig struct {
-	JWTSecret string `json:"jwt_secret"`
+	JWTSecret     string `json:"jwt_secret"`
+	AdminPassword string `json:"admin_password"`
 }
 
 func Load(path string) (*Config, error) {
@@ -75,6 +76,9 @@ func Load(path string) (*Config, error) {
 	}
 	if v := os.Getenv("JWT_SECRET"); v != "" {
 		cfg.Auth.JWTSecret = v
+	}
+	if v := os.Getenv("ADMIN_PASSWORD"); v != "" {
+		cfg.Auth.AdminPassword = v
 	}
 
 	return cfg, nil
