@@ -38,6 +38,19 @@ pub struct Position {
     pub description: Option<String>,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct PositionRule {
+    #[serde(default)]
+    pub id: Option<String>,
+    pub name: String,
+    #[serde(default)]
+    pub keywords: Vec<String>,
+    #[serde(default)]
+    pub exclude: Vec<String>,
+    #[serde(default)]
+    pub priority: i32,
+}
+
 #[derive(Debug, Deserialize)]
 struct ErrorBody {
     #[allow(dead_code)]
@@ -200,6 +213,16 @@ impl ProviderClient {
         let resp = self
             .build_request(reqwest::Method::POST, "/api/v1/positions")
             .json(pos)
+            .send()
+            .await?;
+        Self::check_response(resp).await
+    }
+
+    // ── Classification Rules ──
+
+    pub async fn list_rules(&self) -> Result<Vec<PositionRule>> {
+        let resp = self
+            .build_request(reqwest::Method::GET, "/api/v1/human/rules")
             .send()
             .await?;
         Self::check_response(resp).await
