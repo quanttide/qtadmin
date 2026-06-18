@@ -13,7 +13,6 @@ type Config struct {
 	Store   store.Config  `json:"store"`
 	Log     LogConfig     `json:"log"`
 	Connect ConnectConfig `json:"connect"`
-	Auth    AuthConfig    `json:"auth"`
 }
 
 type ConnectConfig struct {
@@ -32,11 +31,6 @@ type ServerConfig struct {
 type LogConfig struct {
 	Level  string `json:"level"`
 	Format string `json:"format"`
-}
-
-type AuthConfig struct {
-	JWTSecret     string `json:"jwt_secret"`
-	AdminPassword string `json:"admin_password"`
 }
 
 func Load(path string) (*Config, error) {
@@ -83,16 +77,6 @@ func Load(path string) (*Config, error) {
 		cfg.Log.Format = v
 	} else if v := os.Getenv("LOG_FORMAT"); v != "" {
 		cfg.Log.Format = v
-	}
-	if v := os.Getenv("QTADMIN_JWT_SECRET"); v != "" {
-		cfg.Auth.JWTSecret = v
-	} else if v := os.Getenv("JWT_SECRET"); v != "" {
-		cfg.Auth.JWTSecret = v
-	}
-	if v := os.Getenv("QTADMIN_ADMIN_PASSWORD"); v != "" {
-		cfg.Auth.AdminPassword = v
-	} else if v := os.Getenv("ADMIN_PASSWORD"); v != "" {
-		cfg.Auth.AdminPassword = v
 	}
 
 	return cfg, nil
