@@ -12,7 +12,7 @@
   },
   "auth": {
     "jwt_secret": "test-secret",
-    "admin_password": ""
+    "admin_password": "test"
   },
   "connect": {
     "lark_app_id": "",

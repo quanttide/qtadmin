@@ -1,5 +1,6 @@
 """pytest 共享 fixtures。"""
 
+import os
 import subprocess
 import time
 import urllib.error
@@ -9,17 +10,21 @@ from pathlib import Path
 import pytest
 
 PROVIDER_DIR = Path(__file__).parents[1] / "src" / "provider"
+SERVER_BIN = "/tmp/qtadmin-server"
 
 
 @pytest.fixture(scope="session")
 def provider_url():
-    """启动 Provider 进程并等待就绪，返回 base URL。"""
+    """启动 Provider 进程并等待就绪，返回 base URL。
+
+    要求预先构建二进制: go build -o /tmp/qtadmin-server ./cmd/server
+    """
     env = {
         "ADDR": ":8001",
         "CONFIG_PATH": str(PROVIDER_DIR / "testdata" / "config.json"),
     }
     proc = subprocess.Popen(
-        ["go", "run", "./cmd/server"],
+        [SERVER_BIN],
         cwd=PROVIDER_DIR,
         env=env,
     )
