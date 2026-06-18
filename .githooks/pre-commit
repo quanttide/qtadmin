@@ -1,16 +1,34 @@
 #!/bin/bash
-# pre-commit hook: quick check for studio
-# Full test suite runs in CI (.github/workflows/studio.yml)
+# pre-commit hook: quick check for studio and cli
+# Full test suite runs in CI (.github/workflows/studio.yml, cli.yml)
 
 STUDIO="src/studio"
-if ! git diff --cached --name-only | grep -q "^$STUDIO/"; then
-  exit 0
+CLI="src/cli"
+
+if git diff --cached --name-only | grep -q "^$STUDIO/"; then
+  (cd "$STUDIO" && dart analyze lib/ test/)
+  rc=$?
+  if [ $rc -ne 0 ]; then
+    echo "✗ dart analyze 失败，提交终止"
+    exit 1
+  fi
+  echo "✓ dart analyze 通过"
 fi
 
-(cd "$STUDIO" && dart analyze lib/ test/)
-rc=$?
-if [ $rc -ne 0 ]; then
-  echo "✗ dart analyze 失败，提交终止"
-  exit 1
+if git diff --cached --name-only | grep -q "^$CLI/"; then
+  (cd "$CLI" && cargo build)
+  rc=$?
+  if [ $rc -ne 0 ]; then
+    echo "✗ cargo build 失败，提交终止"
+    exit 1
+  fi
+  echo "✓ cargo build 通过"
+
+  (cd "$CLI" && cargo test)
+  rc=$?
+  if [ $rc -ne 0 ]; then
+    echo "✗ cargo test 失败，提交终止"
+    exit 1
+  fi
+  echo "✓ cargo test 通过"
 fi
-echo "✓ dart analyze 通过"
