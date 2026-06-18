@@ -222,7 +222,7 @@ impl ProviderClient {
 
     pub async fn list_rules(&self) -> Result<Vec<PositionRule>> {
         let resp = self
-            .build_request(reqwest::Method::GET, "/api/v1/human/rules")
+            .build_request(reqwest::Method::GET, "/api/v1/connect/rules")
             .send()
             .await?;
         Self::check_response(resp).await
