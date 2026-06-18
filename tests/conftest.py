@@ -47,8 +47,6 @@ def provider_url():
     env = {
         "ADDR": ":8001",
         "CONFIG_PATH": str(PROVIDER_DIR / "testdata" / "config.json"),
-        # 清空所有 QTADMIN_ 前缀变量，避免本地配置干扰
-        **{k: "" for k in os.environ if k.startswith("QTADMIN_")},
     }
     proc = subprocess.Popen(
         [SERVER_BIN],
