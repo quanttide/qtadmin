@@ -12,14 +12,13 @@ import (
 
 func registerAuthRoutes(h *AuthHandler, secret string) *http.ServeMux {
 	mux := http.NewServeMux()
-	mux.HandleFunc("POST /api/v1/auth/register", h.Register)
 	mux.HandleFunc("POST /api/v1/auth/login", h.Login)
 	mux.Handle("POST /api/v1/auth/refresh", AuthMiddleware(secret)(http.HandlerFunc(h.Refresh)))
 	mux.Handle("GET /api/v1/auth/me", AuthMiddleware(secret)(http.HandlerFunc(h.Me)))
 	return mux
 }
 
-func TestRegisterAndLogin(t *testing.T) {
+func TestEnsureAdminAndLogin(t *testing.T) {
 	s, cleanup := testSetup(t)
 	defer cleanup()
 
@@ -27,34 +26,22 @@ func TestRegisterAndLogin(t *testing.T) {
 	h := NewAuthHandler(s, secret)
 	mux := registerAuthRoutes(h, secret)
 
-	var token string
-
-	t.Run("Register", func(t *testing.T) {
-		body := `{"username":"testuser","password":"pass123"}`
-		req := httptest.NewRequest("POST", "/api/v1/auth/register", strings.NewReader(body))
-		req.Header.Set("Content-Type", "application/json")
-		rec := httptest.NewRecorder()
-		mux.ServeHTTP(rec, req)
-
-		if rec.Code != http.StatusCreated {
-			t.Fatalf("expected 201, got %d: %s", rec.Code, rec.Body.String())
+	t.Run("EnsureAdmin creates user", func(t *testing.T) {
+		if err := h.EnsureAdmin("adminpass"); err != nil {
+			t.Fatalf("EnsureAdmin failed: %v", err)
 		}
-
-		var resp authResponse
-		if err := json.Unmarshal(rec.Body.Bytes(), &resp); err != nil {
-			t.Fatalf("unmarshal failed: %v", err)
-		}
-		if resp.Token == "" {
-			t.Error("expected non-empty token")
-		}
-		if resp.User.Username != "testuser" {
-			t.Errorf("expected username=testuser, got %s", resp.User.Username)
-		}
-		token = resp.Token
 	})
 
-	t.Run("Login", func(t *testing.T) {
-		body := `{"username":"testuser","password":"pass123"}`
+	t.Run("EnsureAdmin is idempotent", func(t *testing.T) {
+		if err := h.EnsureAdmin("adminpass"); err != nil {
+			t.Fatalf("EnsureAdmin on second call failed: %v", err)
+		}
+	})
+
+	var token string
+
+	t.Run("Login as admin", func(t *testing.T) {
+		body := `{"username":"admin","password":"adminpass"}`
 		req := httptest.NewRequest("POST", "/api/v1/auth/login", strings.NewReader(body))
 		req.Header.Set("Content-Type", "application/json")
 		rec := httptest.NewRecorder()
@@ -71,18 +58,7 @@ func TestRegisterAndLogin(t *testing.T) {
 		if resp.Token == "" {
 			t.Error("expected non-empty token")
 		}
-	})
-
-	t.Run("Duplicate registration returns 409", func(t *testing.T) {
-		body := `{"username":"testuser","password":"pass123"}`
-		req := httptest.NewRequest("POST", "/api/v1/auth/register", strings.NewReader(body))
-		req.Header.Set("Content-Type", "application/json")
-		rec := httptest.NewRecorder()
-		mux.ServeHTTP(rec, req)
-
-		if rec.Code != http.StatusConflict {
-			t.Errorf("expected 409, got %d: %s", rec.Code, rec.Body.String())
-		}
+		token = resp.Token
 	})
 
 	t.Run("Me with token", func(t *testing.T) {
@@ -93,6 +69,12 @@ func TestRegisterAndLogin(t *testing.T) {
 
 		if rec.Code != http.StatusOK {
 			t.Fatalf("expected 200, got %d: %s", rec.Code, rec.Body.String())
+		}
+
+		var user map[string]any
+		json.Unmarshal(rec.Body.Bytes(), &user)
+		if user["username"] != "admin" {
+			t.Errorf("expected username=admin, got %v", user["username"])
 		}
 	})
 
@@ -116,23 +98,16 @@ func TestLoginInvalid(t *testing.T) {
 	h := NewAuthHandler(s, secret)
 	mux := registerAuthRoutes(h, secret)
 
+	h.EnsureAdmin("adminpass")
+
 	t.Run("wrong password returns 401", func(t *testing.T) {
-		body := `{"username":"testuser","password":"pass123"}`
-		req := httptest.NewRequest("POST", "/api/v1/auth/register", strings.NewReader(body))
+		body := `{"username":"admin","password":"wrongpass"}`
+		req := httptest.NewRequest("POST", "/api/v1/auth/login", strings.NewReader(body))
 		req.Header.Set("Content-Type", "application/json")
 		rec := httptest.NewRecorder()
 		mux.ServeHTTP(rec, req)
-		if rec.Code != http.StatusCreated {
-			t.Fatalf("register failed: %d: %s", rec.Code, rec.Body.String())
-		}
-
-		body = `{"username":"testuser","password":"wrongpass"}`
-		req = httptest.NewRequest("POST", "/api/v1/auth/login", strings.NewReader(body))
-		req.Header.Set("Content-Type", "application/json")
-		rec = httptest.NewRecorder()
-		mux.ServeHTTP(rec, req)
 		if rec.Code != http.StatusUnauthorized {
-			t.Errorf("expected 401 for wrong password, got %d", rec.Code)
+			t.Errorf("expected 401, got %d", rec.Code)
 		}
 	})
 
