@@ -12,15 +12,37 @@ import pytest
 PROVIDER_DIR = Path(__file__).parents[1] / "src" / "provider"
 CLI_DIR = Path(__file__).parents[1] / "src" / "cli"
 SERVER_BIN = "/tmp/qtadmin-server"
+CLI_BIN = str(CLI_DIR / "target" / "debug" / "qtadmin")
 STORE_PATH = "/tmp/qtadmin-test"
+
+
+def pytest_sessionstart(session):
+    """session 启动前构建 Provider 和 CLI 二进制。"""
+    print("\n[conftest] 构建 Provider 二进制...")
+    subprocess.run(
+        ["go", "build", "-o", SERVER_BIN, "./cmd/server"],
+        cwd=PROVIDER_DIR,
+        check=True,
+        capture_output=True,
+    )
+    print("[conftest] Provider 构建完成")
+
+    if not os.path.exists(CLI_BIN):
+        print("[conftest] 构建 CLI 二进制...")
+        subprocess.run(
+            ["cargo", "build"],
+            cwd=CLI_DIR,
+            check=True,
+            capture_output=True,
+        )
+        print("[conftest] CLI 构建完成")
+    else:
+        print("[conftest] CLI 二进制已存在，跳过构建")
 
 
 @pytest.fixture(scope="session")
 def provider_url():
-    """启动 Provider 进程并等待就绪，返回 base URL。
-
-    要求预先构建二进制: go build -o /tmp/qtadmin-server ./cmd/server
-    """
+    """启动 Provider 进程并等待就绪，返回 base URL。"""
     os.makedirs(STORE_PATH, exist_ok=True)
     env = {
         "ADDR": ":8001",
