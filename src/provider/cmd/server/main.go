@@ -11,7 +11,7 @@ import (
 
 	"github.com/quanttide/qtadmin-provider/internal/api"
 	"github.com/quanttide/qtadmin-provider/internal/config"
-	"github.com/quanttide/qtadmin-provider/internal/db"
+	"github.com/quanttide/qtadmin-provider/internal/store"
 )
 
 func main() {
@@ -23,15 +23,15 @@ func main() {
 	}
 
 	setupLogger(cfg.Log)
-	slog.Info("config loaded", "addr", cfg.Server.Addr, "database", cfg.Database.URL)
+	slog.Info("config loaded", "addr", cfg.Server.Addr, "store", cfg.Store)
 
-	database, err := db.Open(cfg.Database.URL)
+	st, err := store.New(cfg.Store)
 	if err != nil {
-		slog.Warn("database unavailable, running without persistence", "error", err)
-	} else {
-		slog.Info("database connected", "dsn", database.DSN())
+		slog.Error("failed to initialize store", "error", err)
+		os.Exit(1)
 	}
-	_ = database
+	defer st.Close()
+	slog.Info("store initialized", "driver", cfg.Store.Driver, "path", cfg.Store.Path)
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /health", api.Health)

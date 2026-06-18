@@ -4,20 +4,18 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+
+	"github.com/quanttide/qtadmin-provider/internal/store"
 )
 
 type Config struct {
-	Server   ServerConfig   `json:"server"`
-	Database DatabaseConfig `json:"database"`
-	Log      LogConfig      `json:"log"`
+	Server ServerConfig `json:"server"`
+	Store  store.Config `json:"store"`
+	Log    LogConfig    `json:"log"`
 }
 
 type ServerConfig struct {
 	Addr string `json:"addr"`
-}
-
-type DatabaseConfig struct {
-	URL string `json:"url"`
 }
 
 type LogConfig struct {
@@ -27,9 +25,12 @@ type LogConfig struct {
 
 func Load(path string) (*Config, error) {
 	cfg := &Config{
-		Server:   ServerConfig{Addr: ":8000"},
-		Database: DatabaseConfig{URL: "qtadmin.db"},
-		Log:      LogConfig{Level: "info", Format: "text"},
+		Server: ServerConfig{Addr: ":8000"},
+		Store: store.Config{
+			Driver: "file",
+			Path:   "data",
+		},
+		Log: LogConfig{Level: "info", Format: "text"},
 	}
 
 	if path != "" {
@@ -45,8 +46,11 @@ func Load(path string) (*Config, error) {
 	if v := os.Getenv("ADDR"); v != "" {
 		cfg.Server.Addr = v
 	}
-	if v := os.Getenv("DATABASE_URL"); v != "" {
-		cfg.Database.URL = v
+	if v := os.Getenv("STORE_DRIVER"); v != "" {
+		cfg.Store.Driver = v
+	}
+	if v := os.Getenv("STORE_PATH"); v != "" {
+		cfg.Store.Path = v
 	}
 	if v := os.Getenv("LOG_LEVEL"); v != "" {
 		cfg.Log.Level = v
