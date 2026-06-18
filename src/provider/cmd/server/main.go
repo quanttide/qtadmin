@@ -33,8 +33,28 @@ func main() {
 	defer st.Close()
 	slog.Info("store initialized", "driver", cfg.Store.Driver, "path", cfg.Store.Path)
 
+	humanHandler := api.NewHumanHandler(st)
+
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /health", api.Health)
+
+	mux.HandleFunc("GET /api/v1/employees", humanHandler.ListEmployees)
+	mux.HandleFunc("POST /api/v1/employees", humanHandler.CreateEmployee)
+	mux.HandleFunc("GET /api/v1/employees/{id}", humanHandler.GetEmployee)
+	mux.HandleFunc("PUT /api/v1/employees/{id}", humanHandler.UpdateEmployee)
+	mux.HandleFunc("DELETE /api/v1/employees/{id}", humanHandler.DeleteEmployee)
+
+	mux.HandleFunc("GET /api/v1/departments", humanHandler.ListDepartments)
+	mux.HandleFunc("POST /api/v1/departments", humanHandler.CreateDepartment)
+	mux.HandleFunc("GET /api/v1/departments/{id}", humanHandler.GetDepartment)
+	mux.HandleFunc("PUT /api/v1/departments/{id}", humanHandler.UpdateDepartment)
+	mux.HandleFunc("DELETE /api/v1/departments/{id}", humanHandler.DeleteDepartment)
+
+	mux.HandleFunc("GET /api/v1/positions", humanHandler.ListPositions)
+	mux.HandleFunc("POST /api/v1/positions", humanHandler.CreatePosition)
+	mux.HandleFunc("GET /api/v1/positions/{id}", humanHandler.GetPosition)
+	mux.HandleFunc("PUT /api/v1/positions/{id}", humanHandler.UpdatePosition)
+	mux.HandleFunc("DELETE /api/v1/positions/{id}", humanHandler.DeletePosition)
 
 	handler := loggingMiddleware(mux)
 
