@@ -1,3 +1,4 @@
+use crate::provider::{ProviderClient, self};
 use clap::{Args, Subcommand};
 use serde::{Deserialize, Serialize};
 use sqlx::sqlite::SqlitePoolOptions;
@@ -189,7 +190,48 @@ async fn run(args: PositionCommands) {
     }
 }
 
-pub fn dispatch(args: &PositionArgs) {
-    let rt = tokio::runtime::Runtime::new().unwrap();
-    rt.block_on(run(args.command.clone()));
+async fn run_provider(args: PositionCommands) {
+    let client = ProviderClient::new("");
+
+    match args {
+        PositionCommands::List { .. } => {
+            match client.list_positions().await {
+                Ok(positions) => println!("{}", serde_json::to_string_pretty(&positions).unwrap()),
+                Err(e) => eprintln!("错误: {}", e),
+            }
+        }
+        PositionCommands::Get { id } => {
+            match client.get_position(id).await {
+                Ok(p) => println!("{}", serde_json::to_string_pretty(&p).unwrap()),
+                Err(e) => eprintln!("错误: {}", e),
+            }
+        }
+        PositionCommands::Create { name, department, level, description, responsibilities, requirements } => {
+            let pos = provider::Position {
+                id: None,
+                name,
+                department,
+                level,
+                description,
+                responsibilities,
+                requirements,
+                active: Some(true),
+            };
+            match client.create_position(&pos).await {
+                Ok(p) => println!("{}", serde_json::to_string_pretty(&p).unwrap()),
+                Err(e) => eprintln!("错误: {}", e),
+            }
+        }
+        _ => eprintln!("Provider模式下暂不支持该操作"),
+    }
+}
+
+pub fn dispatch(args: &PositionArgs, provider: bool) {
+    if provider {
+        let rt = tokio::runtime::Runtime::new().unwrap();
+        rt.block_on(run_provider(args.command.clone()));
+    } else {
+        let rt = tokio::runtime::Runtime::new().unwrap();
+        rt.block_on(run(args.command.clone()));
+    }
 }

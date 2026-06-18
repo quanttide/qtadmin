@@ -11,6 +11,7 @@ mod qtconsult;
 mod qtdata;
 mod qtrecurit;
 mod knowl;
+mod provider;
 mod git_utils;
 
 fn main() {
