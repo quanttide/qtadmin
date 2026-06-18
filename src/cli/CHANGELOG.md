@@ -1,5 +1,20 @@
 # CHANGELOG
 
+## [0.0.12] - 2026-06-18
+
+### Added
+
+- 全局 `--provider` / `-p` 模式，通过 HTTP 调用 Provider API 替代本地文件
+- `human position` 支持 `--provider` 模式（list/get/create）
+- 分类规则从 Provider 加载（`POST /api/v1/connect/rules`），失败回退内置规则
+- CLI 岗位模型与 Provider API 对齐（字符串 ID、status 字段）
+- 端到端测试：CLI → Provider → 数据持久化验证
+
+### Changed
+
+- `position get` / `position delete` 的 ID 参数从数字改为字符串
+- CLI 模型增加 `#[serde(default)]` 兼容 Provider JSON 格式
+
 ## [0.0.11] - 2026-06-18
 
 ### Added
