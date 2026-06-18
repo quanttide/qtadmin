@@ -1,12 +1,13 @@
 # TODO
 
-## v0.0.2 — 基础设施
+## v0.0.2 — 基础设施 ✅
 
 ### 配置管理
 
 - [x] 创建 `internal/config/config.go`，加载 JSON 文件 + 环境变量
 - [x] 支持 `CONFIG_PATH` 环境变量指定配置文件路径
-- [x] 基础配置结构：`server.addr`、`database.url`、`log.level`
+- [x] 基础配置结构：`server.addr`、`store.driver`、`store.path`、`log.level`
+- [x] 环境变量：`STORE_DRIVER` / `STORE_PATH` 替代 `DATABASE_URL`
 
 ### 日志
 
@@ -14,12 +15,14 @@
 - [x] 支持 `LOG_LEVEL` 环境变量（debug/info/warn/error）
 - [x] JSON 格式输出用于生产环境，文本格式用于开发
 
-### 数据库
+### 存储层
 
-- [ ] 调研并选定：GORM vs sqlc vs sqlx（当前环境无网络，暂用 stub）
-- [x] 创建 `internal/db/db.go`，封装连接接口
-- [x] 支持 `DATABASE_URL` 环境变量切换驱动
-- [ ] 自动迁移 / 初始化 Schema
+- [x] 创建 `internal/store/store.go`，定义 `Store` 接口（List/Get/Create/Update/Delete/Close）
+- [x] 创建 `internal/store/filestore.go`，本地 JSON 文件实现
+- [x] 每个集合一个 JSON 文件，格式 `{"records": {"id": {...}}}`
+- [x] 自动 ID 生成（16 字节 hex）
+- [x] 线程安全（`sync.RWMutex`）
+- [x] S3 驱动接口预留（store.New("s3", ...) 返回 "not yet implemented"）
 
 ### CI
 
