@@ -201,21 +201,17 @@ async fn run_provider(args: PositionCommands) {
             }
         }
         PositionCommands::Get { id } => {
-            match client.get_position(id).await {
+            match client.get_position(&id.to_string()).await {
                 Ok(p) => println!("{}", serde_json::to_string_pretty(&p).unwrap()),
                 Err(e) => eprintln!("错误: {}", e),
             }
         }
-        PositionCommands::Create { name, department, level, description, responsibilities, requirements } => {
+        PositionCommands::Create { name, department, description, .. } => {
             let pos = provider::Position {
                 id: None,
                 name,
                 department,
-                level,
                 description,
-                responsibilities,
-                requirements,
-                active: Some(true),
             };
             match client.create_position(&pos).await {
                 Ok(p) => println!("{}", serde_json::to_string_pretty(&p).unwrap()),

@@ -1,37 +1,41 @@
 use anyhow::{Result, anyhow};
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct Employee {
-    pub id: Option<i64>,
+    #[serde(default)]
+    pub id: Option<String>,
     pub name: String,
-    pub email: Option<String>,
-    pub phone: Option<String>,
+    #[serde(default)]
     pub department: Option<String>,
+    #[serde(default)]
     pub position: Option<String>,
+    #[serde(default)]
     pub hire_date: Option<String>,
-    pub active: Option<bool>,
+    #[serde(default)]
+    pub status: Option<String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct Department {
-    pub id: Option<i64>,
+    #[serde(default)]
+    pub id: Option<String>,
     pub name: String,
-    pub description: Option<String>,
+    #[serde(default)]
     pub parent: Option<String>,
-    pub active: Option<bool>,
+    #[serde(default)]
+    pub leader: Option<String>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct Position {
-    pub id: Option<i64>,
+    #[serde(default)]
+    pub id: Option<String>,
     pub name: String,
+    #[serde(default)]
     pub department: Option<String>,
-    pub level: Option<String>,
+    #[serde(default)]
     pub description: Option<String>,
-    pub responsibilities: Option<String>,
-    pub requirements: Option<String>,
-    pub active: Option<bool>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -130,7 +134,7 @@ impl ProviderClient {
         Self::check_response(resp).await
     }
 
-    pub async fn get_employee(&self, id: i64) -> Result<Employee> {
+    pub async fn get_employee(&self, id: &str) -> Result<Employee> {
         let resp = self
             .build_request(reqwest::Method::GET, &format!("/api/v1/employees/{}", id))
             .send()
@@ -157,7 +161,7 @@ impl ProviderClient {
         Self::check_response(resp).await
     }
 
-    pub async fn get_department(&self, id: i64) -> Result<Department> {
+    pub async fn get_department(&self, id: &str) -> Result<Department> {
         let resp = self
             .build_request(reqwest::Method::GET, &format!("/api/v1/departments/{}", id))
             .send()
@@ -184,7 +188,7 @@ impl ProviderClient {
         Self::check_response(resp).await
     }
 
-    pub async fn get_position(&self, id: i64) -> Result<Position> {
+    pub async fn get_position(&self, id: &str) -> Result<Position> {
         let resp = self
             .build_request(reqwest::Method::GET, &format!("/api/v1/positions/{}", id))
             .send()
