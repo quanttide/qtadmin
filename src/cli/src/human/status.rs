@@ -103,7 +103,7 @@ pub fn format_status(store: &dyn PlanStore) -> String {
 #[derive(clap::Args)]
 pub struct StatusArgs;
 
-pub fn run(_args: &StatusArgs) -> Result<()> {
+pub fn run(_args: &StatusArgs, _provider: bool) -> Result<()> {
     let store = FilePlanStore;
     print!("{}", format_status(&store));
     Ok(())

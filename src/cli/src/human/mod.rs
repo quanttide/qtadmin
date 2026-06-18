@@ -22,7 +22,7 @@ pub struct HumanArgs {
 pub fn dispatch(args: &HumanArgs, provider: bool) {
     match &args.command {
         HumanCommands::Status(status_args) => {
-            if let Err(e) = status::run(status_args) {
+            if let Err(e) = status::run(status_args, provider) {
                 eprintln!("错误: {}", e);
             }
         }
