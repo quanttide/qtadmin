@@ -19,13 +19,13 @@ pub struct HumanArgs {
     pub command: HumanCommands,
 }
 
-pub fn dispatch(args: &HumanArgs) {
+pub fn dispatch(args: &HumanArgs, provider: bool) {
     match &args.command {
         HumanCommands::Status(status_args) => {
             if let Err(e) = status::run(status_args) {
                 eprintln!("错误: {}", e);
             }
         }
-        HumanCommands::Position(position_args) => position::dispatch(position_args),
+        HumanCommands::Position(position_args) => position::dispatch(position_args, provider),
     }
 }
