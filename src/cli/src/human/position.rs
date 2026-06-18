@@ -38,7 +38,7 @@ pub enum PositionCommands {
         skip: i64,
     },
     /// 查询单个岗位
-    Get { id: i64 },
+    Get { id: String },
     /// 创建岗位
     Create {
         #[arg(long)]
@@ -56,7 +56,7 @@ pub enum PositionCommands {
     },
     /// 更新岗位
     Update {
-        id: i64,
+        id: String,
         #[arg(long)]
         name: Option<String>,
         #[arg(long)]
@@ -73,7 +73,7 @@ pub enum PositionCommands {
         active: Option<bool>,
     },
     /// 删除岗位
-    Delete { id: i64 },
+    Delete { id: String },
 }
 
 async fn init_db(pool: &sqlx::SqlitePool) {
@@ -132,6 +132,7 @@ async fn run(args: PositionCommands) {
             println!("{}", serde_json::to_string_pretty(&positions).unwrap());
         }
         PositionCommands::Get { id } => {
+            let id: i64 = id.parse().expect("ID 格式错误");
             match sqlx::query_as::<_, Position>("SELECT * FROM org_positions WHERE id = ?1")
                 .bind(id).fetch_optional(&pool).await.unwrap()
             {
@@ -156,6 +157,7 @@ async fn run(args: PositionCommands) {
             }
         }
         PositionCommands::Update { id, name, department, level, description, responsibilities, requirements, active } => {
+            let id: i64 = id.parse().expect("ID 格式错误");
             let existing = match sqlx::query_as::<_, Position>("SELECT * FROM org_positions WHERE id = ?1")
                 .bind(id).fetch_optional(&pool).await.unwrap()
             {
@@ -179,6 +181,7 @@ async fn run(args: PositionCommands) {
             println!("{}", serde_json::to_string_pretty(&updated).unwrap());
         }
         PositionCommands::Delete { id } => {
+            let id: i64 = id.parse().expect("ID 格式错误");
             let result = sqlx::query("DELETE FROM org_positions WHERE id = ?1")
                 .bind(id).execute(&pool).await.unwrap();
             if result.rows_affected() == 0 {
