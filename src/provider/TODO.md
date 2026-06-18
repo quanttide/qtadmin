@@ -4,35 +4,35 @@
 
 ### 配置管理
 
-- [ ] 创建 `internal/config/config.go`，加载 YAML 文件 + 环境变量
-- [ ] 支持 `CONFIG_PATH` 环境变量指定配置文件路径
-- [ ] 基础配置结构：`server.addr`、`database.url`、`log.level`
+- [x] 创建 `internal/config/config.go`，加载 JSON 文件 + 环境变量
+- [x] 支持 `CONFIG_PATH` 环境变量指定配置文件路径
+- [x] 基础配置结构：`server.addr`、`database.url`、`log.level`
 
 ### 日志
 
-- [ ] 使用 `log/slog` 替代 `log` 包
-- [ ] 支持 `LOG_LEVEL` 环境变量（debug/info/warn/error）
-- [ ] JSON 格式输出用于生产环境，文本格式用于开发
+- [x] 使用 `log/slog` 替代 `log` 包
+- [x] 支持 `LOG_LEVEL` 环境变量（debug/info/warn/error）
+- [x] JSON 格式输出用于生产环境，文本格式用于开发
 
 ### 数据库
 
-- [ ] 调研并选定：GORM vs sqlc vs sqlx
-- [ ] 创建 `internal/db/db.go`，封装连接管理
-- [ ] SQLite 起步，支持 `DATABASE_URL` 环境变量切换驱动
+- [ ] 调研并选定：GORM vs sqlc vs sqlx（当前环境无网络，暂用 stub）
+- [x] 创建 `internal/db/db.go`，封装连接接口
+- [x] 支持 `DATABASE_URL` 环境变量切换驱动
 - [ ] 自动迁移 / 初始化 Schema
 
 ### CI
 
-- [ ] 创建 `.github/workflows/provider.yml`
-- [ ] `go build ./cmd/server` 编译检查
-- [ ] `go vet ./...` 静态检查
-- [ ] `go test ./...` 运行测试
+- [x] 创建 `.github/workflows/provider.yml`
+- [x] `go build ./cmd/server` 编译检查
+- [x] `go vet ./...` 静态检查
+- [x] `go test ./...` 运行测试
 
 ### 错误处理
 
-- [ ] 统一错误响应结构：`{"error": {"code": "...", "message": "..."}}`
-- [ ] 创建 `internal/api/error.go`，定义错误码和 HTTP 映射
-- [ ] 中间件或 helper 函数处理 panic 和验证错误
+- [x] 统一错误响应结构：`{"error": {"code": "...", "message": "..."}}`
+- [x] 创建 `internal/api/response.go`，定义 `WriteError` / `WriteJSON` helper
+- [x] 中间件或 helper 函数处理 panic 和验证错误
 
 ## v0.0.3 — human 域 API
 
