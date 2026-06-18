@@ -288,7 +288,7 @@ pub struct ExtractArgs {
     #[arg(long, short = 'i', required = true)]
     pub input: String,
 
-    /// 抽取类型 (cognition, todo, motif, annotate)
+    /// 抽取类型 (cognition, todo, motif, annotate, worldbuilding, scene-graph)
     #[arg(long = "type", short = 't', required = true)]
     pub extract_type: String,
 
@@ -976,6 +976,69 @@ fn extract_worldbuilding(
     Ok(())
 }
 
+// ── scene-graph: 多场景 → 场景关联图 ──
+
+const SCENE_GRAPH_PROMPT_BASE: &str = r#"你是一个叙事结构分析助手。从以下小说片段中，分析场景之间的引用关系和叙事结构。
+
+{format_instructions}
+
+规则：
+- 仔细阅读所有场景，识别场景之间的引用、回调、前传依赖
+- forward_references 识别当前场景提到的更早发生的事——包括前文场景中的事件和文本未覆盖的过往（backstory/off_screen）
+- timeline_relationship 标注场景之间的时间先后和间隔
+- emotional_echoes 识别同一地点或物品在不同场景中承载的不同情感
+- 所有要素必须基于原文推断，不编造
+- 如果某类不存在，输出空数组
+- 纯 JSON。"#;
+
+fn extract_scene_graph(
+    data: &Value,
+    output: &Path,
+    model_schema: Option<&Value>,
+    limit: Option<usize>,
+) -> Result<()> {
+    let entries = data["entries"]
+        .as_array()
+        .context("输入数据缺少 'entries' 字段")?;
+
+    let prompt = if let Some(schema) = model_schema {
+        let fmt = format_schema_for_prompt(schema);
+        SCENE_GRAPH_PROMPT_BASE.replace("{format_instructions}", &fmt)
+    } else {
+        return Err(anyhow::anyhow!("scene-graph 类型需要 --model 参数"));
+    };
+
+    let llm = get_llm()?;
+
+    // 把所有场景拼接成一段文本送给 LLM，让它看到全部场景之间的关系
+    let mut combined = String::new();
+    let entries_iter: Vec<&Value> = match limit {
+        Some(n) => entries.iter().take(n).collect(),
+        None => entries.iter().collect(),
+    };
+    for entry in &entries_iter {
+        let sid = entry["id"].as_str().unwrap_or("?");
+        let source = entry.get("source").and_then(|v| v.as_str()).unwrap_or("");
+        let text = entry["text"].as_str().unwrap_or("");
+        combined.push_str(&format!("\n=== 场景 {} ({}) ===\n{}\n", sid, source, text));
+    }
+
+    let mut result = call_llm(&prompt, &combined, &llm, 4096)?;
+    if let Some(obj) = result.as_object_mut() {
+        let sources: Vec<String> = entries_iter
+            .iter()
+            .filter_map(|e| e.get("source").and_then(|v| v.as_str()).map(|s| s.to_string()))
+            .collect();
+        obj.insert("_sources".into(), Value::Array(sources.into_iter().map(Value::String).collect()));
+    }
+
+    let out_file = output.join("scene-graph.yaml");
+    write_yaml(&serde_json::json!({"scene_graph": result}), &out_file)?;
+    println!("场景关联图: {:?}", out_file);
+
+    Ok(())
+}
+
 // ── 分发 ──
 
 fn extract_by_type(
@@ -991,8 +1054,9 @@ fn extract_by_type(
         "motif" => extract_motif(data, output, model_schema, limit),
         "annotate" => extract_annotate(data, output, model_schema, limit),
         "worldbuilding" => extract_worldbuilding(data, output, model_schema, limit),
+        "scene-graph" => extract_scene_graph(data, output, model_schema, limit),
         _ => anyhow::bail!(
-            "错误: 未知抽取类型 '{}'，可用: cognition, todo, motif, annotate, worldbuilding",
+            "错误: 未知抽取类型 '{}'，可用: cognition, todo, motif, annotate, worldbuilding, scene-graph",
             extract_type
         ),
     }
@@ -1023,7 +1087,7 @@ pub fn run(args: &ExtractArgs) -> Result<()> {
 
     let model_schema = if let Some(model_path) = &args.model {
         let model_raw = read_yaml(Path::new(model_path))?;
-        let top_keys = ["cognition", "motif", "style", "situation", "worldbuilding"];
+        let top_keys = ["cognition", "motif", "style", "situation", "worldbuilding", "scene_graph"];
         let model_key = top_keys
             .iter()
             .find(|k| model_raw.get(*k).is_some())
