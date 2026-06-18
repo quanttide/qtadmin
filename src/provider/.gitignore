@@ -1,20 +1,20 @@
-# Go
+
 /bin/
-/tmp/
+*.dll
+*.dylib
+.env
+# Env
 *.exe
 *.exe~
-*.dll
-*.so
-*.dylib
-*.test
-*.out
-/vendor/
-
+# Go
 # IDE
 .idea/
-.vscode/
-*.swp
+*.out
+server
+*.so
 *.swo
-
-# Env
-.env
+*.swp
+*.test
+/tmp/
+/vendor/
+.vscode/
