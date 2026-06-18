@@ -1,5 +1,16 @@
 # CHANGELOG
 
+## [0.0.13] - 2026-06-18
+
+### Added
+
+- `knowl extract` 子命令：本体 YAML → 结构化产物，支持 cognition/todo/motif/annotate 四种抽取类型
+- Schema 编译：从 YAML field 定义自动生成 JSON Schema，约束 LLM 输出格式
+
+### Changed
+
+- Python extract.py 翻译为 Rust，集成到 qtadmin CLI
+
 ## [0.0.12] - 2026-06-18
 
 ### Added
