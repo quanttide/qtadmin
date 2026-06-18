@@ -35,6 +35,7 @@ func main() {
 
 	humanHandler := api.NewHumanHandler(st)
 	connectHandler := api.NewConnectHandler(st)
+	authHandler := api.NewAuthHandler(st, cfg.Auth.JWTSecret)
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /health", api.Health)
@@ -61,6 +62,13 @@ func main() {
 	mux.HandleFunc("GET /api/v1/connect/notifications", connectHandler.ListNotifications)
 	mux.HandleFunc("GET /api/v1/connect/notifications/{id}", connectHandler.GetNotification)
 	mux.HandleFunc("POST /api/v1/connect/webhook/lark", connectHandler.LarkWebhook)
+
+	mux.HandleFunc("POST /api/v1/auth/login", authHandler.Login)
+	mux.HandleFunc("POST /api/v1/auth/register", authHandler.Register)
+
+	authMW := api.AuthMiddleware(cfg.Auth.JWTSecret)
+	mux.Handle("POST /api/v1/auth/refresh", authMW(http.HandlerFunc(authHandler.Refresh)))
+	mux.Handle("GET /api/v1/auth/me", authMW(http.HandlerFunc(authHandler.Me)))
 
 	handler := loggingMiddleware(mux)
 
