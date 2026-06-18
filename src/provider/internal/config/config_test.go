@@ -74,19 +74,21 @@ func TestLoad_InvalidJSON(t *testing.T) {
 }
 
 func TestLoad_EnvOverrides(t *testing.T) {
-	os.Setenv("ADDR", ":7000")
-	os.Setenv("STORE_DRIVER", "postgres")
-	os.Setenv("STORE_PATH", "/data/db")
-	os.Setenv("LOG_LEVEL", "warn")
-	os.Setenv("LOG_FORMAT", "json")
-	os.Setenv("JWT_SECRET", "my-secret")
+	os.Setenv("QTADMIN_ADDR", ":7000")
+	os.Setenv("QTADMIN_STORE_DRIVER", "postgres")
+	os.Setenv("QTADMIN_STORE_PATH", "/data/db")
+	os.Setenv("QTADMIN_LOG_LEVEL", "warn")
+	os.Setenv("QTADMIN_LOG_FORMAT", "json")
+	os.Setenv("QTADMIN_JWT_SECRET", "my-secret")
+	os.Setenv("QTADMIN_ADMIN_PASSWORD", "adminpass")
 	defer func() {
-		os.Unsetenv("ADDR")
-		os.Unsetenv("STORE_DRIVER")
-		os.Unsetenv("STORE_PATH")
-		os.Unsetenv("LOG_LEVEL")
-		os.Unsetenv("LOG_FORMAT")
-		os.Unsetenv("JWT_SECRET")
+		os.Unsetenv("QTADMIN_ADDR")
+		os.Unsetenv("QTADMIN_STORE_DRIVER")
+		os.Unsetenv("QTADMIN_STORE_PATH")
+		os.Unsetenv("QTADMIN_LOG_LEVEL")
+		os.Unsetenv("QTADMIN_LOG_FORMAT")
+		os.Unsetenv("QTADMIN_JWT_SECRET")
+		os.Unsetenv("QTADMIN_ADMIN_PASSWORD")
 	}()
 
 	cfg, err := Load("")
@@ -110,5 +112,38 @@ func TestLoad_EnvOverrides(t *testing.T) {
 	}
 	if cfg.Auth.JWTSecret != "my-secret" {
 		t.Errorf("jwt secret: got %q, want %q", cfg.Auth.JWTSecret, "my-secret")
+	}
+	if cfg.Auth.AdminPassword != "adminpass" {
+		t.Errorf("admin password: got %q, want %q", cfg.Auth.AdminPassword, "adminpass")
+	}
+}
+
+func TestLoad_LegacyEnvOverrides(t *testing.T) {
+	os.Setenv("ADDR", ":6000")
+	os.Setenv("STORE_PATH", "/legacy/data")
+	os.Setenv("JWT_SECRET", "legacy-secret")
+	os.Setenv("ADMIN_PASSWORD", "legacy-pass")
+	defer func() {
+		os.Unsetenv("ADDR")
+		os.Unsetenv("STORE_PATH")
+		os.Unsetenv("JWT_SECRET")
+		os.Unsetenv("ADMIN_PASSWORD")
+	}()
+
+	cfg, err := Load("")
+	if err != nil {
+		t.Fatalf("Load with legacy env: %v", err)
+	}
+	if cfg.Server.Addr != ":6000" {
+		t.Errorf("addr: got %q, want %q", cfg.Server.Addr, ":6000")
+	}
+	if cfg.Store.Path != "/legacy/data" {
+		t.Errorf("store path: got %q, want %q", cfg.Store.Path, "/legacy/data")
+	}
+	if cfg.Auth.JWTSecret != "legacy-secret" {
+		t.Errorf("jwt secret: got %q, want %q", cfg.Auth.JWTSecret, "legacy-secret")
+	}
+	if cfg.Auth.AdminPassword != "legacy-pass" {
+		t.Errorf("admin password: got %q, want %q", cfg.Auth.AdminPassword, "legacy-pass")
 	}
 }

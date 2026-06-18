@@ -59,25 +59,39 @@ func Load(path string) (*Config, error) {
 		}
 	}
 
-	if v := os.Getenv("ADDR"); v != "" {
+	if v := os.Getenv("QTADMIN_ADDR"); v != "" {
+		cfg.Server.Addr = v
+	} else if v := os.Getenv("ADDR"); v != "" {
 		cfg.Server.Addr = v
 	}
-	if v := os.Getenv("STORE_DRIVER"); v != "" {
+	if v := os.Getenv("QTADMIN_STORE_DRIVER"); v != "" {
+		cfg.Store.Driver = v
+	} else if v := os.Getenv("STORE_DRIVER"); v != "" {
 		cfg.Store.Driver = v
 	}
-	if v := os.Getenv("STORE_PATH"); v != "" {
+	if v := os.Getenv("QTADMIN_STORE_PATH"); v != "" {
+		cfg.Store.Path = v
+	} else if v := os.Getenv("STORE_PATH"); v != "" {
 		cfg.Store.Path = v
 	}
-	if v := os.Getenv("LOG_LEVEL"); v != "" {
+	if v := os.Getenv("QTADMIN_LOG_LEVEL"); v != "" {
+		cfg.Log.Level = v
+	} else if v := os.Getenv("LOG_LEVEL"); v != "" {
 		cfg.Log.Level = v
 	}
-	if v := os.Getenv("LOG_FORMAT"); v != "" {
+	if v := os.Getenv("QTADMIN_LOG_FORMAT"); v != "" {
+		cfg.Log.Format = v
+	} else if v := os.Getenv("LOG_FORMAT"); v != "" {
 		cfg.Log.Format = v
 	}
-	if v := os.Getenv("JWT_SECRET"); v != "" {
+	if v := os.Getenv("QTADMIN_JWT_SECRET"); v != "" {
+		cfg.Auth.JWTSecret = v
+	} else if v := os.Getenv("JWT_SECRET"); v != "" {
 		cfg.Auth.JWTSecret = v
 	}
-	if v := os.Getenv("ADMIN_PASSWORD"); v != "" {
+	if v := os.Getenv("QTADMIN_ADMIN_PASSWORD"); v != "" {
+		cfg.Auth.AdminPassword = v
+	} else if v := os.Getenv("ADMIN_PASSWORD"); v != "" {
 		cfg.Auth.AdminPassword = v
 	}
 
