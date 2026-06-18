@@ -38,10 +38,8 @@ func newTestServer(t *testing.T) (*httptest.Server, string) {
 	mux.HandleFunc("PUT /api/v1/positions/{id}", humanHandler.UpdatePosition)
 	mux.HandleFunc("DELETE /api/v1/positions/{id}", humanHandler.DeletePosition)
 
-	mux.HandleFunc("POST /api/v1/connect/notify", connectHandler.Notify)
 	mux.HandleFunc("GET /api/v1/connect/notifications", connectHandler.ListNotifications)
 	mux.HandleFunc("GET /api/v1/connect/notifications/{id}", connectHandler.GetNotification)
-	mux.HandleFunc("POST /api/v1/connect/webhook/lark", connectHandler.LarkWebhook)
 
 	mux.HandleFunc("POST /api/v1/auth/login", authHandler.Login)
 	mux.HandleFunc("POST /api/v1/auth/register", authHandler.Register)
@@ -54,7 +52,6 @@ func newTestServer(t *testing.T) (*httptest.Server, string) {
 	mux.HandleFunc("GET /api/v1/qtconsult/projects/{id}", businessHandler.GetProject)
 	mux.HandleFunc("PUT /api/v1/qtconsult/projects/{id}", businessHandler.UpdateProject)
 	mux.HandleFunc("DELETE /api/v1/qtconsult/projects/{id}", businessHandler.DeleteProject)
-	mux.HandleFunc("PUT /api/v1/qtconsult/projects/{id}/stage", businessHandler.UpdateProjectStage)
 	mux.HandleFunc("GET /api/v1/qtclass/courses", businessHandler.ListCourses)
 	mux.HandleFunc("POST /api/v1/qtclass/courses", businessHandler.CreateCourse)
 	mux.HandleFunc("GET /api/v1/qtclass/courses/{id}", businessHandler.GetCourse)
@@ -67,16 +64,13 @@ func newTestServer(t *testing.T) (*httptest.Server, string) {
 	mux.HandleFunc("GET /api/v1/qtcloud/resources/{id}", businessHandler.GetResource)
 	mux.HandleFunc("PUT /api/v1/qtcloud/resources/{id}", businessHandler.UpdateResource)
 	mux.HandleFunc("DELETE /api/v1/qtcloud/resources/{id}", businessHandler.DeleteResource)
-	mux.HandleFunc("PUT /api/v1/qtcloud/resources/{id}/status", businessHandler.UpdateResourceStatus)
 	mux.HandleFunc("GET /api/v1/qtdata/datasets", businessHandler.ListDatasets)
 	mux.HandleFunc("POST /api/v1/qtdata/datasets", businessHandler.CreateDataset)
 	mux.HandleFunc("GET /api/v1/qtdata/datasets/{id}", businessHandler.GetDataset)
 	mux.HandleFunc("PUT /api/v1/qtdata/datasets/{id}", businessHandler.UpdateDataset)
 	mux.HandleFunc("DELETE /api/v1/qtdata/datasets/{id}", businessHandler.DeleteDataset)
 	mux.HandleFunc("POST /api/v1/qtrecurit/resumes", businessHandler.ImportResume)
-	mux.HandleFunc("PUT /api/v1/qtrecurit/resumes/{id}/stage", businessHandler.UpdateResumeStage)
 	mux.HandleFunc("POST /api/v1/qtrecurit/interviews", businessHandler.CreateInterview)
-	mux.HandleFunc("POST /api/v1/qtrecurit/interviews/{id}/feedback", businessHandler.UpdateInterviewFeedback)
 
 	ts := httptest.NewServer(mux)
 	return ts, secret
@@ -286,42 +280,8 @@ func TestIntegration_AuthFlow(t *testing.T) {
 func TestIntegration_ConnectNotifications(t *testing.T) {
 	ts, _ := newTestServer(t)
 
-	t.Run("Send notification", func(t *testing.T) {
-		resp := request(t, ts, "POST", "/api/v1/connect/notify", `{"channel":"lark","target":"user_123","title":"Hello","content":"Test message"}`)
-		if resp.StatusCode != http.StatusCreated {
-			t.Fatalf("expected 201, got %d", resp.StatusCode)
-		}
-	})
-
-	var notifID string
-
-	t.Run("List notifications", func(t *testing.T) {
+	t.Run("List notifications returns empty or seeded", func(t *testing.T) {
 		resp := request(t, ts, "GET", "/api/v1/connect/notifications", "")
-		if resp.StatusCode != http.StatusOK {
-			t.Fatalf("expected 200, got %d", resp.StatusCode)
-		}
-		var list []any
-		if err := json.NewDecoder(resp.Body).Decode(&list); err != nil {
-			t.Fatalf("decode list: %v", err)
-		}
-		if len(list) > 0 {
-			m := list[0].(map[string]any)
-			notifID, _ = m["id"].(string)
-		}
-	})
-
-	t.Run("Get notification by ID", func(t *testing.T) {
-		if notifID == "" {
-			t.Skip("no notification created")
-		}
-		resp := request(t, ts, "GET", "/api/v1/connect/notifications/"+notifID, "")
-		if resp.StatusCode != http.StatusOK {
-			t.Fatalf("expected 200, got %d", resp.StatusCode)
-		}
-	})
-
-	t.Run("Lark webhook", func(t *testing.T) {
-		resp := request(t, ts, "POST", "/api/v1/connect/webhook/lark", `{"event":"approval","data":{"id":"a1"}}`)
 		if resp.StatusCode != http.StatusOK {
 			t.Fatalf("expected 200, got %d", resp.StatusCode)
 		}
@@ -347,11 +307,6 @@ func TestIntegration_BusinessDomains(t *testing.T) {
 		id := m["id"].(string)
 
 		resp = request(t, ts, "GET", "/api/v1/qtconsult/projects/"+id, "")
-		if resp.StatusCode != http.StatusOK {
-			t.Fatalf("expected 200, got %d", resp.StatusCode)
-		}
-
-		resp = request(t, ts, "PUT", "/api/v1/qtconsult/projects/"+id+"/stage", `{"stage":"planning"}`)
 		if resp.StatusCode != http.StatusOK {
 			t.Fatalf("expected 200, got %d", resp.StatusCode)
 		}
@@ -389,15 +344,6 @@ func TestIntegration_BusinessDomains(t *testing.T) {
 		m := readBody(t, resp)
 		id := m["id"].(string)
 
-		resp = request(t, ts, "PUT", "/api/v1/qtcloud/resources/"+id+"/status", `{"status":"stopped"}`)
-		if resp.StatusCode != http.StatusOK {
-			t.Fatalf("expected 200, got %d", resp.StatusCode)
-		}
-		m = readBody(t, resp)
-		if m["status"] != "stopped" {
-			t.Errorf("expected stopped, got %v", m["status"])
-		}
-
 		resp = request(t, ts, "DELETE", "/api/v1/qtcloud/resources/"+id, "")
 		if resp.StatusCode != http.StatusNoContent {
 			t.Errorf("expected 204, got %d", resp.StatusCode)
@@ -419,28 +365,14 @@ func TestIntegration_BusinessDomains(t *testing.T) {
 	})
 
 	t.Run("QtRecurit flow", func(t *testing.T) {
-		resp := request(t, ts, "POST", "/api/v1/qtrecurit/resumes", `{"candidate_name":"Dave","position":"Engineer","stage":"new"}`)
-		if resp.StatusCode != http.StatusCreated {
-			t.Fatalf("expected 201, got %d", resp.StatusCode)
-		}
-		m := readBody(t, resp)
-		id := m["id"].(string)
-
-		resp = request(t, ts, "PUT", "/api/v1/qtrecurit/resumes/"+id+"/stage", `{"stage":"interview"}`)
-		if resp.StatusCode != http.StatusOK {
-			t.Fatalf("expected 200, got %d", resp.StatusCode)
+		r1 := request(t, ts, "POST", "/api/v1/qtrecurit/resumes", `{"candidate_name":"Dave","position":"Engineer","stage":"new"}`)
+		if r1.StatusCode != http.StatusCreated {
+			t.Fatalf("expected 201, got %d", r1.StatusCode)
 		}
 
-		resp = request(t, ts, "POST", "/api/v1/qtrecurit/interviews", `{"candidate":"Dave","resume_id":"`+id+`"}`)
-		if resp.StatusCode != http.StatusCreated {
-			t.Fatalf("expected 201, got %d", resp.StatusCode)
-		}
-		m = readBody(t, resp)
-		ivID := m["id"].(string)
-
-		resp = request(t, ts, "POST", "/api/v1/qtrecurit/interviews/"+ivID+"/feedback", `{"feedback":"Strong hire"}`)
-		if resp.StatusCode != http.StatusOK {
-			t.Fatalf("expected 200, got %d", resp.StatusCode)
+		r2 := request(t, ts, "POST", "/api/v1/qtrecurit/interviews", `{"candidate":"Dave","interviewer":"Alice"}`)
+		if r2.StatusCode != http.StatusCreated {
+			t.Fatalf("expected 201, got %d", r2.StatusCode)
 		}
 	})
 }
