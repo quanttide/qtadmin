@@ -1,9 +1,20 @@
-__pycache__/
-*.py[cod]
-*$py.class
+# Go
+/bin/
+/tmp/
+*.exe
+*.exe~
+*.dll
 *.so
-.env
-.venv
-*.db
+*.dylib
+*.test
+*.out
+/vendor/
 
-.python-version
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Env
+.env
