@@ -34,6 +34,7 @@ func main() {
 	slog.Info("store initialized", "driver", cfg.Store.Driver, "path", cfg.Store.Path)
 
 	humanHandler := api.NewHumanHandler(st)
+	connectHandler := api.NewConnectHandler(st)
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /health", api.Health)
@@ -55,6 +56,11 @@ func main() {
 	mux.HandleFunc("GET /api/v1/positions/{id}", humanHandler.GetPosition)
 	mux.HandleFunc("PUT /api/v1/positions/{id}", humanHandler.UpdatePosition)
 	mux.HandleFunc("DELETE /api/v1/positions/{id}", humanHandler.DeletePosition)
+
+	mux.HandleFunc("POST /api/v1/connect/notify", connectHandler.Notify)
+	mux.HandleFunc("GET /api/v1/connect/notifications", connectHandler.ListNotifications)
+	mux.HandleFunc("GET /api/v1/connect/notifications/{id}", connectHandler.GetNotification)
+	mux.HandleFunc("POST /api/v1/connect/webhook/lark", connectHandler.LarkWebhook)
 
 	handler := loggingMiddleware(mux)
 
