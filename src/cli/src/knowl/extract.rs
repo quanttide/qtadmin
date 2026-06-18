@@ -988,6 +988,7 @@ const SCENE_GRAPH_PROMPT_BASE: &str = r#"你是一个叙事结构分析助手。
 - timeline_relationship 标注场景之间的时间先后和间隔
 - emotional_echoes 识别同一地点或物品在不同场景中承载的不同情感
 - 所有要素必须基于原文推断，不编造
+- excerpt / excerpt_past / excerpt_present 字段必须从原文逐字引用，不能概括或改写
 - 如果某类不存在，输出空数组
 - 纯 JSON。"#;
 
