@@ -36,14 +36,6 @@ func main() {
 	humanHandler := api.NewHumanHandler(st)
 	businessHandler := api.NewBusinessHandler(st)
 	connectHandler := api.NewConnectHandler(st)
-	authHandler := api.NewAuthHandler(st, cfg.Auth.JWTSecret)
-
-	if cfg.Auth.AdminPassword != "" {
-		if err := authHandler.EnsureAdmin(cfg.Auth.AdminPassword); err != nil {
-			slog.Error("failed to seed admin user", "error", err)
-			os.Exit(1)
-		}
-	}
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /health", api.Health)
@@ -68,12 +60,6 @@ func main() {
 
 	mux.HandleFunc("GET /api/v1/connect/notifications", connectHandler.ListNotifications)
 	mux.HandleFunc("GET /api/v1/connect/notifications/{id}", connectHandler.GetNotification)
-
-	mux.HandleFunc("POST /api/v1/auth/login", authHandler.Login)
-
-	authMW := api.AuthMiddleware(cfg.Auth.JWTSecret)
-	mux.Handle("POST /api/v1/auth/refresh", authMW(http.HandlerFunc(authHandler.Refresh)))
-	mux.Handle("GET /api/v1/auth/me", authMW(http.HandlerFunc(authHandler.Me)))
 
 	mux.HandleFunc("GET /api/v1/qtconsult/projects", businessHandler.ListProjects)
 	mux.HandleFunc("POST /api/v1/qtconsult/projects", businessHandler.CreateProject)

@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-func newTestServer(t *testing.T) (*httptest.Server, string) {
+func newTestServer(t *testing.T) *httptest.Server {
 	t.Helper()
 	s, cleanup := testSetup(t)
 	t.Cleanup(cleanup)
@@ -16,11 +16,6 @@ func newTestServer(t *testing.T) (*httptest.Server, string) {
 	humanHandler := NewHumanHandler(s)
 	businessHandler := NewBusinessHandler(s)
 	connectHandler := NewConnectHandler(s)
-	secret := "test-integration-secret"
-	authHandler := NewAuthHandler(s, secret)
-	if err := authHandler.EnsureAdmin("adminpass"); err != nil {
-		t.Fatalf("seed admin: %v", err)
-	}
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /health", Health)
@@ -43,11 +38,6 @@ func newTestServer(t *testing.T) (*httptest.Server, string) {
 
 	mux.HandleFunc("GET /api/v1/connect/notifications", connectHandler.ListNotifications)
 	mux.HandleFunc("GET /api/v1/connect/notifications/{id}", connectHandler.GetNotification)
-
-	mux.HandleFunc("POST /api/v1/auth/login", authHandler.Login)
-	authMW := AuthMiddleware(secret)
-	mux.Handle("POST /api/v1/auth/refresh", authMW(http.HandlerFunc(authHandler.Refresh)))
-	mux.Handle("GET /api/v1/auth/me", authMW(http.HandlerFunc(authHandler.Me)))
 
 	mux.HandleFunc("GET /api/v1/qtconsult/projects", businessHandler.ListProjects)
 	mux.HandleFunc("POST /api/v1/qtconsult/projects", businessHandler.CreateProject)
@@ -75,7 +65,7 @@ func newTestServer(t *testing.T) (*httptest.Server, string) {
 	mux.HandleFunc("POST /api/v1/qtrecurit/interviews", businessHandler.CreateInterview)
 
 	ts := httptest.NewServer(mux)
-	return ts, secret
+	return ts
 }
 
 func request(t *testing.T, ts *httptest.Server, method, path, body string) *http.Response {
@@ -92,21 +82,6 @@ func request(t *testing.T, ts *httptest.Server, method, path, body string) *http
 	return rec.Result()
 }
 
-func requestWithToken(t *testing.T, ts *httptest.Server, method, path, body, token string) *http.Response {
-	t.Helper()
-	var req *http.Request
-	if body != "" {
-		req = httptest.NewRequest(method, path, strings.NewReader(body))
-		req.Header.Set("Content-Type", "application/json")
-	} else {
-		req = httptest.NewRequest(method, path, nil)
-	}
-	req.Header.Set("Authorization", "Bearer "+token)
-	rec := httptest.NewRecorder()
-	ts.Config.Handler.ServeHTTP(rec, req)
-	return rec.Result()
-}
-
 func readBody(t *testing.T, resp *http.Response) map[string]any {
 	t.Helper()
 	var m map[string]any
@@ -117,7 +92,7 @@ func readBody(t *testing.T, resp *http.Response) map[string]any {
 }
 
 func TestIntegration_Health(t *testing.T) {
-	ts, _ := newTestServer(t)
+	ts := newTestServer(t)
 	resp := request(t, ts, "GET", "/health", "")
 	if resp.StatusCode != http.StatusOK {
 		t.Fatalf("expected 200, got %d", resp.StatusCode)
@@ -129,7 +104,7 @@ func TestIntegration_Health(t *testing.T) {
 }
 
 func TestIntegration_EmployeeLifecycle(t *testing.T) {
-	ts, _ := newTestServer(t)
+	ts := newTestServer(t)
 
 	var empID string
 
@@ -210,70 +185,8 @@ func TestIntegration_EmployeeLifecycle(t *testing.T) {
 	})
 }
 
-func TestIntegration_AuthFlow(t *testing.T) {
-	ts, secret := newTestServer(t)
-	var token string
-
-	t.Run("Login as admin", func(t *testing.T) {
-		resp := request(t, ts, "POST", "/api/v1/auth/login", `{"username":"admin","password":"adminpass"}`)
-		if resp.StatusCode != http.StatusOK {
-			t.Fatalf("expected 200, got %d", resp.StatusCode)
-		}
-		m := readBody(t, resp)
-		token = m["token"].(string)
-		if token == "" {
-			t.Fatal("expected non-empty token")
-		}
-	})
-
-	t.Run("Me with token", func(t *testing.T) {
-		resp := requestWithToken(t, ts, "GET", "/api/v1/auth/me", "", token)
-		if resp.StatusCode != http.StatusOK {
-			t.Fatalf("expected 200, got %d", resp.StatusCode)
-		}
-		m := readBody(t, resp)
-		if m["username"] != "admin" {
-			t.Errorf("expected admin, got %v", m["username"])
-		}
-	})
-
-	t.Run("Refresh token", func(t *testing.T) {
-		resp := requestWithToken(t, ts, "POST", "/api/v1/auth/refresh", "", token)
-		if resp.StatusCode != http.StatusOK {
-			t.Fatalf("expected 200, got %d", resp.StatusCode)
-		}
-		m := readBody(t, resp)
-		if m["token"] == "" {
-			t.Fatal("expected refreshed token")
-		}
-	})
-
-	t.Run("Login with correct password", func(t *testing.T) {
-		resp := request(t, ts, "POST", "/api/v1/auth/login", `{"username":"admin","password":"adminpass"}`)
-		if resp.StatusCode != http.StatusOK {
-			t.Fatalf("expected 200, got %d", resp.StatusCode)
-		}
-	})
-
-	t.Run("Login with wrong password returns 401", func(t *testing.T) {
-		resp := request(t, ts, "POST", "/api/v1/auth/login", `{"username":"admin","password":"wrong"}`)
-		if resp.StatusCode != http.StatusUnauthorized {
-			t.Errorf("expected 401, got %d", resp.StatusCode)
-		}
-	})
-
-	t.Run("Me without token returns 401", func(t *testing.T) {
-		resp := request(t, ts, "GET", "/api/v1/auth/me", "")
-		if resp.StatusCode != http.StatusUnauthorized {
-			t.Errorf("expected 401, got %d", resp.StatusCode)
-		}
-	})
-
-	_ = secret
-}
-
 func TestIntegration_ConnectNotifications(t *testing.T) {
-	ts, _ := newTestServer(t)
+	ts := newTestServer(t)
 
 	t.Run("List notifications returns empty or seeded", func(t *testing.T) {
 		resp := request(t, ts, "GET", "/api/v1/connect/notifications", "")
@@ -291,7 +204,7 @@ func TestIntegration_ConnectNotifications(t *testing.T) {
 }
 
 func TestIntegration_BusinessDomains(t *testing.T) {
-	ts, _ := newTestServer(t)
+	ts := newTestServer(t)
 
 	t.Run("QtConsult CRUD", func(t *testing.T) {
 		resp := request(t, ts, "POST", "/api/v1/qtconsult/projects", `{"name":"Consult A","client":"Client X","stage":"init"}`)
@@ -373,7 +286,7 @@ func TestIntegration_BusinessDomains(t *testing.T) {
 }
 
 func TestIntegration_DepartmentAndPosition(t *testing.T) {
-	ts, _ := newTestServer(t)
+	ts := newTestServer(t)
 
 	t.Run("Department CRUD", func(t *testing.T) {
 		resp := request(t, ts, "POST", "/api/v1/departments", `{"name":"QA","leader":"Eve"}`)
@@ -433,7 +346,7 @@ func TestIntegration_DepartmentAndPosition(t *testing.T) {
 }
 
 func TestIntegration_ErrorPaths(t *testing.T) {
-	ts, _ := newTestServer(t)
+	ts := newTestServer(t)
 
 	t.Run("Invalid JSON body returns 400", func(t *testing.T) {
 		resp := request(t, ts, "POST", "/api/v1/employees", "not json")
@@ -479,7 +392,7 @@ func TestIntegration_ErrorPaths(t *testing.T) {
 }
 
 func TestIntegration_CrossDomainFlow(t *testing.T) {
-	ts, _ := newTestServer(t)
+	ts := newTestServer(t)
 
 	t.Run("Create multiple resource types and verify lists", func(t *testing.T) {
 		request(t, ts, "POST", "/api/v1/employees", `{"name":"Alice","department":"Engineering","position":"Dev"}`)
