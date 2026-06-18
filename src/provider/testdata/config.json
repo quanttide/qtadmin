@@ -1,0 +1,25 @@
+{
+  "server": {
+    "addr": ":8001"
+  },
+  "store": {
+    "driver": "file",
+    "path": "/tmp/qtadmin-test"
+  },
+  "log": {
+    "level": "error",
+    "format": "text"
+  },
+  "auth": {
+    "jwt_secret": "test-secret",
+    "admin_password": ""
+  },
+  "connect": {
+    "lark_app_id": "",
+    "lark_app_secret": "",
+    "smtp_host": "",
+    "smtp_port": "",
+    "smtp_user": "",
+    "smtp_pass": ""
+  }
+}
