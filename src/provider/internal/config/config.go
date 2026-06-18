@@ -9,9 +9,19 @@ import (
 )
 
 type Config struct {
-	Server ServerConfig `json:"server"`
-	Store  store.Config `json:"store"`
-	Log    LogConfig    `json:"log"`
+	Server  ServerConfig  `json:"server"`
+	Store   store.Config  `json:"store"`
+	Log     LogConfig     `json:"log"`
+	Connect ConnectConfig `json:"connect"`
+}
+
+type ConnectConfig struct {
+	LarkAppID     string `json:"lark_app_id"`
+	LarkAppSecret string `json:"lark_app_secret"`
+	SMTPHost      string `json:"smtp_host"`
+	SMTPPort      string `json:"smtp_port"`
+	SMTPUser      string `json:"smtp_user"`
+	SMTPPass      string `json:"smtp_pass"`
 }
 
 type ServerConfig struct {
