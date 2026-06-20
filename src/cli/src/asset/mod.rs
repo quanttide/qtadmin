@@ -1,5 +1,5 @@
 mod archive;
-mod audit;
+mod quality;
 mod status;
 
 use clap::Subcommand;
@@ -8,9 +8,9 @@ use clap::Subcommand;
 pub enum AssetCommands {
     /// 将 journal 日志归档到 archive
     Archive(archive::ArchiveArgs),
-    /// 审计资产仓库是否符合标准规范
-    Audit(audit::AuditArgs),
-    /// 评估资产内容质量状态
+    /// 评估资产质量
+    Quality(quality::QualityArgs),
+    /// 查看资产当前状态
     Status(status::StatusArgs),
 }
 
@@ -27,7 +27,7 @@ pub fn dispatch(args: &AssetArgs) {
                 eprintln!("错误：{e}");
             }
         }
-        AssetCommands::Audit(audit_args) => match audit::run(audit_args) {
+        AssetCommands::Quality(quality_args) => match quality::run(quality_args) {
             Ok(true) => {}
             Ok(false) => std::process::exit(1),
             Err(e) => {

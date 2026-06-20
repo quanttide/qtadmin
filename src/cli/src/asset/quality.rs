@@ -6,8 +6,9 @@ use regex::Regex;
 
 use crate::git_utils;
 
+/// 评估资产质量
 #[derive(Args)]
-pub struct AuditArgs {
+pub struct QualityArgs {
     /// 要审计的 Git 仓库路径
     #[arg(default_value = ".")]
     pub repo_path: String,
@@ -556,7 +557,7 @@ impl GitRepoAuditor {
     }
 }
 
-pub fn run(args: &AuditArgs) -> Result<bool> {
+pub fn run(args: &QualityArgs) -> Result<bool> {
     let mut auditor = GitRepoAuditor::new(&args.repo_path);
     let report = auditor.audit()?;
     let output = report.format_report(args.verbose);
