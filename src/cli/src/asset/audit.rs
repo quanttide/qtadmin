@@ -1,7 +1,6 @@
 use std::path::{Path, PathBuf};
-use std::process::Command;
 
-use anyhow::{Context, Result};
+use anyhow::Result;
 use clap::Args;
 use regex::Regex;
 
@@ -9,30 +8,12 @@ use crate::git_utils;
 
 #[derive(Args)]
 pub struct AuditArgs {
-    /// 要审计的 Git 仓库路径（结构审计模式）
+    /// 要审计的 Git 仓库路径
     #[arg(default_value = ".")]
     pub repo_path: String,
     /// 显示所有通过的项目
     #[arg(short, long)]
     pub verbose: bool,
-    /// 质量评估模式：对手册内容进行多维度打分（替代结构审计）
-    #[arg(short = 'q', long)]
-    pub quality: bool,
-    /// 质量评估输出 JSON 路径
-    #[arg(long, default_value = "p40-results.json")]
-    pub output: String,
-    /// 质量评估输出 Markdown 报告路径
-    #[arg(short = 'r', long, default_value = "p40-report.md")]
-    pub report: String,
-    /// 质量评估：断点续评
-    #[arg(long)]
-    pub resume: bool,
-    /// 质量评估：快速模式（仅评估 index.md）
-    #[arg(long)]
-    pub quick: bool,
-    /// 质量评估：限制评估文件数量
-    #[arg(long)]
-    pub limit: Option<usize>,
 }
 
 #[derive(Debug)]
@@ -576,68 +557,11 @@ impl GitRepoAuditor {
 }
 
 pub fn run(args: &AuditArgs) -> Result<bool> {
-    if args.quality {
-        return run_quality_evaluation(args);
-    }
     let mut auditor = GitRepoAuditor::new(&args.repo_path);
     let report = auditor.audit()?;
     let output = report.format_report(args.verbose);
     print!("{output}");
     Ok(report.failed_count() == 0)
-}
-
-/// 质量评估模式：对手册内容进行多维度打分
-fn run_quality_evaluation(args: &AuditArgs) -> Result<bool> {
-    let script_dir = find_script_dir()?;
-    let script_path = script_dir.join("p40-evaluate.py");
-
-    if !script_path.exists() {
-        anyhow::bail!("评估脚本不存在: {}", script_path.display());
-    }
-
-    let mut cmd = Command::new("python3");
-    cmd.arg(&script_path)
-        .arg("--output")
-        .arg(&args.output)
-        .arg("--report")
-        .arg(&args.report);
-
-    if args.resume {
-        cmd.arg("--resume");
-    }
-    if args.quick {
-        cmd.arg("--quick");
-    }
-    if let Some(limit) = args.limit {
-        cmd.arg("--limit").arg(limit.to_string());
-    }
-
-    let status = cmd
-        .status()
-        .context("无法启动 p40 评估脚本，请确认已安装 python3 且 DEEPSEEK_API_KEY 已设置")?;
-
-    if !status.success() {
-        anyhow::bail!("评估脚本异常退出: {}", status);
-    }
-
-    Ok(true)
-}
-
-/// 查找 p40-evaluate.py 脚本位置
-fn find_script_dir() -> Result<PathBuf> {
-    let candidates = [
-        "examples/default/examples",
-        "../examples/default/examples",
-        "../../examples/default/examples",
-    ];
-    let manifest_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-    for rel in &candidates {
-        let candidate = manifest_dir.join(rel);
-        if candidate.join("p40-evaluate.py").exists() {
-            return Ok(candidate);
-        }
-    }
-    anyhow::bail!("找不到 p40-evaluate.py，请确保 examples 子模块已初始化")
 }
 
 #[cfg(test)]
