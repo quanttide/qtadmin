@@ -9,19 +9,28 @@
 | **业务域** | 带 `qt` 前缀 | `qtrecurit`（招聘）、`qtcloud`、`qtclass` | 面向具体业务线，内部复用多个职能域并编排组合 |
 | **职能域** | 不带 `qt` 前缀 | `human`（人力资源）、`asset`（数字资产）、`connect`（沟通连接） | 可复用的职能能力层，被所有业务域调用 |
 
+## 项目结构
+
+| 模块 | 技术栈 | 状态 |
+|------|--------|------|
+| `src/studio/` | Flutter | 🟢 **当前重心** |
+| `src/cli/` | Rust | 🟢 持续迭代 |
+| `src/provider/` | Go | 🟡 维护态 |
+
 ## CLI 命令
 
 ```
 qtadmin
-├── asset       # 职能域：数字资产
-│   ├── backup  #   日志归档
-│   └── audit   #   仓库资产审计
-├── human       # 职能域：人力资源
-│   └── status  #   招聘计划与进度
-├── connect     # 职能域：沟通连接
-│   └── email/  #   邮件通道（lark-cli）
-└── qtrecurit   # 业务域：量潮招聘
-    └── status  #   招聘数据统计
+├── asset           # 职能域：数字资产
+│   ├── archive     #   日志归档
+│   ├── status      #   结构合规检查（文件/格式/提交规范）
+│   └── quality     #   语义质量评估（叙事/知识/认知三维度）
+├── human           # 职能域：人力资源
+│   └── status      #   招聘计划与进度
+├── connect         # 职能域：沟通连接
+│   └── email/      #   邮件通道（lark-cli）
+└── qtrecurit       # 业务域：量潮招聘
+    └── status      #   招聘数据统计
 ```
 
 ## 迭代方向
