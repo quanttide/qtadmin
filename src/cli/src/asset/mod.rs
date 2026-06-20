@@ -1,5 +1,5 @@
+mod archive;
 mod audit;
-mod backup;
 mod evaluate;
 
 use clap::Subcommand;
@@ -7,7 +7,7 @@ use clap::Subcommand;
 #[derive(Subcommand)]
 pub enum AssetCommands {
     /// 将 journal 日志归档到 archive
-    Backup(backup::BackupArgs),
+    Archive(archive::ArchiveArgs),
     /// 审计 Git 仓库是否符合标准资产体系规范
     Audit(audit::AuditArgs),
     /// p40 手册质量多维度评估
@@ -22,8 +22,8 @@ pub struct AssetArgs {
 
 pub fn dispatch(args: &AssetArgs) {
     match &args.command {
-        AssetCommands::Backup(backup_args) => {
-            if let Err(e) = backup::run(backup_args) {
+        AssetCommands::Archive(archive_args) => {
+            if let Err(e) = archive::run(archive_args) {
                 eprintln!("错误：{e}");
             }
         }
