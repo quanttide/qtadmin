@@ -79,22 +79,87 @@ struct Output {
 
 // ── 评估指标定义 ──────────────────────────────────────────────────────────
 
-const METRICS: &[(&str, &str, &str, &str)] = &[
-    ("narrative_clarity", "narrative", "叙事·清晰易懂",
-     "评估此手册的语言表达是否清晰易懂：句子是否简短通顺？术语是否有解释？逻辑是否连贯？读者能否轻松跟上思路而不感到困惑？"),
-    ("knowledge_extractable_branch", "knowledge", "可编程·条件分支",
-     "评估此手册中包含的可编程条件逻辑的清晰度：规则是否明确定义了'如果X则Y'的条件分支？条件判断的依据是否可量化或可枚举？"),
-    ("knowledge_extractable_rule", "knowledge", "可编程·规则参数",
-     "评估此手册中的规则参数是否清晰可提取：金额、比例、期限、阈值等数值型参数是否明确给出或指向明确的数据源？"),
-    ("knowledge_extractable_flow", "knowledge", "可编程·流程状态机",
-     "评估此手册中的流程是否可建模为状态机：是否有明确的起始状态、中间态/步骤、终止状态？步骤之间的转移条件是否清晰？"),
-    ("knowledge_extractable_role", "knowledge", "可编程·角色权限",
-     "评估此手册中的角色和权限定义是否可编程：谁可以做什么、谁不能做什么、谁审批什么——这些是否明确到可以直接映射为代码中的角色权限模型？"),
-    ("knowledge_extractable_validation", "knowledge", "可编程·校验规则",
-     "评估此手册中定义的约束和校验规则是否可编程：'不得''必须''禁止'等约束是否清晰定义了校验条件？"),
-    ("cognitive_mental_model", "cognitive", "心智·三段论完整性",
-     "评估此手册是否帮助读者建立了完整的工作心智模型。一个完整的工作手册应当包含三个部分：（1）意图——为什么做、在什么场景下触发、谁来做、目标是什么；（2）流程——怎么做、先做什么再做什么、步骤之间的转移条件；（3）验收——怎么知道做完了、做对了、交付标准和检查条件是什么。请整体判断：这篇手册的意图→流程→验收三段论完整吗？"),
-];
+#[derive(Debug, Clone)]
+pub struct MetricDef {
+    pub key: String,
+    pub dimension: String,
+    pub label: String,
+    pub prompt: String,
+}
+
+/// 从 profile 加载或使用硬编码 fallback
+pub fn load_metrics() -> Vec<MetricDef> {
+    static CACHE: std::sync::OnceLock<Vec<MetricDef>> = std::sync::OnceLock::new();
+    CACHE
+        .get_or_init(|| {
+            let profile_path = profile_quality_path();
+            if let Some(metrics) = load_from_profile(&profile_path) {
+                return metrics;
+            }
+            builtin_metrics()
+        })
+        .clone()
+}
+
+fn profile_quality_path() -> PathBuf {
+    if let Ok(env_path) = std::env::var("QTRECURIT_PROFILE") {
+        PathBuf::from(env_path).join("asset").join("quality.json")
+    } else {
+        PathBuf::from("../../data/profile")
+            .join("asset")
+            .join("quality.json")
+    }
+}
+
+#[derive(Debug, Deserialize)]
+struct QualityMetricsFile {
+    dimensions: HashMap<String, DimensionDef>,
+}
+
+#[derive(Debug, Deserialize)]
+struct DimensionDef {
+    label: String,
+    metrics: Vec<MetricEntry>,
+}
+
+#[derive(Debug, Deserialize)]
+struct MetricEntry {
+    key: String,
+    label: String,
+    prompt: String,
+}
+
+fn load_from_profile(path: &PathBuf) -> Option<Vec<MetricDef>> {
+    let content = std::fs::read_to_string(path).ok()?;
+    let file: QualityMetricsFile = serde_json::from_str(&content).ok()?;
+    let mut result = Vec::new();
+    for (dim_key, dim) in file.dimensions {
+        for m in dim.metrics {
+            result.push(MetricDef {
+                key: m.key,
+                dimension: dim_key.clone(),
+                label: m.label,
+                prompt: m.prompt,
+            });
+        }
+    }
+    if result.is_empty() {
+        return None;
+    }
+    Some(result)
+}
+
+fn builtin_metrics() -> Vec<MetricDef> {
+    vec![
+        MetricDef { key: "narrative_clarity".into(), dimension: "narrative".into(), label: "叙事·清晰易懂".into(), prompt: "评估此手册的语言表达是否清晰易懂：句子是否简短通顺？术语是否有解释？逻辑是否连贯？读者能否轻松跟上思路而不感到困惑？".into() },
+        MetricDef { key: "knowledge_extractable_branch".into(), dimension: "knowledge".into(), label: "可编程·条件分支".into(), prompt: "评估此手册中包含的可编程条件逻辑的清晰度：规则是否明确定义了'如果X则Y'的条件分支？条件判断的依据是否可量化或可枚举？".into() },
+        MetricDef { key: "knowledge_extractable_rule".into(), dimension: "knowledge".into(), label: "可编程·规则参数".into(), prompt: "评估此手册中的规则参数是否清晰可提取：金额、比例、期限、阈值等数值型参数是否明确给出或指向明确的数据源？".into() },
+        MetricDef { key: "knowledge_extractable_flow".into(), dimension: "knowledge".into(), label: "可编程·流程状态机".into(), prompt: "评估此手册中的流程是否可建模为状态机：是否有明确的起始状态、中间态/步骤、终止状态？步骤之间的转移条件是否清晰？".into() },
+        MetricDef { key: "knowledge_extractable_role".into(), dimension: "knowledge".into(), label: "可编程·角色权限".into(), prompt: "评估此手册中的角色和权限定义是否可编程：谁可以做什么、谁不能做什么、谁审批什么——这些是否明确到可以直接映射为代码中的角色权限模型？".into() },
+        MetricDef { key: "knowledge_extractable_validation".into(), dimension: "knowledge".into(), label: "可编程·校验规则".into(), prompt: "评估此手册中定义的约束和校验规则是否可编程：'不得''必须''禁止'等约束是否清晰定义了校验条件？".into() },
+        MetricDef { key: "cognitive_mental_model".into(), dimension: "cognitive".into(), label: "心智·三段论完整性".into(), prompt: "评估此手册是否帮助读者建立了完整的工作心智模型。一个完整的工作手册应当包含三个部分：（1）意图——为什么做、在什么场景下触发、谁来做、目标是什么；（2）流程——怎么做、先做什么再做什么、步骤之间的转移条件；（3）验收——怎么知道做完了、做对了、交付标准和检查条件是什么。请整体判断：这篇手册的意图→流程→验收三段论完整吗？".into() },
+    ]
+}
 
 // ── LLM 调用 ──────────────────────────────────────────────────────────────
 
@@ -331,10 +396,11 @@ fn compute_stats(files: &[FileResult]) -> Stats {
         .min_by(|a, b| a.overall_score.partial_cmp(&b.overall_score).unwrap());
 
     let mut metric_avgs = HashMap::new();
-    for (key, _, _, _) in METRICS {
+    let metrics = load_metrics();
+    for m in &metrics {
         let scores: Vec<u32> = valid
             .iter()
-            .filter_map(|f| f.metrics.get(*key))
+            .filter_map(|f| f.metrics.get(&m.key))
             .map(|m| m.score)
             .collect();
         let avg = if !scores.is_empty() {
@@ -342,7 +408,7 @@ fn compute_stats(files: &[FileResult]) -> Stats {
         } else {
             0.0
         };
-        metric_avgs.insert(key.to_string(), avg);
+        metric_avgs.insert(m.key.clone(), avg);
     }
 
     Stats {
@@ -432,11 +498,12 @@ fn generate_report(output: &Output) -> String {
             .collect();
         dim_metrics.sort_by(|a, b| a.1.partial_cmp(b.1).unwrap());
 
+        let metrics = load_metrics();
         for (mk, avg) in &dim_metrics {
-            let label = METRICS
+            let label = metrics
                 .iter()
-                .find(|m| m.0 == mk.as_str())
-                .map(|m| m.2)
+                .find(|m| m.key == *mk.as_str())
+                .map(|m| m.label.as_str())
                 .unwrap_or(mk);
             let icon = if **avg >= 4.0 {
                 "🟢"
@@ -481,16 +548,17 @@ fn generate_report(output: &Output) -> String {
     sorted_metrics.sort_by(|a, b| a.1.partial_cmp(b.1).unwrap());
 
     lines.push("### 最需改进的指标\n".into());
+    let metrics = load_metrics();
     for (mk, avg) in sorted_metrics.iter().take(5) {
-        let label = METRICS
+        let label = metrics
             .iter()
-            .find(|m| m.0 == mk.as_str())
-            .map(|m| m.2)
+            .find(|m| m.key == *mk.as_str())
+            .map(|m| m.label.as_str())
             .unwrap_or(mk);
-        let dim = METRICS
+        let dim = metrics
             .iter()
-            .find(|m| m.0 == mk.as_str())
-            .map(|m| m.1)
+            .find(|m| m.key == *mk.as_str())
+            .map(|m| m.dimension.as_str())
             .unwrap_or("");
         let dim_label = match dim {
             "narrative" => "叙事工程",
@@ -630,9 +698,9 @@ pub fn run(args: &QualityArgs) -> Result<()> {
 
         if chars < 20 {
             let mut metrics = HashMap::new();
-            for (key, _, _, _) in METRICS {
+            for m in &load_metrics() {
                 metrics.insert(
-                    key.to_string(),
+                    m.key.clone(),
                     ScoreResult {
                         score: 1,
                         reason: "文件过短（<20字符），无法评估".into(),
@@ -662,7 +730,8 @@ pub fn run(args: &QualityArgs) -> Result<()> {
         let mut file_metrics = HashMap::new();
         let mut dim_scores: HashMap<String, Vec<u32>> = HashMap::new();
 
-        for (key, dimension, _label, prompt_template) in METRICS {
+        let metrics = load_metrics();
+        for m in &metrics {
             let full_prompt = format!(
                 "你是一位专业的文档质量评估师。请对以下工作手册文件进行单一维度的评估。\n\n\
                  ## 评估指标\n\
@@ -679,7 +748,7 @@ pub fn run(args: &QualityArgs) -> Result<()> {
                  文件路径：{}\n\
                  文件大小：{} 行 / {} 字符\n\n\
                  ```\n{}\n```",
-                prompt_template, relpath, lines, chars, truncated
+                m.prompt, relpath, lines, chars, truncated
             );
 
             let raw = call_llm(&full_prompt, &api_key).unwrap_or_else(|_| {
@@ -687,10 +756,10 @@ pub fn run(args: &QualityArgs) -> Result<()> {
             });
             let result = parse_score_response(&raw);
             let metric_score = result.score;
-            file_metrics.insert(key.to_string(), result);
+            file_metrics.insert(m.key.clone(), result);
 
             dim_scores
-                .entry(dimension.to_string())
+                .entry(m.dimension.clone())
                 .or_default()
                 .push(metric_score);
         }
