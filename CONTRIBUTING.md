@@ -79,6 +79,13 @@ dart run build_runner build   # freezed codegen
 | `test` | 测试相关 |
 | `chore` | 构建/工具/配置 |
 
+### 子模块操作
+
+qtadmin 是 `quanttide-tech` 仓库的子模块，操作时可能遇到 detached HEAD 状态：
+
+- 提交后推送用 `git push origin HEAD:main`
+- 记得先 `git checkout main` 再开始新工作，避免在 detached HEAD 上提交
+
 ## 发布规范
 
 ### 版本约定
