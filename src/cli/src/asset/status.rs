@@ -1,81 +1,76 @@
 use std::path::PathBuf;
 use std::process::Command;
 
-use anyhow::{Context, Result};
+use anyhow::Result;
 use clap::Args;
 
-/// 手册内容质量状态评估
+/// 查看数字资产当前状态
 #[derive(Args)]
 pub struct StatusArgs {
-    /// 输出 JSON 路径
-    #[arg(short, long, default_value = "p40-results.json")]
-    pub output: String,
-
-    /// 输出 Markdown 报告路径
-    #[arg(short = 'r', long, default_value = "p40-report.md")]
-    pub report: String,
-
-    /// 断点续评
-    #[arg(long)]
-    pub resume: bool,
-
-    /// 快速模式：仅评估 index.md
-    #[arg(long)]
-    pub quick: bool,
-
-    /// 限制评估文件数量
-    #[arg(long)]
-    pub limit: Option<usize>,
+    /// 资产仓库路径
+    #[arg(default_value = ".")]
+    pub repo_path: String,
 }
 
 pub fn run(args: &StatusArgs) -> Result<()> {
-    let script_dir = find_script_dir()?;
-    let script_path = script_dir.join("p40-evaluate.py");
+    let repo_path = PathBuf::from(&args.repo_path).canonicalize()?;
 
-    if !script_path.exists() {
-        anyhow::bail!("评估脚本不存在: {}", script_path.display());
+    if !repo_path.join(".git").exists() {
+        anyhow::bail!("不是 Git 仓库: {}", repo_path.display());
     }
 
-    let mut cmd = Command::new("python3");
-    cmd.arg(&script_path)
-        .arg("--output")
-        .arg(&args.output)
-        .arg("--report")
-        .arg(&args.report);
+    println!("📂 资产仓库: {}", repo_path.display());
+    println!();
 
-    if args.resume {
-        cmd.arg("--resume");
-    }
-    if args.quick {
-        cmd.arg("--quick");
-    }
-    if let Some(limit) = args.limit {
-        cmd.arg("--limit").arg(limit.to_string());
+    // 仓库基本信息
+    let remote = run_git(&repo_path, &["remote", "get-url", "origin"]);
+    let branch = run_git(&repo_path, &["rev-parse", "--abbrev-ref", "HEAD"]);
+    let last_commit = run_git(&repo_path, &["log", "--oneline", "-1"]);
+
+    println!("  远程: {remote}");
+    println!("  分支: {branch}");
+    println!("  最新: {last_commit}");
+
+    // 未提交变更
+    let status_out = run_git(&repo_path, &["status", "--short"]);
+    let changed = status_out.lines().count();
+    if changed > 0 {
+        println!();
+        println!("  ⚠️  有 {changed} 个文件未提交:");
+        for line in status_out.lines().take(10) {
+            println!("    {line}");
+        }
+        if changed > 10 {
+            println!("    ... 还有 {} 个", changed - 10);
+        }
+    } else {
+        println!();
+        println!("  ✅ 工作区干净");
     }
 
-    let status = cmd
-        .status()
-        .context("无法启动 p40 评估脚本，请确认已安装 python3 且 DEEPSEEK_API_KEY 已设置")?;
+    // 文件统计
+    let file_count = run_git(&repo_path, &["ls-files", "*.md"]).lines().count();
+    let total_files = run_git(&repo_path, &["ls-files"]).lines().count();
+    println!();
+    println!(
+        "  文件: {} 个（其中 {file_count} 个 Markdown）",
+        total_files
+    );
 
-    if !status.success() {
-        anyhow::bail!("评估脚本异常退出: {}", status);
-    }
+    // 最后提交时间
+    let last_date = run_git(&repo_path, &["log", "-1", "--format=%ci"]);
+    println!("  最后提交: {last_date}");
 
     Ok(())
 }
 
-fn find_script_dir() -> Result<PathBuf> {
-    let candidates = [
-        "examples/default/examples",
-        "../examples/default/examples",
-        "../../examples/default/examples",
-    ];
-    let manifest_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-    for rel in &candidates {
-        let candidate = manifest_dir.join(rel);
-        if candidate.join("p40-evaluate.py").exists() {
-            return Ok(candidate);
-        }
-    }
-    anyhow::bail!("找不到 p40-evaluate.py，请确保 examples 子模块已初始化")
+fn run_git(repo: &PathBuf, args: &[&str]) -> String {
+    Command::new("git")
+        .args(args)
+        .current_dir(repo)
+        .output()
+        .ok()
+        .and_then(|o| String::from_utf8(o.stdout).ok())
+        .map(|s| s.trim().to_string())
+        .unwrap_or_default()
 }
