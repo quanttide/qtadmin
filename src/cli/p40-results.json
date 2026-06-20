@@ -1,0 +1,817 @@
+{
+  "files": [
+    {
+      "file": "asset/index.md",
+      "error": null,
+      "lines": 73,
+      "chars": 3001,
+      "dimension_scores": {
+        "cognitive": 3.0,
+        "knowledge": 2.2,
+        "narrative": 4.0
+      },
+      "overall_score": 3.07,
+      "metrics": {
+        "knowledge_extractable_branch": {
+          "score": 2,
+          "reason": "手册中几乎没有明确定义的'如果X则Y'条件逻辑，条件判断依据不可量化或可枚举。",
+          "evidence": "手册内容多为分类、原则和流程描述，如'有保留价值的→保留到工作案例，没用的→信息压缩，废弃原文档'，但未给出具体可量化的判断标准。"
+        },
+        "knowledge_extractable_flow": {
+          "score": 3,
+          "reason": "手册描述了数字资产的分类、治理原则和流转流程，但流程步骤不明确，缺乏清晰的起始、中间和终止状态，转移条件也不具体。",
+          "evidence": "业务类资产流转：1. 外部信息进入业务档案；2. 业务档案分解成职能档案工作；3. 职能档案通过审批合并成业务档案并交付。"
+        },
+        "narrative_clarity": {
+          "score": 4,
+          "reason": "语言表达清晰易懂，句子通顺，术语有解释，逻辑连贯，但部分术语如‘量潮数据’未解释，略有改进空间。",
+          "evidence": "大部分数字资产会随着业务迭代疯狂变动。如果在各个工作手册里分别维护配套的数字资产，根本跟不上迭代速度。因此，**集中在数字资产手册统一维护**。"
+        },
+        "knowledge_extractable_role": {
+          "score": 2,
+          "reason": "手册未定义任何具体的角色、权限或审批流程，无法直接映射到代码中的角色权限模型。",
+          "evidence": "手册内容仅涉及数字资产分类、治理原则和流转流程，未提及任何角色或权限定义。"
+        },
+        "knowledge_extractable_validation": {
+          "score": 2,
+          "reason": "手册中约束和校验规则极少，且未使用'不得''必须''禁止'等明确词汇定义可编程的校验条件。",
+          "evidence": "手册中仅有'核心资产是否有多重备份？'等检查清单项，缺乏明确的约束性规则。"
+        },
+        "cognitive_mental_model": {
+          "score": 3,
+          "reason": "手册详细说明了意图和分类原则，但流程部分缺乏具体操作步骤，验收部分仅有检查清单而无明确交付标准。",
+          "evidence": "意图：'集中在数字资产手册统一维护'；流程：仅有'业务类资产流转'的粗略步骤；验收：附录检查清单但无具体标准。"
+        },
+        "knowledge_extractable_rule": {
+          "score": 2,
+          "reason": "手册中几乎没有给出具体的数值型参数（金额、比例、期限、阈值等），仅有原则性描述和分类表格，缺乏可提取的明确参数。",
+          "evidence": "手册全文未出现任何金额、比例、期限或阈值等数值，仅包含分类表格和原则性描述，如'多次决策、多人决策'、'多重备份'等。"
+        }
+      }
+    },
+    {
+      "file": "business/index.md",
+      "error": null,
+      "lines": 30,
+      "chars": 1427,
+      "dimension_scores": {
+        "cognitive": 3.0,
+        "narrative": 4.0,
+        "knowledge": 1.8
+      },
+      "overall_score": 2.93,
+      "metrics": {
+        "narrative_clarity": {
+          "score": 4,
+          "reason": "语言表达清晰，逻辑连贯，但部分术语如“价值的经济学生命周期管理”未解释，可能造成困惑。",
+          "evidence": "商务管理就是价值的经济学生命周期管理——从价值的诞生（定义服务）、到价值的度量（定价）、再到价值的实现（谈判与交易）。"
+        },
+        "knowledge_extractable_branch": {
+          "score": 2,
+          "reason": "手册仅描述了商务管理的概念和文件索引，未包含任何可编程的条件逻辑（如'如果X则Y'），条件判断依据也未量化或枚举。",
+          "evidence": "手册内容为概念介绍和文件索引，无具体规则或条件分支语句。"
+        },
+        "knowledge_extractable_role": {
+          "score": 1,
+          "reason": "手册内容为概念介绍和文件索引，完全没有定义任何角色、权限或审批流程，无法映射到代码中的角色权限模型。",
+          "evidence": "手册仅包含“为什么需要商务管理”、“什么是商务管理”和文件索引，未提及任何角色或权限。"
+        },
+        "knowledge_extractable_rule": {
+          "score": 2,
+          "reason": "手册仅描述了商务管理的概念和文件索引，未给出任何具体的金额、比例、期限、阈值等数值型参数或明确的数据源。",
+          "evidence": "手册内容为概念性描述和文件索引，如'我们如何定价并说服客户其价值？'，未提供任何具体数值参数。"
+        },
+        "knowledge_extractable_validation": {
+          "score": 1,
+          "reason": "手册内容为概述和索引，未定义任何可编程的约束或校验规则。",
+          "evidence": "手册仅包含概念介绍和文件索引，无'不得''必须''禁止'等约束性语句。"
+        },
+        "cognitive_mental_model": {
+          "score": 3,
+          "reason": "手册清晰阐述了意图（为什么做、目标）和流程（文件索引中的步骤），但缺少验收标准（如何知道做完了、做对了）。",
+          "evidence": "手册说明了‘为什么需要商务管理’和‘什么是商务管理’，并列出文件索引，但未提及任何验收或检查条件。"
+        },
+        "knowledge_extractable_flow": {
+          "score": 3,
+          "reason": "手册描述了流程的起始（市场需要什么）和终止（签约与收款），但中间步骤（如服务定义、定价、谈判）的转移条件不清晰，缺乏明确的状态机建模要素。",
+          "evidence": "核心问题链：1. 市场需要什么？2. 我们如何设计能满足它的服务/产品？3. 我们如何定价并说服客户其价值？4. 我们如何达成交易并维持关系？"
+        }
+      }
+    },
+    {
+      "file": "code/index.md",
+      "error": null,
+      "lines": 7,
+      "chars": 113,
+      "dimension_scores": {
+        "cognitive": 1.0,
+        "knowledge": 1.0,
+        "narrative": 3.0
+      },
+      "overall_score": 1.67,
+      "metrics": {
+        "knowledge_extractable_validation": {
+          "score": 1,
+          "reason": "手册内容极少，仅包含偏好性建议，未定义任何可编程的约束或校验规则。",
+          "evidence": "`pyproject.toml`, but not `requirements.txt`"
+        },
+        "cognitive_mental_model": {
+          "score": 1,
+          "reason": "手册仅列出零散的技术偏好，完全没有意图、流程或验收内容，无法帮助读者建立工作心智模型。",
+          "evidence": "手册内容仅有三条技术选择说明，如“`pyproject.toml`, but not `requirements.txt`”，无任何操作步骤或检查标准。"
+        },
+        "knowledge_extractable_role": {
+          "score": 1,
+          "reason": "手册内容完全不涉及角色和权限定义，无法映射到代码中的角色权限模型。",
+          "evidence": "手册仅提及Python项目配置和工具使用，无任何角色或权限相关描述。"
+        },
+        "narrative_clarity": {
+          "score": 3,
+          "reason": "句子简短但缺乏连贯解释，术语未定义，逻辑跳跃，读者可能困惑。",
+          "evidence": "`pyproject.toml`, but not `requirements.txt`；`uv`代替`pip`；优先用虚拟环境。"
+        },
+        "knowledge_extractable_branch": {
+          "score": 1,
+          "reason": "手册内容仅为简短的技术偏好说明，未包含任何可编程条件逻辑（if-then规则），条件判断依据不可量化或枚举。",
+          "evidence": "手册仅列出'pyproject.toml, but not requirements.txt'等偏好，无条件分支描述。"
+        },
+        "knowledge_extractable_flow": {
+          "score": 1,
+          "reason": "手册内容仅为几条零散的编码约定，没有描述任何流程或步骤，无法建模为状态机。",
+          "evidence": "手册仅列出三条关于Python工具使用的偏好，无起始、中间、终止状态或转移条件。"
+        },
+        "knowledge_extractable_rule": {
+          "score": 1,
+          "reason": "手册内容为软件工程规范，未包含任何金额、比例、期限、阈值等数值型参数，完全不满足指标要求。",
+          "evidence": "手册仅提及Python项目配置和工具使用，无任何数值参数。"
+        }
+      }
+    },
+    {
+      "file": "data/index.md",
+      "error": null,
+      "lines": 22,
+      "chars": 1132,
+      "dimension_scores": {
+        "cognitive": 2.0,
+        "knowledge": 1.2,
+        "narrative": 3.0
+      },
+      "overall_score": 2.07,
+      "metrics": {
+        "knowledge_extractable_rule": {
+          "score": 1,
+          "reason": "手册内容仅为目录和链接，未包含任何明确的数值型参数（如金额、比例、期限、阈值等），完全不满足指标要求。",
+          "evidence": "手册内容仅为章节标题和链接，如“Chapter 1：定义数据交付物。同时暗示以交付为中心的思想。”，无任何具体参数。"
+        },
+        "knowledge_extractable_branch": {
+          "score": 1,
+          "reason": "手册内容仅为目录和链接，未包含任何可编程条件逻辑（如'如果X则Y'的规则），条件判断依据完全缺失。",
+          "evidence": "手册仅列出章节标题和链接，如'Chapter 1：定义数据交付物'，无任何条件逻辑描述。"
+        },
+        "knowledge_extractable_role": {
+          "score": 1,
+          "reason": "手册内容仅为目录和链接，完全没有定义任何角色、权限或审批规则，无法映射到代码中的角色权限模型。",
+          "evidence": "手册仅包含章节标题和链接，如“Chapter 1：定义数据交付物”，无任何角色或权限描述。"
+        },
+        "narrative_clarity": {
+          "score": 3,
+          "reason": "语言表达基本清晰，但句子结构不完整，术语缺乏解释，逻辑连贯性不足。",
+          "evidence": "Chapter 1：定义数据交付物。同时暗示以交付为中心的思想。"
+        },
+        "knowledge_extractable_flow": {
+          "score": 2,
+          "reason": "手册仅列出章节标题和链接，缺乏具体流程步骤和转移条件，无法判断是否可建模为状态机。",
+          "evidence": "Chapter 3： 定义工作流程，部分参考“DataOps”。（仅提及定义，无具体流程描述）"
+        },
+        "knowledge_extractable_validation": {
+          "score": 1,
+          "reason": "手册内容仅为目录和链接，未定义任何约束或校验规则，完全不满足可编程性要求。",
+          "evidence": "手册仅包含章节标题和链接，如“Chapter 1：定义数据交付物。”，无任何“不得”“必须”“禁止”等约束性表述。"
+        },
+        "cognitive_mental_model": {
+          "score": 2,
+          "reason": "手册仅提供了目录框架和链接，缺乏具体的意图、流程和验收内容，三段论完整性很差。",
+          "evidence": "手册内容仅为章节标题和链接列表，如“Chapter 1：定义数据交付物。同时暗示以交付为中心的思想。”，没有展开任何操作细节或验收标准。"
+        }
+      }
+    },
+    {
+      "file": "finance/tax/index.md",
+      "error": null,
+      "lines": 27,
+      "chars": 1276,
+      "dimension_scores": {
+        "narrative": 4.0,
+        "knowledge": 3.4,
+        "cognitive": 4.0
+      },
+      "overall_score": 3.8,
+      "metrics": {
+        "cognitive_mental_model": {
+          "score": 4,
+          "reason": "手册基本覆盖了意图、流程和验收，但意图部分缺少明确的触发场景和责任人说明，验收部分缺少具体的检查条件。",
+          "evidence": "意图：'办理时间每年3月1日至6月30日'；流程：'打开APP...点下一步...申请退税'；验收：'状态跟踪：税务审核中→国库处理中→到账'"
+        },
+        "knowledge_extractable_branch": {
+          "score": 3,
+          "reason": "手册描述了操作步骤，但缺乏明确的'如果X则Y'条件逻辑，条件判断（如年收入、银行卡类型）仅提及而未量化或枚举。",
+          "evidence": "年收入不超过6万的可用简易申报；年终奖计税方式两种都试一下，选退税多的那种。"
+        },
+        "knowledge_extractable_role": {
+          "score": 2,
+          "reason": "手册仅描述了用户操作步骤，未定义任何角色、权限或审批流程，无法映射到代码中的角色权限模型。",
+          "evidence": "全文未出现角色、权限、审批等关键词，仅描述个人操作流程。"
+        },
+        "knowledge_extractable_validation": {
+          "score": 4,
+          "reason": "约束条件清晰且可编程，但部分规则（如“两种都试一下”）未明确校验逻辑。",
+          "evidence": "绑定本人I类储蓄卡，II类、III类卡或冻结状态的卡不可用。"
+        },
+        "narrative_clarity": {
+          "score": 4,
+          "reason": "语言表达清晰易懂，句子简短通顺，逻辑连贯，但部分术语（如I类卡、汇缴地）未解释，略有改进空间。",
+          "evidence": "下载或更新个人所得税官方APP，完成实名登录和人脸识别。绑定本人I类储蓄卡，II类、III类卡或冻结状态的卡不可用。"
+        },
+        "knowledge_extractable_rule": {
+          "score": 4,
+          "reason": "手册中金额、比例、期限等参数基本明确，但缺少具体数值如退税额计算规则、税率等，有少量改进空间。",
+          "evidence": "年收入不超过6万的可用简易申报；办理时间每年3月1日至6月30日；一般一到十个工作日。"
+        },
+        "knowledge_extractable_flow": {
+          "score": 4,
+          "reason": "流程有明确的起始、中间步骤和终止状态，转移条件清晰，但缺少分支状态和异常处理。",
+          "evidence": "起始状态：准备（下载APP、登录、绑卡）；中间步骤：开始申报→核对信息→申请退税；终止状态：等待到账。转移条件如“年收入不超过6万的可用简易申报”等清晰。"
+        }
+      }
+    },
+    {
+      "file": "health/index.md",
+      "error": null,
+      "lines": 33,
+      "chars": 1765,
+      "dimension_scores": {
+        "knowledge": 1.4,
+        "narrative": 4.0,
+        "cognitive": 3.0
+      },
+      "overall_score": 2.8,
+      "metrics": {
+        "knowledge_extractable_validation": {
+          "score": 1,
+          "reason": "手册内容为描述性文字，未定义任何可编程的约束或校验规则，缺乏'不得''必须''禁止'等具体条件。",
+          "evidence": "全文未出现'不得''必须''禁止'等约束性词汇，仅包含概念描述和运作机制说明。"
+        },
+        "knowledge_extractable_role": {
+          "score": 1,
+          "reason": "手册内容为身心健康理念的抽象描述，完全没有定义任何角色、权限或审批流程，无法映射到代码中的角色权限模型。",
+          "evidence": "手册中未出现任何角色名称、权限描述或审批规则，全文为概念性阐述。"
+        },
+        "cognitive_mental_model": {
+          "score": 3,
+          "reason": "手册清晰阐述了意图（为何做、目标）和流程（三层机制），但缺少具体的操作步骤和验收标准，三段论不完整。",
+          "evidence": "手册描述了‘内核层、缓冲层、外延层’的运作机制，但未给出‘怎么做’的具体步骤和‘如何验收’的标准。"
+        },
+        "knowledge_extractable_flow": {
+          "score": 2,
+          "reason": "手册内容为概念性描述，缺乏明确的起始状态、中间步骤和终止状态，转移条件不清晰，无法建模为状态机。",
+          "evidence": "手册描述了三个层次（自我关怀、精力管理、系统减负）的运作机制，但未定义具体状态或转移条件，如“通过捕捉‘第一反应’来识别真实状态”等表述抽象。"
+        },
+        "narrative_clarity": {
+          "score": 4,
+          "reason": "语言表达清晰，逻辑连贯，但部分术语如‘无指标’、‘关窗’等未解释，可能让读者困惑。",
+          "evidence": "利用‘无指标’作为合法的暂停理由"
+        },
+        "knowledge_extractable_branch": {
+          "score": 2,
+          "reason": "手册内容为概念性描述，缺乏任何可编程的条件逻辑（如'如果X则Y'），条件判断依据不可量化或枚举。",
+          "evidence": "手册中仅包含'通过捕捉第一反应来识别真实状态'等模糊表述，未定义任何具体条件分支或可量化规则。"
+        },
+        "knowledge_extractable_rule": {
+          "score": 1,
+          "reason": "手册中未给出任何具体的金额、比例、期限、阈值等数值型参数，也未指向明确的数据源。",
+          "evidence": "全文未出现任何数字或数值型参数，仅包含概念性描述，如‘通过捕捉第一反应来识别真实状态’等。"
+        }
+      }
+    },
+    {
+      "file": "human/index.md",
+      "error": null,
+      "lines": 15,
+      "chars": 844,
+      "dimension_scores": {
+        "knowledge": 2.0,
+        "narrative": 4.0,
+        "cognitive": 3.0
+      },
+      "overall_score": 3.0,
+      "metrics": {
+        "narrative_clarity": {
+          "score": 4,
+          "reason": "语言表达清晰易懂，句子通顺，逻辑连贯，但术语解释不够充分。",
+          "evidence": "人力资源管理的本质不是'招人'和'发工资'，而是'投资'。"
+        },
+        "knowledge_extractable_flow": {
+          "score": 2,
+          "reason": "手册内容为理念和概述，缺乏具体流程步骤和转移条件，无法建模为状态机。",
+          "evidence": "手册仅包含核心理念、配置和培训与开发的简要描述，未定义任何起始状态、中间步骤或终止状态。"
+        },
+        "knowledge_extractable_role": {
+          "score": 2,
+          "reason": "手册中几乎没有定义具体的角色、权限或审批流程，无法直接映射到代码中的角色权限模型。",
+          "evidence": "手册内容仅涉及核心理念、配置和培训，未提及任何角色权限或审批规则。"
+        },
+        "knowledge_extractable_validation": {
+          "score": 2,
+          "reason": "手册中几乎没有使用'不得''必须''禁止'等约束性词汇，缺乏可编程的校验规则定义。",
+          "evidence": "全文未出现任何明确的约束或校验条件，仅包含理念描述和配置说明。"
+        },
+        "cognitive_mental_model": {
+          "score": 3,
+          "reason": "手册仅阐述了核心理念和部分意图，缺少具体流程和验收标准，三段论不完整。",
+          "evidence": "手册包含核心理念和配置说明，但未提供招聘、培训等具体流程步骤，也未定义完成标准或检查条件。"
+        },
+        "knowledge_extractable_branch": {
+          "score": 2,
+          "reason": "手册中几乎没有定义任何可编程的条件逻辑（如果X则Y），仅包含理念和概述，缺乏可量化或可枚举的条件分支。",
+          "evidence": "全文未出现'如果'、'当'、'条件'等关键词，也没有任何规则形式的条件语句。"
+        },
+        "knowledge_extractable_rule": {
+          "score": 2,
+          "reason": "手册中几乎没有给出任何具体的数值型参数（如金额、比例、期限、阈值等），仅提及培训手册另有说明但未提供具体数据。",
+          "evidence": "培训与开发的组织支撑职能详见独立手册："
+        }
+      }
+    },
+    {
+      "file": "human/recuritment/index.md",
+      "error": null,
+      "lines": 62,
+      "chars": 2030,
+      "dimension_scores": {
+        "cognitive": 3.0,
+        "narrative": 4.0,
+        "knowledge": 3.0
+      },
+      "overall_score": 3.33,
+      "metrics": {
+        "narrative_clarity": {
+          "score": 4,
+          "reason": "语言表达整体清晰，流程逻辑连贯，但部分术语未解释，如“实训模式”“合作博弈”等。",
+          "evidence": "从申请资料可以看出申请者的态度。海投简历者按标准化流程回复；按我们要求详细补充信息的，根据坦诚程度建立信任等级。"
+        },
+        "knowledge_extractable_rule": {
+          "score": 3,
+          "reason": "手册中缺乏具体的数值型参数（如金额、比例、期限、阈值），仅提及概念性描述，参数不明确。",
+          "evidence": "例如，信任等级分为低/中/高，但未定义具体阈值；弹性薪资范围未给出具体数值或数据源。"
+        },
+        "knowledge_extractable_flow": {
+          "score": 4,
+          "reason": "流程有明确的起始（申请）、中间步骤（笔试、面试、发Offer）和终止（入职），转移条件部分清晰但不够完整。",
+          "evidence": "申请 → 笔试 → 面试 → 发 Offer → 入职"
+        },
+        "knowledge_extractable_validation": {
+          "score": 3,
+          "reason": "手册中约束和校验规则不够清晰，缺乏可编程的明确条件。",
+          "evidence": "淘汰标准：固执己见、无法接受反馈的人。"
+        },
+        "cognitive_mental_model": {
+          "score": 3,
+          "reason": "手册详细描述了流程，但缺少明确的意图（如触发场景、目标）和验收标准（如如何判断完成、交付物检查条件）。",
+          "evidence": "手册开头直接进入招聘流程，未说明‘为什么做’或‘目标是什么’；结尾无验收环节，如‘如何确认招聘成功’或‘交付标准’。"
+        },
+        "knowledge_extractable_branch": {
+          "score": 3,
+          "reason": "部分条件逻辑明确（如信任等级、笔试结果），但多数规则依赖主观判断，缺乏可量化或可枚举的清晰条件分支。",
+          "evidence": "根据信任等级（低/中/高）采取对应策略；结果分三档：能直接做出来的直接录取；有成长空间的走实训模式；都不行的建议转岗。"
+        },
+        "knowledge_extractable_role": {
+          "score": 2,
+          "reason": "手册中角色和权限定义模糊，未明确谁可以做什么、谁审批什么，无法直接映射为代码中的角色权限模型。",
+          "evidence": "通用问题由 HR 负责，技术性问题由技术人员主导。"
+        }
+      }
+    },
+    {
+      "file": "index.md",
+      "error": null,
+      "lines": 32,
+      "chars": 1015,
+      "dimension_scores": {
+        "cognitive": 2.0,
+        "knowledge": 1.6,
+        "narrative": 4.0
+      },
+      "overall_score": 2.53,
+      "metrics": {
+        "knowledge_extractable_branch": {
+          "score": 2,
+          "reason": "手册中几乎没有定义任何可编程的条件逻辑（如果X则Y），仅包含分类和提示词示例，缺乏量化或可枚举的条件分支。",
+          "evidence": "手册内容仅为手册体系分类和公开渠道介绍，未出现任何'如果...则...'形式的条件规则。"
+        },
+        "narrative_clarity": {
+          "score": 4,
+          "reason": "语言表达清晰，句子简短通顺，逻辑连贯，但术语解释不足，如未解释BU、GitHub组织等。",
+          "evidence": "这些工具大多是在解决实践问题中演化出来的，而非照抄某个现有规范。因此每个工具都有针对性地应对特定问题。"
+        },
+        "knowledge_extractable_rule": {
+          "score": 2,
+          "reason": "手册中未包含任何金额、比例、期限、阈值等数值型参数，规则参数完全缺失。",
+          "evidence": "手册内容仅涉及手册体系分类和公开渠道介绍，无任何数值型参数。"
+        },
+        "knowledge_extractable_flow": {
+          "score": 2,
+          "reason": "手册内容主要是公司介绍和公开渠道说明，缺乏可建模为状态机的流程步骤和转移条件。",
+          "evidence": "手册仅包含手册体系说明和如何通过公开渠道了解公司，没有描述任何具有起始、中间、终止状态的工作流程。"
+        },
+        "knowledge_extractable_role": {
+          "score": 1,
+          "reason": "手册内容完全不涉及角色和权限定义，无法映射到代码中的角色权限模型。",
+          "evidence": "手册仅介绍了手册体系、公开渠道和AI使用提示，未提及任何角色、权限或审批流程。"
+        },
+        "knowledge_extractable_validation": {
+          "score": 1,
+          "reason": "手册内容未包含任何约束或校验规则，完全不满足可编程性要求。",
+          "evidence": "手册中未出现'不得''必须''禁止'等约束性词汇，仅描述了手册体系和公开渠道信息。"
+        },
+        "cognitive_mental_model": {
+          "score": 2,
+          "reason": "手册仅介绍了手册体系和公开渠道，缺少核心的意图、流程和验收内容，三段论几乎完全缺失。",
+          "evidence": "手册内容仅包含手册类型表格和如何通过公开渠道了解公司，未涉及任何具体工作的意图、流程或验收标准。"
+        }
+      }
+    },
+    {
+      "file": "project/index.md",
+      "error": null,
+      "lines": 53,
+      "chars": 1288,
+      "dimension_scores": {
+        "cognitive": 3.0,
+        "knowledge": 1.4,
+        "narrative": 4.0
+      },
+      "overall_score": 2.8,
+      "metrics": {
+        "knowledge_extractable_rule": {
+          "score": 2,
+          "reason": "手册中未给出任何具体的数值型参数（如金额、比例、期限、阈值等），仅描述了流程和概念，缺乏可提取的规则参数。",
+          "evidence": "手册内容均为定性描述，如“明确项目要达成的业务目标”、“设定项目关键里程碑”等，未提供任何具体数值或数据源指向。"
+        },
+        "knowledge_extractable_validation": {
+          "score": 1,
+          "reason": "手册中完全没有出现'不得''必须''禁止'等约束性词汇，未定义任何可编程的校验规则。",
+          "evidence": "全文仅描述项目管理方法和流程，无任何约束或校验条件。"
+        },
+        "knowledge_extractable_flow": {
+          "score": 2,
+          "reason": "手册仅列出项目管理要素，未定义具体流程步骤或状态转移条件，无法建模为状态机。",
+          "evidence": "手册内容为项目管理的概念列表，如'范围定义'、'进度计划'等，缺乏起始、中间、终止状态及转移条件。"
+        },
+        "knowledge_extractable_branch": {
+          "score": 1,
+          "reason": "手册内容仅为项目管理流程的框架性描述，完全没有包含任何可编程的条件逻辑（如'如果X则Y'的规则），条件判断依据也未量化或可枚举。",
+          "evidence": "手册中仅列出如'范围定义'、'进度计划'等标题和子项，没有任何条件语句或可量化的判断规则。"
+        },
+        "narrative_clarity": {
+          "score": 4,
+          "reason": "语言表达清晰，结构合理，但部分术语如WBS未详细解释，且句子略显清单化，可读性有提升空间。",
+          "evidence": "工作分解结构 (WBS)：将项目分解为可管理的工作包"
+        },
+        "cognitive_mental_model": {
+          "score": 3,
+          "reason": "手册列出了项目管理的要素和流程名称，但缺乏具体的操作步骤、转移条件和验收标准，意图、流程、验收三段论不完整。",
+          "evidence": "手册仅列出如'范围定义'、'进度计划'等标题和子项，未提供具体如何执行、何时转移以及如何验收的细节。"
+        },
+        "knowledge_extractable_role": {
+          "score": 1,
+          "reason": "手册内容为通用项目管理流程，完全没有定义角色和权限，无法映射到代码中的角色权限模型。",
+          "evidence": "全文未出现任何角色（如管理员、普通用户）或权限（如创建、审批）相关的描述。"
+        }
+      }
+    },
+    {
+      "file": "qtclass/index.md",
+      "error": null,
+      "lines": 25,
+      "chars": 1263,
+      "dimension_scores": {
+        "cognitive": 2.0,
+        "knowledge": 1.6,
+        "narrative": 4.0
+      },
+      "overall_score": 2.53,
+      "metrics": {
+        "knowledge_extractable_validation": {
+          "score": 1,
+          "reason": "手册内容为经营目标与方向描述，未包含任何可编程的约束或校验规则。",
+          "evidence": "全文无'不得''必须''禁止'等约束性词汇，仅描述经营现状与方向。"
+        },
+        "knowledge_extractable_branch": {
+          "score": 2,
+          "reason": "手册内容为经营目标描述，未定义任何可编程的条件逻辑规则，缺乏'如果X则Y'的条件分支。",
+          "evidence": "全文未出现'如果'、'则'、'当'等条件语句，仅描述经营方向如'短期现金来源以学生直接付费为主'。"
+        },
+        "knowledge_extractable_role": {
+          "score": 1,
+          "reason": "手册内容为经营目标和方向，完全没有涉及角色、权限或审批的定义，无法映射到代码中的角色权限模型。",
+          "evidence": "全文未出现任何角色、权限、审批相关描述。"
+        },
+        "cognitive_mental_model": {
+          "score": 2,
+          "reason": "手册仅描述了经营目标和方向，缺乏具体操作流程和验收标准，意图部分也不完整。",
+          "evidence": "手册只列出了三个经营方向，没有说明谁来做、具体步骤、转移条件或交付标准。"
+        },
+        "knowledge_extractable_rule": {
+          "score": 2,
+          "reason": "手册中未给出任何具体的金额、比例、期限、阈值等数值型参数，仅描述了经营方向，缺乏可提取的规则参数。",
+          "evidence": "全文未出现任何数字或具体数值，如'短期现金来源以学生直接付费为主'未说明付费金额或比例。"
+        },
+        "narrative_clarity": {
+          "score": 4,
+          "reason": "语言表达清晰，逻辑连贯，但部分术语如“多边平台冷启动”未解释，可能让非专业读者困惑。",
+          "evidence": "量潮课堂面临多边平台冷启动问题，涉及四端——高校（合作入口）、学生（服务使用者）、企业（人才需求方）、课堂BU（平台方）。"
+        },
+        "knowledge_extractable_flow": {
+          "score": 2,
+          "reason": "手册内容为经营目标与方向描述，缺乏可建模为状态机的流程步骤与转移条件。",
+          "evidence": "手册仅列出三个经营方向（客户、价值、收入），无起始状态、中间步骤或终止状态的定义。"
+        }
+      }
+    },
+    {
+      "file": "qtdata/data/index.md",
+      "error": null,
+      "lines": 5,
+      "chars": 1604,
+      "dimension_scores": {
+        "cognitive": 2.0,
+        "knowledge": 1.8,
+        "narrative": 4.0
+      },
+      "overall_score": 2.6,
+      "metrics": {
+        "knowledge_extractable_role": {
+          "score": 1,
+          "reason": "手册内容为抽象的方法论描述，完全没有定义任何具体的角色、权限或审批规则，无法映射到代码中的角色权限模型。",
+          "evidence": "手册中未提及任何角色、权限或审批相关的内容。"
+        },
+        "cognitive_mental_model": {
+          "score": 2,
+          "reason": "手册仅描述了框架设计的理念和分类思想，但未提供具体的意图、流程或验收内容，三段论几乎完全缺失。",
+          "evidence": "手册内容为元讨论，如‘规范的层级就分很多层’、‘核心逻辑主要基于两个视角’，没有给出任何实际的操作步骤或验收标准。"
+        },
+        "knowledge_extractable_rule": {
+          "score": 1,
+          "reason": "手册内容为抽象的方法论描述，未给出任何具体的数值型参数（金额、比例、期限、阈值等），完全不满足规则参数清晰可提取的要求。",
+          "evidence": "手册中没有任何金额、比例、期限、阈值等数值型参数，仅讨论分类和框架构建。"
+        },
+        "knowledge_extractable_branch": {
+          "score": 2,
+          "reason": "手册仅描述了框架和分类思想，未给出任何具体的'如果X则Y'条件规则，条件判断依据也未量化或可枚举。",
+          "evidence": "手册提到'核心逻辑主要基于两个视角：一是交付视角...二是流程视角'，但未定义任何可执行的条件分支。"
+        },
+        "knowledge_extractable_validation": {
+          "score": 2,
+          "reason": "手册内容为框架性描述，未定义任何具体的约束或校验规则，缺乏可编程的'不得''必须''禁止'等条件。",
+          "evidence": "手册仅描述了数据工程体系的层级结构和编制思路，未包含任何具体的约束或校验规则。"
+        },
+        "knowledge_extractable_flow": {
+          "score": 3,
+          "reason": "手册描述了流程的层级和分类思想，但未给出具体的起始、中间、终止状态及转移条件，仅停留在概念层面。",
+          "evidence": "手册提到‘从项目启动到交付的完整动态流水线’，但未细化状态和转移条件。"
+        },
+        "narrative_clarity": {
+          "score": 4,
+          "reason": "语言表达基本清晰，逻辑连贯，但部分句子较长，术语如“DataOps”未解释，略有改进空间。",
+          "evidence": "“整个体系在搭建时必须具备很强的归纳性。其核心逻辑主要基于两个视角：一是交付视角，聚焦以数据为中心的交付物积累，关键是明确定义相关概念；二是流程视角，可称为DataOps或其他，涵盖从项目启动到交付的完整动态流水线，包括各环节任务、人员协作与流程管控。”"
+        }
+      }
+    },
+    {
+      "file": "qtdata/index.md",
+      "error": null,
+      "lines": 77,
+      "chars": 3447,
+      "dimension_scores": {
+        "knowledge": 3.6,
+        "narrative": 5.0,
+        "cognitive": 4.0
+      },
+      "overall_score": 4.2,
+      "metrics": {
+        "knowledge_extractable_flow": {
+          "score": 4,
+          "reason": "流程有明确的起始状态（线索获取）、中间步骤（需求评估、报价签约、执行交付）和终止状态（收尾归档），转移条件清晰，但部分步骤（如执行交付内部阶段）的转移条件可更细化。",
+          "evidence": "量潮数据的完整业务流从线索到交付分为五个环节：线索获取 → 需求评估 → 报价签约 → 执行交付 → 收尾归档。"
+        },
+        "knowledge_extractable_branch": {
+          "score": 3,
+          "reason": "手册包含一些条件判断（如检查账号信用度、确认需求真实性），但未明确定义'如果X则Y'的规则，条件依据多为定性描述而非可量化或可枚举的标准。",
+          "evidence": "初步判断时先检查账号——老号信用度更高，对新号需求保持谨慎，通过帖子内容和用户历史笔记验证需求真实性。"
+        },
+        "knowledge_extractable_validation": {
+          "score": 4,
+          "reason": "手册中约束和校验规则基本清晰，但部分规则（如合规性判断）缺乏具体校验条件，有少量改进空间。",
+          "evidence": "确认数据用途是否合规（见需求评估环节）以及报价时明确告知客户需求变更时将根据公式重新调整价格（见报价签约环节）。"
+        },
+        "cognitive_mental_model": {
+          "score": 4,
+          "reason": "手册完整覆盖了意图、流程和验收，但验收部分不够系统化，缺少明确的交付标准和检查条件。",
+          "evidence": "手册包含线索获取、需求评估、报价签约、执行交付、收尾归档的完整流程，并在执行交付中提及‘交付与验收’阶段，但未详细列出验收标准和检查清单。"
+        },
+        "knowledge_extractable_role": {
+          "score": 3,
+          "reason": "角色和权限定义不够明确，缺乏可编程的精确映射，如谁可以做什么、谁审批什么等细节缺失。",
+          "evidence": "手册列出了销售、商务经理、技术评估员、项目经理、实施团队等角色，但未定义具体权限和审批流程，如谁负责审批报价或合同。"
+        },
+        "knowledge_extractable_rule": {
+          "score": 4,
+          "reason": "手册中明确给出了收款比例范围（30-50%、30-40%、20-30%），但其他数值参数如定价公式、加急溢价比例等未具体给出，仅指向外部文档。",
+          "evidence": "签约时需明确收款比例（首付30-50%、中期30-40%、尾款20-30%）"
+        },
+        "narrative_clarity": {
+          "score": 5,
+          "reason": "语言表达清晰易懂，句子简短通顺，术语有解释，逻辑连贯，读者能轻松跟上思路。",
+          "evidence": "量潮数据的完整业务流从线索到交付分为五个环节：线索获取 → 需求评估 → 报价签约 → 执行交付 → 收尾归档。"
+        }
+      }
+    },
+    {
+      "file": "sales/index.md",
+      "error": null,
+      "lines": 33,
+      "chars": 1703,
+      "dimension_scores": {
+        "narrative": 5.0,
+        "cognitive": 3.0,
+        "knowledge": 2.2
+      },
+      "overall_score": 3.4,
+      "metrics": {
+        "cognitive_mental_model": {
+          "score": 3,
+          "reason": "手册明确了意图（销售角色与目标）和流程（核心问题链与文件索引），但缺少验收标准，三段论不完整。",
+          "evidence": "手册包含意图（销售负责'搞定人'）和流程（核心问题链指向各子文件），但未提及如何验收工作完成或交付标准。"
+        },
+        "knowledge_extractable_branch": {
+          "score": 2,
+          "reason": "手册内容为概述和索引，未定义任何可编程的条件逻辑（如'如果X则Y'），缺乏可量化或可枚举的判断依据。",
+          "evidence": "手册仅包含角色定义、核心问题链和文件索引，无任何条件分支规则。"
+        },
+        "narrative_clarity": {
+          "score": 5,
+          "reason": "语言表达清晰易懂，句子简短通顺，术语有解释，逻辑连贯，读者能轻松跟上思路。",
+          "evidence": "销售负责'搞定人'——解决客户'愿不愿意买'的问题。商务负责'搞定交易的结构'——解决'能不能卖、怎么卖才不亏'的问题。"
+        },
+        "knowledge_extractable_flow": {
+          "score": 3,
+          "reason": "手册描述了销售流程的步骤和文件索引，但缺乏明确的起始、中间和终止状态定义，转移条件不清晰。",
+          "evidence": "核心问题链列出了步骤：去哪里找客户？→怎么跟客户说？→怎么把钱收了？→怎么管好过程？但未明确状态和转移条件。"
+        },
+        "knowledge_extractable_rule": {
+          "score": 2,
+          "reason": "手册中几乎没有给出任何具体的数值型参数（金额、比例、期限、阈值等），仅描述了职责分工和文件索引。",
+          "evidence": "全文未出现任何数字或具体数值，如金额、比例、期限等，仅包含定性描述和文件链接。"
+        },
+        "knowledge_extractable_role": {
+          "score": 2,
+          "reason": "手册仅描述了销售与商务的职责分工，但未定义具体的角色权限、操作边界或审批流程，无法直接映射为代码中的角色权限模型。",
+          "evidence": "销售管'能不能溢价'，商务管'有没有底线'"
+        },
+        "knowledge_extractable_validation": {
+          "score": 2,
+          "reason": "手册中几乎没有使用'不得''必须''禁止'等约束性词汇，缺乏可编程的校验规则定义。",
+          "evidence": "全文未出现'不得''必须''禁止'等约束性词汇，仅描述角色分工和流程索引，无具体校验条件。"
+        }
+      }
+    },
+    {
+      "file": "scm/index.md",
+      "error": null,
+      "lines": 19,
+      "chars": 437,
+      "dimension_scores": {
+        "narrative": 4.0,
+        "knowledge": 1.0,
+        "cognitive": 2.0
+      },
+      "overall_score": 2.33,
+      "metrics": {
+        "knowledge_extractable_validation": {
+          "score": 1,
+          "reason": "手册内容仅为目录和主题概述，未包含任何约束或校验规则，无法评估可编程性。",
+          "evidence": "手册仅列出采购、供应商关系管理等主题，无'不得''必须''禁止'等约束定义。"
+        },
+        "knowledge_extractable_flow": {
+          "score": 1,
+          "reason": "手册内容仅为目录和主题列表，没有描述任何具体流程，无法判断状态机要素。",
+          "evidence": "手册仅包含标题、内容结构（指向其他文件）和核心主题列表，无流程描述。"
+        },
+        "knowledge_extractable_rule": {
+          "score": 1,
+          "reason": "手册内容仅为目录和主题列表，未包含任何金额、比例、期限、阈值等数值型参数或指向明确数据源的规则。",
+          "evidence": "手册仅列出采购、供应商关系管理等主题，无具体参数或数据源引用。"
+        },
+        "narrative_clarity": {
+          "score": 4,
+          "reason": "语言简洁通顺，结构清晰，但缺少对术语的解释，略有改进空间。",
+          "evidence": "本板块记录供应链管理相关的工作方法和流程。"
+        },
+        "knowledge_extractable_branch": {
+          "score": 1,
+          "reason": "手册内容仅为目录和概述，未包含任何可编程条件逻辑（如'如果X则Y'的规则），条件判断依据完全缺失。",
+          "evidence": "手册仅列出标题和链接，如'采购流程与供应商管理'，无具体规则描述。"
+        },
+        "knowledge_extractable_role": {
+          "score": 1,
+          "reason": "手册内容仅为目录和主题列表，未定义任何角色、权限或审批规则，无法映射到代码中的角色权限模型。",
+          "evidence": "手册仅包含“采购流程与供应商管理”、“供应商关系管理与云厂商工单博弈”等主题标题，无具体角色权限描述。"
+        },
+        "cognitive_mental_model": {
+          "score": 2,
+          "reason": "手册仅列出目录和主题，缺乏具体的意图、流程和验收标准，三段论几乎完全缺失。",
+          "evidence": "手册内容仅为标题和链接列表，如“采购 - 采购流程与供应商管理”，无任何具体操作步骤或验收条件。"
+        }
+      }
+    },
+    {
+      "file": "share/index.md",
+      "error": null,
+      "lines": 36,
+      "chars": 1063,
+      "dimension_scores": {
+        "cognitive": 3.0,
+        "narrative": 4.0,
+        "knowledge": 2.2
+      },
+      "overall_score": 3.07,
+      "metrics": {
+        "knowledge_extractable_validation": {
+          "score": 3,
+          "reason": "约束和校验规则多为描述性指南，缺乏可编程的明确条件，如'保持可读性'等无法直接转化为代码校验。",
+          "evidence": "替换策略如'人名 → 某同事'是示例而非规则，审查流程为步骤描述，无具体校验条件。"
+        },
+        "cognitive_mental_model": {
+          "score": 3,
+          "reason": "手册明确了意图（处理敏感信息）和流程（替换策略、审查步骤），但缺少验收标准（如何判断处理完成、正确性检查条件）。",
+          "evidence": "手册列出了敏感信息类型和替换策略，并给出了审查流程（创建→扫描→交叉审查→审计），但未说明如何验收替换是否正确或文档是否可发布。"
+        },
+        "knowledge_extractable_branch": {
+          "score": 2,
+          "reason": "手册仅列出了敏感信息类型和替换策略，但未定义任何可编程的条件逻辑（如'如果X则Y'），缺乏可量化的判断依据。",
+          "evidence": "手册中只有替换策略的列表，如'人名 → \"某同事\"'，但没有条件分支或可量化的规则。"
+        },
+        "knowledge_extractable_flow": {
+          "score": 3,
+          "reason": "流程有明确的步骤（审查流程），但缺少明确的起始状态、中间态和终止状态，转移条件不清晰。",
+          "evidence": "审查流程：1. 创建文档时自查敏感信息 2. 提交前进行敏感信息扫描 3. 同事交叉审查 4. 定期审计已发布文档"
+        },
+        "narrative_clarity": {
+          "score": 4,
+          "reason": "语言表达清晰，结构合理，但部分术语如“正则表达式”未解释，可能对非技术读者造成困惑。",
+          "evidence": "使用正则表达式检查常见敏感模式"
+        },
+        "knowledge_extractable_rule": {
+          "score": 2,
+          "reason": "手册中未给出任何具体的金额、比例、期限、阈值等数值型参数，仅描述了替换策略，缺乏可提取的规则参数。",
+          "evidence": "金额/合同细节 → '相关数据'、'具体条款'"
+        },
+        "knowledge_extractable_role": {
+          "score": 1,
+          "reason": "手册内容为敏感信息处理规范，完全不涉及角色和权限定义，无法映射到代码中的角色权限模型。",
+          "evidence": "手册标题为'敏感信息处理规范'，内容仅涉及信息分类、替换策略和审查流程，未提及任何角色或权限。"
+        }
+      }
+    }
+  ],
+  "stats": {
+    "total_files": 16,
+    "files_evaluated": 16,
+    "files_with_error": 0,
+    "overall_average": 2.88,
+    "dimension_averages": {
+      "cognitive": 2.69,
+      "knowledge": 1.96,
+      "narrative": 4.0
+    },
+    "health_distribution": {
+      "healthy": 1,
+      "moderate": 12,
+      "unhealthy": 3
+    },
+    "best_file": "qtdata/index.md",
+    "best_score": 4.2,
+    "worst_file": "code/index.md",
+    "worst_score": 1.67,
+    "metric_averages": {
+      "knowledge_extractable_branch": 1.94,
+      "knowledge_extractable_role": 1.44,
+      "cognitive_mental_model": 2.69,
+      "narrative_clarity": 4.0,
+      "knowledge_extractable_validation": 1.88,
+      "knowledge_extractable_rule": 2.0,
+      "knowledge_extractable_flow": 2.56
+    }
+  }
+}
