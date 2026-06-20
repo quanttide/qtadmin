@@ -4,7 +4,7 @@ use anyhow::Result;
 use clap::Args;
 use regex::Regex;
 
-use crate::git_utils;
+use crate::asset::git_utils;
 
 /// 查看资产状态（结构合规检查）
 #[derive(Args)]

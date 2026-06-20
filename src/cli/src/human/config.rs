@@ -55,7 +55,7 @@ impl From<ProfileRuleRecord> for PositionRule {
 fn config_paths() -> Vec<PathBuf> {
     let mut paths = Vec::new();
 
-    if let Ok(env_path) = std::env::var("QTRECURIT_CONFIG") {
+    if let Ok(env_path) = std::env::var(crate::cli_config::ENV_CONFIG) {
         paths.push(PathBuf::from(env_path));
     }
 
@@ -68,17 +68,6 @@ fn config_paths() -> Vec<PathBuf> {
     }
 
     paths
-}
-
-fn profile_rules_path() -> PathBuf {
-    if let Ok(env_path) = std::env::var("QTRECURIT_PROFILE") {
-        PathBuf::from(env_path).join("connect").join("rules.json")
-    } else {
-        // 默认相对项目根目录
-        PathBuf::from("../../data/profile")
-            .join("connect")
-            .join("rules.json")
-    }
 }
 
 fn load_from_toml(path: &PathBuf) -> Option<HumanConfig> {
@@ -107,7 +96,7 @@ pub fn load_config() -> HumanConfig {
     }
 
     // 2. 从 profile 加载
-    let profile_path = profile_rules_path();
+    let profile_path = crate::cli_config::profile_rules_path();
     if let Some(config) = load_from_profile(&profile_path) {
         return config;
     }

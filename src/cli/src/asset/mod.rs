@@ -1,4 +1,5 @@
 mod archive;
+mod git_utils;
 mod quality;
 mod status;
 
