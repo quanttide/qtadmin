@@ -1,6 +1,5 @@
 mod archive;
 mod quality;
-mod status;
 
 use clap::Subcommand;
 
@@ -10,8 +9,6 @@ pub enum AssetCommands {
     Archive(archive::ArchiveArgs),
     /// 评估资产质量
     Quality(quality::QualityArgs),
-    /// 查看资产当前状态
-    Status(status::StatusArgs),
 }
 
 #[derive(clap::Args)]
@@ -35,11 +32,5 @@ pub fn dispatch(args: &AssetArgs) {
                 std::process::exit(1);
             }
         },
-        AssetCommands::Status(status_args) => {
-            if let Err(e) = status::run(status_args) {
-                eprintln!("错误：{e}");
-                std::process::exit(1);
-            }
-        }
     }
 }
