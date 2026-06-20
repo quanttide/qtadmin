@@ -15,13 +15,13 @@ pub struct QualityArgs {
     #[arg(long, default_value = "docs/handbook")]
     pub handbook_dir: String,
 
-    /// 输出 JSON 路径
-    #[arg(short, long, default_value = "p40-results.json")]
-    pub output: String,
+    /// 保存 JSON 结果到文件（可选，默认仅打印报告到 stdout）
+    #[arg(short, long)]
+    pub output: Option<String>,
 
-    /// 输出 Markdown 报告路径
-    #[arg(short = 'r', long, default_value = "p40-report.md")]
-    pub report: String,
+    /// 保存 Markdown 报告到文件（可选，默认仅打印到 stdout）
+    #[arg(short = 'r', long)]
+    pub report: Option<String>,
 
     /// 断点续评
     #[arg(long)]
@@ -572,13 +572,18 @@ pub fn run(args: &QualityArgs) -> Result<()> {
 
     // 加载已有结果
     let mut results: Vec<FileResult> = if args.resume {
-        let path = std::path::Path::new(&args.output);
-        if path.exists() {
-            let content = std::fs::read_to_string(path)?;
-            let existing: Output = serde_json::from_str(&content)?;
-            println!("♻️ 断点续评：跳过 {} 个已评估文件", existing.files.len());
-            existing.files
+        if let Some(ref output_path) = args.output {
+            let path = std::path::Path::new(output_path);
+            if path.exists() {
+                let content = std::fs::read_to_string(path)?;
+                let existing: Output = serde_json::from_str(&content)?;
+                println!("♻️ 断点续评：跳过 {} 个已评估文件", existing.files.len());
+                existing.files
+            } else {
+                Vec::new()
+            }
         } else {
+            eprintln!("错误：断点续评需要指定 --output 路径");
             Vec::new()
         }
     } else {
@@ -720,12 +725,14 @@ pub fn run(args: &QualityArgs) -> Result<()> {
         });
 
         // 中间保存
-        let stats = compute_stats(&results);
-        let output = Output {
-            files: results.clone(),
-            stats,
-        };
-        save_output(&output, &args.output)?;
+        if let Some(ref output_path) = args.output {
+            let stats = compute_stats(&results);
+            let output = Output {
+                files: results.clone(),
+                stats,
+            };
+            save_output(&output, output_path)?;
+        }
     }
 
     let elapsed = start.elapsed();
@@ -737,12 +744,18 @@ pub fn run(args: &QualityArgs) -> Result<()> {
         stats,
     };
 
-    save_output(&output, &args.output)?;
-    println!("💾 JSON 结果已保存: {}", args.output);
+    // 保存或打印
+    if let Some(ref output_path) = args.output {
+        save_output(&output, output_path)?;
+        println!("💾 JSON 结果已保存: {}", output_path);
+    }
 
     let report = generate_report(&output);
-    std::fs::write(&args.report, &report)?;
-    println!("📝 Markdown 报告已保存: {}", args.report);
+    if let Some(ref report_path) = args.report {
+        std::fs::write(report_path, &report)?;
+        println!("📝 Markdown 报告已保存: {}", report_path);
+    }
+    println!("{}", report);
 
     Ok(())
 }
