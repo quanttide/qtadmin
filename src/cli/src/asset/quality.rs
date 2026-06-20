@@ -12,7 +12,7 @@ use walkdir::WalkDir;
 #[derive(Args)]
 pub struct QualityArgs {
     /// 手册目录路径
-    #[arg(long, default_value = "docs/handbook")]
+    #[arg(long, default_value = crate::cli_config::DEFAULT_HANDBOOK_DIR)]
     pub handbook_dir: String,
 
     /// 保存 JSON 结果到文件（可选，默认仅打印报告到 stdout）
@@ -88,27 +88,17 @@ pub struct MetricDef {
 }
 
 /// 从 profile 加载或使用硬编码 fallback
-pub fn load_metrics() -> Vec<MetricDef> {
+fn load_metrics() -> Vec<MetricDef> {
     static CACHE: std::sync::OnceLock<Vec<MetricDef>> = std::sync::OnceLock::new();
     CACHE
         .get_or_init(|| {
-            let profile_path = profile_quality_path();
+            let profile_path = crate::cli_config::profile_quality_path();
             if let Some(metrics) = load_from_profile(&profile_path) {
                 return metrics;
             }
             builtin_metrics()
         })
         .clone()
-}
-
-fn profile_quality_path() -> PathBuf {
-    if let Ok(env_path) = std::env::var("QTRECURIT_PROFILE") {
-        PathBuf::from(env_path).join("asset").join("quality.json")
-    } else {
-        PathBuf::from("../../data/profile")
-            .join("asset")
-            .join("quality.json")
-    }
 }
 
 #[derive(Debug, Deserialize)]
@@ -615,8 +605,7 @@ fn generate_report(output: &Output) -> String {
 // ── 主入口 ──────────────────────────────────────────────────────────────
 
 pub fn run(args: &QualityArgs) -> Result<()> {
-    let api_key = std::env::var("DEEPSEEK_API_KEY")
-        .map_err(|_| anyhow::anyhow!("DEEPSEEK_API_KEY 环境变量未设置"))?;
+    let api_key = crate::cli_config::deepseek_api_key().map_err(|e| anyhow::anyhow!("{}", e))?;
 
     let handbook_dir = PathBuf::from(&args.handbook_dir);
     if !handbook_dir.exists() {

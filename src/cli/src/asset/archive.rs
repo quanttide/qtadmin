@@ -6,7 +6,7 @@ use clap::Args;
 use regex::Regex;
 use walkdir::WalkDir;
 
-use crate::git_utils;
+use crate::asset::git_utils;
 
 #[derive(Args)]
 pub struct ArchiveArgs {
