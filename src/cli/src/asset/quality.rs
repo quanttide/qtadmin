@@ -151,6 +151,54 @@ fn builtin_metrics() -> Vec<MetricDef> {
     ]
 }
 
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_load_metrics_fallback_when_profile_missing() {
+        // 确保 profile 文件不存在，load_metrics 应返回内置 fallback
+        let metrics = load_metrics();
+        assert!(!metrics.is_empty(), "fallback metrics should not be empty");
+    }
+
+    #[test]
+    fn test_load_metrics_structure() {
+        let metrics = load_metrics();
+        assert_eq!(metrics.len(), 7, "expected exactly 7 builtin metrics");
+
+        // 验证所有 dimension 值属于预期的 3 个维度
+        let dimensions: std::collections::HashSet<&str> =
+            metrics.iter().map(|m| m.dimension.as_str()).collect();
+        let mut expected = std::collections::HashSet::new();
+        expected.insert("narrative");
+        expected.insert("knowledge");
+        expected.insert("cognitive");
+        assert_eq!(dimensions, expected, "expected 3 dimensions");
+    }
+
+    #[test]
+    fn test_builtin_metrics_keys() {
+        let metrics = builtin_metrics();
+        let keys: std::collections::HashSet<&str> =
+            metrics.iter().map(|m| m.key.as_str()).collect();
+
+        let mut expected = std::collections::HashSet::new();
+        expected.insert("narrative_clarity");
+        expected.insert("knowledge_extractable_branch");
+        expected.insert("knowledge_extractable_rule");
+        expected.insert("knowledge_extractable_flow");
+        expected.insert("knowledge_extractable_role");
+        expected.insert("knowledge_extractable_validation");
+        expected.insert("cognitive_mental_model");
+
+        assert_eq!(
+            keys, expected,
+            "builtin metrics should produce all 7 expected keys"
+        );
+    }
+}
+
 // ── LLM 调用 ──────────────────────────────────────────────────────────────
 
 #[derive(Serialize)]

@@ -70,6 +70,39 @@ fn resolve_open_id(user: &str) -> Result<String, String> {
     Err(format!("未找到成员: {}", user))
 }
 
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_notice_args_construction() {
+        let args = NoticeArgs {
+            chat: "oc_test_group_id".to_string(),
+            at: "ou_test_user_id".to_string(),
+            notice: "这是一条测试通知".to_string(),
+        };
+        assert_eq!(args.chat, "oc_test_group_id");
+        assert_eq!(args.at, "ou_test_user_id");
+        assert_eq!(args.notice, "这是一条测试通知");
+    }
+
+    #[test]
+    fn test_resolve_chat_id_already_id() {
+        // When chat starts with "oc_", it returns the value directly (no CLI call)
+        let result = resolve_chat_id("oc_test123");
+        assert!(result.is_ok());
+        assert_eq!(result.unwrap(), "oc_test123");
+    }
+
+    #[test]
+    fn test_resolve_open_id_already_id() {
+        // When user starts with "ou_", it returns the value directly (no CLI call)
+        let result = resolve_open_id("ou_test456");
+        assert!(result.is_ok());
+        assert_eq!(result.unwrap(), "ou_test456");
+    }
+}
+
 pub fn run(args: &NoticeArgs) {
     let chat_id = match resolve_chat_id(&args.chat) {
         Ok(id) => id,

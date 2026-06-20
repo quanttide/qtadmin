@@ -62,6 +62,107 @@ fn load_positions() -> Vec<PositionRecord> {
     list
 }
 
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::env;
+    use tempfile::TempDir;
+
+    /// Helper: save an env var, set it to `val`, and restore the old value on drop.
+    struct EnvGuard {
+        key: String,
+        prev: Option<String>,
+    }
+
+    impl Drop for EnvGuard {
+        fn drop(&mut self) {
+            match &self.prev {
+                Some(v) => env::set_var(&self.key, v),
+                None => env::remove_var(&self.key),
+            }
+        }
+    }
+
+    fn set_env_var_guard(key: &str, val: &str) -> EnvGuard {
+        let prev = env::var(key).ok();
+        env::set_var(key, val);
+        EnvGuard {
+            key: key.to_owned(),
+            prev,
+        }
+    }
+
+    #[test]
+    fn test_load_positions_file_not_found() {
+        let dir = TempDir::new().unwrap();
+        let _guard =
+            set_env_var_guard(crate::cli_config::ENV_PROFILE, dir.path().to_str().unwrap());
+        let positions = load_positions();
+        assert!(positions.is_empty());
+    }
+
+    #[test]
+    fn test_load_positions_valid_json() {
+        let dir = TempDir::new().unwrap();
+        let human_dir = dir.path().join("human");
+        std::fs::create_dir(&human_dir).unwrap();
+        let file_path = human_dir.join("positions.json");
+        let data = r#"{
+            "records": {
+                "p1": { "id": "p1", "name": "后端工程师", "department": "技术部", "active": true },
+                "p2": { "id": "p2", "name": "前端工程师", "department": "技术部", "active": false }
+            }
+        }"#;
+        std::fs::write(&file_path, data).unwrap();
+
+        let _guard =
+            set_env_var_guard(crate::cli_config::ENV_PROFILE, dir.path().to_str().unwrap());
+        let positions = load_positions();
+        assert_eq!(positions.len(), 2);
+        // Should be sorted by name (UTF-8 byte order)
+        assert_eq!(positions[0].name, "前端工程师");
+        assert_eq!(positions[1].name, "后端工程师");
+    }
+
+    #[test]
+    fn test_load_positions_filters_and_sorting() {
+        let dir = TempDir::new().unwrap();
+        let human_dir = dir.path().join("human");
+        std::fs::create_dir(&human_dir).unwrap();
+        let file_path = human_dir.join("positions.json");
+        let data = r#"{
+            "records": {
+                "p3": { "id": "p3", "name": "产品经理", "department": "产品部", "active": true },
+                "p1": { "id": "p1", "name": "架构师", "department": "技术部", "active": true },
+                "p2": { "id": "p2", "name": "设计师", "department": "设计部", "active": false }
+            }
+        }"#;
+        std::fs::write(&file_path, data).unwrap();
+
+        let _guard =
+            set_env_var_guard(crate::cli_config::ENV_PROFILE, dir.path().to_str().unwrap());
+        let positions = load_positions();
+        assert_eq!(positions.len(), 3);
+
+        // Sorted by name ascending (UTF-8 byte order)
+        assert_eq!(positions[0].name, "产品经理");
+        assert_eq!(positions[1].name, "架构师");
+        assert_eq!(positions[2].name, "设计师");
+
+        // Filter by active
+        let active_only: Vec<&PositionRecord> = positions.iter().filter(|p| p.active).collect();
+        assert_eq!(active_only.len(), 2);
+
+        // Filter by department
+        let tech: Vec<&PositionRecord> = positions
+            .iter()
+            .filter(|p| p.department.as_deref() == Some("技术部"))
+            .collect();
+        assert_eq!(tech.len(), 1);
+        assert_eq!(tech[0].name, "架构师");
+    }
+}
+
 pub fn dispatch(args: &PositionArgs, _provider: bool) {
     match &args.command {
         PositionCommands::List {

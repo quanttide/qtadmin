@@ -44,3 +44,46 @@ pub fn profile_quality_path() -> PathBuf {
 pub fn deepseek_api_key() -> Result<String, String> {
     std::env::var(ENV_DEEPSEEK_KEY).map_err(|_| format!("{ENV_DEEPSEEK_KEY} 环境变量未设置"))
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::env;
+
+    #[test]
+    fn test_profile_root_default() {
+        // 确保环境变量未设置
+        env::remove_var(ENV_PROFILE);
+        let root = profile_root();
+        assert_eq!(root, PathBuf::from(DEFAULT_PROFILE_PATH));
+    }
+
+    #[test]
+    fn test_profile_root_env_var() {
+        // 设置环境变量验证覆盖
+        env::set_var(ENV_PROFILE, "/custom/profile");
+        let root = profile_root();
+        assert_eq!(root, PathBuf::from("/custom/profile"));
+        env::remove_var(ENV_PROFILE);
+    }
+
+    #[test]
+    fn test_profile_rules_path() {
+        env::remove_var(ENV_PROFILE);
+        let path = profile_rules_path();
+        let expected = PathBuf::from(DEFAULT_PROFILE_PATH)
+            .join("connect")
+            .join("rules.json");
+        assert_eq!(path, expected);
+    }
+
+    #[test]
+    fn test_profile_quality_path() {
+        env::remove_var(ENV_PROFILE);
+        let path = profile_quality_path();
+        let expected = PathBuf::from(DEFAULT_PROFILE_PATH)
+            .join("asset")
+            .join("quality.json");
+        assert_eq!(path, expected);
+    }
+}
