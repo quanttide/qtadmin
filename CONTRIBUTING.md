@@ -6,20 +6,34 @@
 
 ## 运行命令
 
-### Provider
+### CLI
+
 ```bash
-cd src/provider
-pdm install
-pdm run uvicorn app:app --reload
-pytest
+cd src/cli
+cargo build                    # 编译
+cargo run -- asset quality     # 运行子命令
+cargo test                     # 运行测试
 ```
 
-### Studio
+### Provider（维护态，已重构为 Go）
+
+```bash
+cd src/provider
+go run ./cmd/server            # 启动服务 (默认 :8000)
+ADDR=:8000 go run ./cmd/server # 指定端口
+go build ./cmd/server          # 编译
+go test ./...                  # 测试
+```
+
+### Studio（当前重心）
+
 ```bash
 cd src/studio
 flutter run -d linux
 flutter run -d chrome
-dart analyze lib/
+dart analyze lib/ test/
+flutter test
+dart run build_runner build   # freezed codegen
 ```
 
 ## 代码规范
@@ -35,6 +49,14 @@ dart analyze lib/
 | 文档 | 中文 docstring |
 | 行宽 | 100 字符以内 |
 
+### Rust
+
+| 约定 | 规则 |
+|------|------|
+| 命名 | `snake_case` 函数/变量，`PascalCase` 类型/trait |
+| 错误处理 | anyhow::Result，context 附加上下文信息 |
+| 测试 | 单元测试内联到文件底部 `#[cfg(test)] mod tests` |
+
 ### Dart / Flutter
 
 | 约定 | 规则 |
@@ -46,7 +68,7 @@ dart analyze lib/
 
 ## Git 规范
 
-使用 `cz commit`（commitizen）生成 Conventional Commits。
+使用 Conventional Commits。
 
 | 类型 | 说明 |
 |------|------|
@@ -59,13 +81,31 @@ dart analyze lib/
 
 ## 发布规范
 
-monorepo 标签格式：`{项目}/v{版本}`，如 `studio/v0.1.0`。
+### 版本约定
 
-流程：更新版本号 → 更新 CHANGELOG → commit → tag → push → GitHub Release。
+- `v0.0.x` — 探索验证阶段，技术债清理、架构验证
+- `v0.1.0` 起 — 进入上线推进阶段，标记探索期结束
+
+主仓库与 studio 子标签版本号同步，升则同升。
+
+### Release 标签格式
+
+monorepo 标签格式：`{项目}/v{版本}`。
+
+- CLI 发布用 `cli/vX.X.X` 标签
+- Studio 发布用 `studio/vX.X.X` 标签
+
+### 发布流程
+
+1. 更新版本号（`src/cli/Cargo.toml` 或 `src/pubspec.yaml`）
+2. 更新对应 CHANGELOG（`src/cli/CHANGELOG.md` 或 `src/studio/CHANGELOG.md`）
+3. 不修改项目根目录 `CHANGELOG.md`
+4. commit → tag → push → GitHub Release
+5. 不删除已有标签或 release
 
 ## Pull Request
 
-1. 确保通过 lint：`dart analyze lib/`（studio）或 `ruff check .`（provider）
-2. 确保测试通过：`pytest`（provider）
-3. 用 `cz commit` 提交
+1. 确保通过 lint
+2. 确保测试通过
+3. 用 Conventional Commits 提交
 4. PR 标题概括变更，说明附上动机和影响范围
