@@ -1,5 +1,23 @@
 # CHANGELOG
 
+## [0.0.14] - 2026-06-20
+
+### Added
+
+- `asset archive`：将 journal 日志归档到 archive
+- `asset quality`：Rust 实现的手册质量评估（叙事/知识/认知三维度）
+- `asset status`：仓库结构合规检查（必需文件、格式、提交规范）
+
+### Changed
+
+- `asset backup` 重命名为 `asset archive`
+- `asset audit` 重命名为 `asset quality`，结构检查移至 `asset status`
+- `asset evaluate` 合并入 `asset quality`，移除 Python 脚本依赖
+
+### Removed
+
+- 移除 `p40-evaluate.py` 调用依赖，全部改用 Rust 实现
+
 ## [0.0.13] - 2026-06-18
 
 ### Added
