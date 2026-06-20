@@ -1,6 +1,5 @@
 mod archive;
 mod audit;
-mod evaluate;
 
 use clap::Subcommand;
 
@@ -8,10 +7,8 @@ use clap::Subcommand;
 pub enum AssetCommands {
     /// 将 journal 日志归档到 archive
     Archive(archive::ArchiveArgs),
-    /// 审计 Git 仓库是否符合标准资产体系规范
+    /// 审计资产规范（结构审计）或评估内容质量（--quality）
     Audit(audit::AuditArgs),
-    /// p40 手册质量多维度评估
-    Evaluate(evaluate::EvaluateArgs),
 }
 
 #[derive(clap::Args)]
@@ -35,11 +32,5 @@ pub fn dispatch(args: &AssetArgs) {
                 std::process::exit(1);
             }
         },
-        AssetCommands::Evaluate(evaluate_args) => {
-            if let Err(e) = evaluate::run(evaluate_args) {
-                eprintln!("错误：{e}");
-                std::process::exit(1);
-            }
-        }
     }
 }

@@ -1,0 +1,12 @@
+{
+  "sections": [
+    {
+      "id": "dashboard",
+      "items": ["dashboard"]
+    },
+    {
+      "id": "business",
+      "items": ["thinking", "writing"]
+    }
+  ]
+}

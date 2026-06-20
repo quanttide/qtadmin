@@ -1,0 +1,16 @@
+{
+  "sections": [
+    {
+      "id": "dashboard",
+      "items": ["dashboard"]
+    },
+    {
+      "id": "business",
+      "items": ["data", "classroom", "consulting", "cloud"]
+    },
+    {
+      "id": "function",
+      "items": ["hr", "finance", "org", "strategy", "media"]
+    }
+  ]
+}
