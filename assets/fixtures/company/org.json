@@ -1,0 +1,25 @@
+{
+  "institutions": [
+    { "id": "shareholders", "name": "股东代表大会", "parentId": "", "level": 0, "status": "normal", "expectedFrequency": "每季一次", "pendingProposalCount": 0, "lastMeetingDate": "15天前", "nextMeetingDate": "75天后" },
+    { "id": "partner", "name": "合伙人委员会", "parentId": "shareholders", "level": 1, "status": "normal", "expectedFrequency": "每月一次", "pendingProposalCount": 0, "lastMeetingDate": "3天前", "nextMeetingDate": "28天后" },
+    { "id": "assembly", "name": "公司代表大会", "parentId": "", "level": 0, "status": "normal", "expectedFrequency": "每月一次", "pendingProposalCount": 1, "lastMeetingDate": "5天前", "nextMeetingDate": "25天后" },
+    { "id": "secretary", "name": "书记处", "parentId": "assembly", "level": 1, "status": "normal", "expectedFrequency": "每周一次", "pendingProposalCount": 1, "lastMeetingDate": "2天前", "nextMeetingDate": "5天后" },
+    { "id": "exec", "name": "执行委员会", "parentId": "assembly", "level": 1, "status": "warning", "expectedFrequency": "每周一次", "pendingProposalCount": 2, "lastMeetingDate": "7天前", "nextMeetingDate": "明天" },
+    { "id": "tech", "name": "技术委员会", "parentId": "assembly", "level": 1, "status": "overdue", "expectedFrequency": "每周一次", "pendingProposalCount": 3, "lastMeetingDate": "12天前", "nextMeetingDate": "逾期" }
+  ],
+  "representatives": [
+    { "id": "p1", "name": "张三", "institutionIds": ["secretary", "exec"], "rank": "M1", "term": "2026Q1-Q2", "attendanceRate": 100, "proposalCount": 5, "voteRate": 100, "objectionCount": 1, "tier": "green", "recentVotes": [
+      { "id": "m1", "institutionId": "secretary", "date": "2026-05-06", "title": "预算审批会议", "agendaItems": ["Q3预算审批"], "attendeeCount": 9, "totalMemberCount": 10 },
+      { "id": "m2", "institutionId": "secretary", "date": "2026-04-29", "title": "周例会", "agendaItems": ["进度同步"], "attendeeCount": 10, "totalMemberCount": 10 }
+    ] },
+    { "id": "p2", "name": "李四", "institutionIds": ["exec"], "rank": "M2", "term": "2026Q1-Q2", "attendanceRate": 60, "proposalCount": 2, "voteRate": 70, "objectionCount": 0, "tier": "yellow", "recentVotes": [] }
+  ],
+  "ranks": [
+    { "name": "专业序列", "isManagement": false, "headCount": 5 },
+    { "name": "M1", "isManagement": true, "headCount": 2 },
+    { "name": "M2", "isManagement": true, "headCount": 1 }
+  ],
+  "promotions": [
+    { "id": "pr1", "personName": "王五", "fromRank": "专业序列", "toRank": "M1", "date": "2026-04-01", "isCrossTrack": true }
+  ]
+}

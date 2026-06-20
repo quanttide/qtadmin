@@ -1,0 +1,23 @@
+name: qtadmin_dashboard
+description: 仪表盘领域包，qtadmin 专属聚合视图。
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: ">=3.8.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_bloc: ^9.1.0
+  freezed_annotation: ^3.1.0
+  json_annotation: ^4.11.0
+  data_sources:
+    path: ../data-sources
+
+dev_dependencies:
+  build_runner: ^2.4.6
+  freezed: ^3.2.5
+  json_serializable: ^6.9.0
+  flutter_test:
+    sdk: flutter

@@ -1,0 +1,20 @@
+
+/bin/
+*.dll
+*.dylib
+.env
+# Env
+*.exe
+*.exe~
+# Go
+# IDE
+.idea/
+*.out
+/server
+*.so
+*.swo
+*.swp
+*.test
+/tmp/
+/vendor/
+.vscode/
