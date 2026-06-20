@@ -21,6 +21,14 @@ qtadmin 是量潮管理后台，覆盖公司内部各业务线与职能领域。
 
 覆盖足够支撑日常管理的核心能力。具体规划：
 
+### 🏗️ 跨域：以 profile 为事实源
+
+将 `data/profile/` 作为业务事实的权威来源，CLI 改为从 profile 加载数据而非硬编码：
+
+- [ ] 分类规则从 `profile/connect/rules.json` 加载，移除 `human/config.rs` 硬编码
+- [ ] 执行框架从 `profile/execute/` 加载，支持动态命令注册
+- [ ] 质量评估标准定义在 profile 中，CLI 运行时读取而非代码硬编码
+
 ### human — 人力资源职能域
 
 覆盖人事管理核心链路，不限于招聘。
