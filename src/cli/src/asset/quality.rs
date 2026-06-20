@@ -473,6 +473,74 @@ fn generate_report(output: &Output) -> String {
     }
     lines.push(String::new());
 
+    // ── 四、关键改进方向 ──
+    lines.push("## 四、关键改进方向\n".into());
+
+    // 最差指标排行
+    let mut sorted_metrics: Vec<(&String, &f64)> = stats.metric_averages.iter().collect();
+    sorted_metrics.sort_by(|a, b| a.1.partial_cmp(b.1).unwrap());
+
+    lines.push("### 最需改进的指标\n".into());
+    for (mk, avg) in sorted_metrics.iter().take(5) {
+        let label = METRICS
+            .iter()
+            .find(|m| m.0 == mk.as_str())
+            .map(|m| m.2)
+            .unwrap_or(mk);
+        let dim = METRICS
+            .iter()
+            .find(|m| m.0 == mk.as_str())
+            .map(|m| m.1)
+            .unwrap_or("");
+        let dim_label = match dim {
+            "narrative" => "叙事工程",
+            "knowledge" => "知识工程",
+            "cognitive" => "认知工程",
+            _ => dim,
+        };
+        lines.push(format!(
+            "- **{}** ({}/5) — 来自 {} 维度",
+            label, avg, dim_label
+        ));
+    }
+    lines.push(String::new());
+
+    // 最差文件排行
+    let mut sorted_files_desc = output.files.clone();
+    sorted_files_desc.sort_by(|a, b| a.overall_score.partial_cmp(&b.overall_score).unwrap());
+
+    lines.push("### 最需改进的文件\n".into());
+    lines.push("| 文件 | 总分 | 叙事 | 知识 | 认知 | 主要短板 |".into());
+    lines.push("|------|------|------|------|------|--------|".into());
+    for f in sorted_files_desc.iter().take(5) {
+        if f.error.is_some() {
+            continue;
+        }
+        let narrative = f.dimension_scores.get("narrative").copied().unwrap_or(0.0);
+        let knowledge = f.dimension_scores.get("knowledge").copied().unwrap_or(0.0);
+        let cognitive = f.dimension_scores.get("cognitive").copied().unwrap_or(0.0);
+        let mut weak = Vec::new();
+        if narrative < 3.0 {
+            weak.push("叙事");
+        }
+        if knowledge < 3.0 {
+            weak.push("知识");
+        }
+        if cognitive < 3.0 {
+            weak.push("认知");
+        }
+        let weakness = if weak.is_empty() {
+            "—".into()
+        } else {
+            weak.join("+")
+        };
+        lines.push(format!(
+            "| {} | {} | {} | {} | {} | {} |",
+            f.file, f.overall_score, narrative, knowledge, cognitive, weakness
+        ));
+    }
+    lines.push(String::new());
+
     lines.join("\n")
 }
 
