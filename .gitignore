@@ -43,3 +43,5 @@ src/cli/target/
 .terraform/
 terraform/terraform.tfstate
 terraform/terraform.tfstate.backup
+p40-results.json
+p40-report.md
