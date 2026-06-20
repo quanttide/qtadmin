@@ -1,5 +1,24 @@
 # CHANGELOG
 
+## [0.0.15] - 2026-06-20
+
+### Added
+
+- `cli_config.rs`：集中管理环境变量和默认路径（QTRECURIT_PROFILE, DEEPSEEK_API_KEY 等）
+- 测试覆盖：cli_config（4 测试）、quality metrics（3 测试）、position（3 测试）、connect notice（3 测试）、auth user（3 测试）
+
+### Changed
+
+- `git_utils.rs` 移入 `asset/git_utils.rs`
+- `human/position.rs` 改为从 `profile/human/positions.json` 读取，移除 SQLite 依赖
+- `human/config.rs` 使用 `cli_config` 代替硬编码环境变量
+- `asset/quality.rs` 使用 `cli_config` 代替硬编码路径和 API Key
+
+### Removed
+
+- 移除 `provider.rs`（Provider API 客户端）
+- 移除 `human/position.rs` 中的 SQLite + provider 模式代码
+
 ## [0.0.14] - 2026-06-20
 
 ### Added
