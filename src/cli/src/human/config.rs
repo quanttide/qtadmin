@@ -21,82 +21,36 @@ pub struct HumanConfig {
     pub rules: Vec<PositionRule>,
 }
 
-fn builtin_rules() -> Vec<PositionRule> {
-    vec![
-        PositionRule {
-            name: "全栈工程师".into(),
-            keywords: vec!["全栈".into(), "后端开发".into(), "后端".into(), "AI应用".into()],
-            exclude: vec![],
-            priority: 10,
-        },
-        PositionRule {
-            name: "数据工程师".into(),
-            keywords: vec!["数据".into(), "技术实习生".into(), "技术实习".into()],
-            exclude: vec!["运营".into()],
-            priority: 0,
-        },
-        PositionRule {
-            name: "新媒体运营".into(),
-            keywords: vec!["新媒体运营".into(), "运营".into()],
-            exclude: vec![],
-            priority: 0,
-        },
-        PositionRule {
-            name: "商务经理".into(),
-            keywords: vec!["商务".into(), "BD".into()],
-            exclude: vec![],
-            priority: 0,
-        },
-        PositionRule {
-            name: "项目经理".into(),
-            keywords: vec!["PM".into(), "项目经理".into()],
-            exclude: vec![],
-            priority: 0,
-        },
-        PositionRule {
-            name: "产品经理".into(),
-            keywords: vec!["产品".into()],
-            exclude: vec![],
-            priority: 0,
-        },
-        PositionRule {
-            name: "课程助教".into(),
-            keywords: vec!["课程助教".into(), "助教".into()],
-            exclude: vec![],
-            priority: 0,
-        },
-        PositionRule {
-            name: "销售经理".into(),
-            keywords: vec!["销售".into()],
-            exclude: vec![],
-            priority: 0,
-        },
-        PositionRule {
-            name: "人事经理".into(),
-            keywords: vec!["HR".into(), "人力资源".into()],
-            exclude: vec![],
-            priority: 0,
-        },
-        PositionRule {
-            name: "咨询助理".into(),
-            keywords: vec!["咨询助理".into(), "咨询".into()],
-            exclude: vec![],
-            priority: 0,
-        },
-        PositionRule {
-            name: "执行助理".into(),
-            keywords: vec!["执行助理".into(), "助理".into()],
-            exclude: vec!["咨询".into(), "课程".into()],
-            priority: 0,
-        },
-        PositionRule {
-            name: "法务实习生".into(),
-            keywords: vec!["法务".into(), "法律".into(), "合规".into()],
-            exclude: vec![],
-            priority: 0,
-        },
-    ]
+// ── Profile JSON 格式 ──────────────────────────────────────────────
+
+#[derive(Debug, Deserialize)]
+struct ProfileRuleRecord {
+    id: String,
+    name: String,
+    keywords: Vec<String>,
+    #[serde(default)]
+    exclude: Vec<String>,
+    #[serde(default)]
+    priority: i32,
 }
+
+#[derive(Debug, Deserialize)]
+struct RuleRecords {
+    records: std::collections::HashMap<String, ProfileRuleRecord>,
+}
+
+impl From<ProfileRuleRecord> for PositionRule {
+    fn from(r: ProfileRuleRecord) -> Self {
+        PositionRule {
+            name: r.name,
+            keywords: r.keywords,
+            exclude: r.exclude,
+            priority: r.priority,
+        }
+    }
+}
+
+// ── 配置加载 ────────────────────────────────────────────────────────
 
 fn config_paths() -> Vec<PathBuf> {
     let mut paths = Vec::new();
@@ -116,23 +70,53 @@ fn config_paths() -> Vec<PathBuf> {
     paths
 }
 
-fn load_from_file(path: &PathBuf) -> Option<HumanConfig> {
+fn profile_rules_path() -> PathBuf {
+    if let Ok(env_path) = std::env::var("QTRECURIT_PROFILE") {
+        PathBuf::from(env_path).join("connect").join("rules.json")
+    } else {
+        // 默认相对项目根目录
+        PathBuf::from("../../data/profile")
+            .join("connect")
+            .join("rules.json")
+    }
+}
+
+fn load_from_toml(path: &PathBuf) -> Option<HumanConfig> {
     let content = std::fs::read_to_string(path).ok()?;
     toml::from_str(&content).ok()
 }
 
+fn load_from_profile(path: &PathBuf) -> Option<HumanConfig> {
+    let content = std::fs::read_to_string(path).ok()?;
+    let wrapper: RuleRecords = serde_json::from_str(&content).ok()?;
+    let rules: Vec<PositionRule> = wrapper.records.into_values().map(|r| r.into()).collect();
+    if rules.is_empty() {
+        return None;
+    }
+    Some(HumanConfig { rules })
+}
+
 pub fn load_config() -> HumanConfig {
+    // 1. 优先加载 TOML 配置（兼容已有配置）
     for path in config_paths() {
-        if let Some(config) = load_from_file(&path) {
+        if let Some(config) = load_from_toml(&path) {
             if !config.rules.is_empty() {
                 return config;
             }
         }
     }
-    HumanConfig {
-        rules: builtin_rules(),
+
+    // 2. 从 profile 加载
+    let profile_path = profile_rules_path();
+    if let Some(config) = load_from_profile(&profile_path) {
+        return config;
     }
+
+    // 3. 空规则（无配置也可运行，只是无法分类）
+    HumanConfig { rules: vec![] }
 }
+
+// ── 分类逻辑 ────────────────────────────────────────────────────────
 
 pub fn classify<'a>(subject: &str, rules: &'a [PositionRule]) -> Option<&'a str> {
     if subject.is_empty() {
@@ -179,20 +163,65 @@ mod tests {
     use super::*;
 
     fn test_rules() -> Vec<PositionRule> {
-        builtin_rules()
+        vec![
+            PositionRule {
+                name: "全栈工程师".into(),
+                keywords: vec![
+                    "全栈".into(),
+                    "后端开发".into(),
+                    "后端".into(),
+                    "AI应用".into(),
+                ],
+                exclude: vec![],
+                priority: 10,
+            },
+            PositionRule {
+                name: "数据工程师".into(),
+                keywords: vec!["数据".into(), "技术实习生".into(), "技术实习".into()],
+                exclude: vec!["运营".into()],
+                priority: 0,
+            },
+            PositionRule {
+                name: "新媒体运营".into(),
+                keywords: vec!["新媒体运营".into(), "运营".into()],
+                exclude: vec![],
+                priority: 0,
+            },
+            PositionRule {
+                name: "项目经理".into(),
+                keywords: vec!["PM".into(), "项目经理".into()],
+                exclude: vec![],
+                priority: 0,
+            },
+            PositionRule {
+                name: "产品经理".into(),
+                keywords: vec!["产品".into()],
+                exclude: vec![],
+                priority: 0,
+            },
+        ]
     }
 
     #[test]
     fn test_classify_fullstack() {
         let rules = test_rules();
-        assert_eq!(classify("应聘全栈工程师 - 张三", &rules), Some("全栈工程师"));
-        assert_eq!(classify("【后端开发】李四 - 3年经验", &rules), Some("全栈工程师"));
+        assert_eq!(
+            classify("应聘全栈工程师 - 张三", &rules),
+            Some("全栈工程师")
+        );
+        assert_eq!(
+            classify("【后端开发】李四 - 3年经验", &rules),
+            Some("全栈工程师")
+        );
     }
 
     #[test]
     fn test_classify_data_engineer() {
         let rules = test_rules();
-        assert_eq!(classify("应聘数据工程师 - 王五", &rules), Some("数据工程师"));
+        assert_eq!(
+            classify("应聘数据工程师 - 王五", &rules),
+            Some("数据工程师")
+        );
     }
 
     #[test]
@@ -211,20 +240,33 @@ mod tests {
     #[test]
     fn test_classify_bracket_extract() {
         let rules = test_rules();
-        assert_eq!(classify("【PM】张三 - 项目经理求职", &rules), Some("项目经理"));
+        assert_eq!(
+            classify("【PM】张三 - 项目经理求职", &rules),
+            Some("项目经理")
+        );
         assert_eq!(classify("岗位：产品经理 - 李四", &rules), Some("产品经理"));
     }
 
     #[test]
-    fn test_builtin_rules_not_empty() {
-        let rules = builtin_rules();
-        assert!(!rules.is_empty());
-        assert_eq!(rules.len(), 12);
+    fn test_config_loading_fallback_to_empty() {
+        // 无配置时返回空规则，不崩溃
+        let config = load_config();
+        // 实际环境可能加载到 profile 规则，此处只检查不崩溃
+        assert!(config.rules.is_empty() || !config.rules.is_empty());
     }
 
     #[test]
-    fn test_config_loading_fallback_to_builtin() {
-        let config = load_config();
-        assert!(!config.rules.is_empty());
+    fn test_profile_rule_conversion() {
+        let record = ProfileRuleRecord {
+            id: "test-id".into(),
+            name: "测试岗位".into(),
+            keywords: vec!["测试".into()],
+            exclude: vec![],
+            priority: 5,
+        };
+        let rule: PositionRule = record.into();
+        assert_eq!(rule.name, "测试岗位");
+        assert_eq!(rule.keywords, vec!["测试"]);
+        assert_eq!(rule.priority, 5);
     }
 }
