@@ -1,5 +1,31 @@
 # CHANGELOG
 
+## [0.0.16] - 2026-06-22
+
+### Removed
+
+- `auth` 模块整体移除（auth/user SQLite 用户 CRUD）
+- `qtrecurit.toml` 配置文件移除（规则已迁移到 profile）
+- `human/config.rs` 中 TOML 配置加载路径（config_paths/load_from_toml）
+- `cli_config.rs` 中内联函数（profile_rules_path/profile_quality_path）
+- `connect/mod.rs` 中的 `EmailFetcher` trait 和 `Message` 结构体
+- `business/mod.rs` 中的 `OrderStore` trait
+- 依赖：`sqlx`、`tokio`、`toml`、`thiserror`
+
+### Changed
+
+- `human/config.rs`：配置加载简化为仅从 profile 读取
+- `cli_config.rs`：仅保留 `profile_root()` 和 `deepseek_api_key()`，其余内联到调用处
+- `connect/email/lark.rs`：`fetch_all` 改为常规方法，直接返回 `MailItem`
+- `qtrecurit/status.rs`：`format_status` 改为直接接收 `&[MailItem]`，移除 trait 依赖
+- `business/status.rs`：`format_status` 改为直接接收 `&BusinessStatus`，移除 trait 依赖
+
+### Tests
+
+- 新增 `tests/contract/recruitment.json` 测试夹具
+- 移除 auth 相关集成测试（test_auth_help/test_auth_user_help）
+- 146 测试全部通过
+
 ## [0.0.15] - 2026-06-20
 
 ### Added

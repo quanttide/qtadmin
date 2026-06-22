@@ -6,7 +6,7 @@ use std::time::Duration;
 use anyhow::{Context, Result};
 use serde::Deserialize;
 
-use super::super::{EmailFetcher, Message};
+use crate::human::report::MailItem;
 
 #[derive(Debug, Deserialize)]
 struct LarkResponse {
@@ -24,8 +24,8 @@ struct LarkMessage {
 
 pub struct LarkCliFetcher;
 
-impl EmailFetcher for LarkCliFetcher {
-    fn fetch_all(&self) -> Result<Vec<Message>> {
+impl LarkCliFetcher {
+    pub fn fetch_all(&self) -> Result<Vec<MailItem>> {
         let mut all = Vec::new();
         let mut token: Option<String> = None;
 
@@ -36,7 +36,10 @@ impl EmailFetcher for LarkCliFetcher {
                     break;
                 }
                 for m in batch {
-                    all.push(Message { subject: m.subject, date: m.date });
+                    all.push(MailItem {
+                        subject: m.subject,
+                        date: m.date,
+                    });
                 }
             } else {
                 break;

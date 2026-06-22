@@ -1,14 +1,13 @@
 use crate::asset;
-use crate::auth;
 use crate::business;
 use crate::connect;
 use crate::human;
+use crate::knowl;
 use crate::project;
-use crate::qtcloud;
 use crate::qtclass;
+use crate::qtcloud;
 use crate::qtconsult;
 use crate::qtdata;
-use crate::knowl;
 use crate::qtrecurit;
 
 use clap::{Parser, Subcommand};
@@ -28,8 +27,6 @@ pub struct Cli {
 pub enum Commands {
     /// 数字资产职能
     Asset(asset::AssetArgs),
-    /// 身份与权限管理
-    Auth(auth::AuthArgs),
     /// 商务拓展职能
     Business(business::BusinessArgs),
     /// 连接基础设施
@@ -58,7 +55,6 @@ pub fn run() {
 
     match &cli.command {
         Some(Commands::Asset(args)) => asset::dispatch(args),
-        Some(Commands::Auth(args)) => auth::dispatch(args),
         Some(Commands::Business(args)) => business::dispatch(args),
         Some(Commands::Connect(args)) => connect::dispatch(args),
         Some(Commands::Human(args)) => human::dispatch(args, provider),

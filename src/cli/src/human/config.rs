@@ -25,6 +25,7 @@ pub struct HumanConfig {
 
 #[derive(Debug, Deserialize)]
 struct ProfileRuleRecord {
+    #[allow(dead_code)]
     id: String,
     name: String,
     keywords: Vec<String>,
@@ -52,29 +53,6 @@ impl From<ProfileRuleRecord> for PositionRule {
 
 // ── 配置加载 ────────────────────────────────────────────────────────
 
-fn config_paths() -> Vec<PathBuf> {
-    let mut paths = Vec::new();
-
-    if let Ok(env_path) = std::env::var(crate::cli_config::ENV_CONFIG) {
-        paths.push(PathBuf::from(env_path));
-    }
-
-    if let Ok(cwd) = std::env::current_dir() {
-        paths.push(cwd.join("qtrecurit.toml"));
-    }
-
-    if let Some(config_dir) = dirs::config_dir() {
-        paths.push(config_dir.join("qtadmin").join("qtrecurit.toml"));
-    }
-
-    paths
-}
-
-fn load_from_toml(path: &PathBuf) -> Option<HumanConfig> {
-    let content = std::fs::read_to_string(path).ok()?;
-    toml::from_str(&content).ok()
-}
-
 fn load_from_profile(path: &PathBuf) -> Option<HumanConfig> {
     let content = std::fs::read_to_string(path).ok()?;
     let wrapper: RuleRecords = serde_json::from_str(&content).ok()?;
@@ -86,23 +64,10 @@ fn load_from_profile(path: &PathBuf) -> Option<HumanConfig> {
 }
 
 pub fn load_config() -> HumanConfig {
-    // 1. 优先加载 TOML 配置（兼容已有配置）
-    for path in config_paths() {
-        if let Some(config) = load_from_toml(&path) {
-            if !config.rules.is_empty() {
-                return config;
-            }
-        }
-    }
-
-    // 2. 从 profile 加载
-    let profile_path = crate::cli_config::profile_rules_path();
-    if let Some(config) = load_from_profile(&profile_path) {
-        return config;
-    }
-
-    // 3. 空规则（无配置也可运行，只是无法分类）
-    HumanConfig { rules: vec![] }
+    let profile_path = crate::cli_config::profile_root()
+        .join("connect")
+        .join("rules.json");
+    load_from_profile(&profile_path).unwrap_or(HumanConfig { rules: vec![] })
 }
 
 // ── 分类逻辑 ────────────────────────────────────────────────────────
@@ -238,9 +203,7 @@ mod tests {
 
     #[test]
     fn test_config_loading_fallback_to_empty() {
-        // 无配置时返回空规则，不崩溃
         let config = load_config();
-        // 实际环境可能加载到 profile 规则，此处只检查不崩溃
         assert!(config.rules.is_empty() || !config.rules.is_empty());
     }
 

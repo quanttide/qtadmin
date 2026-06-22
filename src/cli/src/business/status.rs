@@ -1,22 +1,41 @@
 use anyhow::Result;
 
-use super::{OrderItem, OrderStore, BusinessStatus};
+use super::{load_orders, BusinessStatus, OrderItem};
 
 pub const STAGES: &[&str] = &["商机", "报价", "谈判", "签约"];
 
 pub fn default_orders() -> BusinessStatus {
     BusinessStatus {
         orders: vec![
-            OrderItem { title: "客户群消息总结流程".into(), client: "秘书处".into(), stage: "报价".into(), amount: "50,000".into() },
-            OrderItem { title: "Vibe Coding 入门培训".into(), client: "秘书处".into(), stage: "商机".into(), amount: "—".into() },
-            OrderItem { title: "招聘系统".into(), client: "秘书处".into(), stage: "商机".into(), amount: "—".into() },
-            OrderItem { title: "创始人日志精炼".into(), client: "秘书处".into(), stage: "商机".into(), amount: "—".into() },
+            OrderItem {
+                title: "客户群消息总结流程".into(),
+                client: "秘书处".into(),
+                stage: "报价".into(),
+                amount: "50,000".into(),
+            },
+            OrderItem {
+                title: "Vibe Coding 入门培训".into(),
+                client: "秘书处".into(),
+                stage: "商机".into(),
+                amount: "—".into(),
+            },
+            OrderItem {
+                title: "招聘系统".into(),
+                client: "秘书处".into(),
+                stage: "商机".into(),
+                amount: "—".into(),
+            },
+            OrderItem {
+                title: "创始人日志精炼".into(),
+                client: "秘书处".into(),
+                stage: "商机".into(),
+                amount: "—".into(),
+            },
         ],
     }
 }
 
-pub fn format_status(store: &dyn OrderStore) -> String {
-    let status = store.load();
+pub fn format_status(status: &BusinessStatus) -> String {
     let mut out = String::new();
 
     out.push_str("# 商务拓展\n\n");
@@ -50,7 +69,10 @@ pub fn format_status(store: &dyn OrderStore) -> String {
             }
             None => o.stage.clone(),
         };
-        out.push_str(&format!("| {} | {} | {} | {} |\n", o.title, o.client, stage_bar, o.amount));
+        out.push_str(&format!(
+            "| {} | {} | {} | {} |\n",
+            o.title, o.client, stage_bar, o.amount
+        ));
     }
 
     out
@@ -60,8 +82,8 @@ pub fn format_status(store: &dyn OrderStore) -> String {
 pub struct StatusArgs;
 
 pub fn run(_args: &StatusArgs) -> Result<()> {
-    let store = super::FileOrderStore;
-    print!("{}", format_status(&store));
+    let status = load_orders();
+    print!("{}", format_status(&status));
     Ok(())
 }
 
@@ -69,28 +91,18 @@ pub fn run(_args: &StatusArgs) -> Result<()> {
 mod tests {
     use super::*;
 
-    struct MockStore {
-        status: BusinessStatus,
-    }
-
-    impl OrderStore for MockStore {
-        fn load(&self) -> BusinessStatus {
-            self.status.clone()
-        }
-    }
-
     #[test]
     fn test_format_status_contains_header() {
-        let store = MockStore { status: default_orders() };
-        let output = format_status(&store);
+        let status = default_orders();
+        let output = format_status(&status);
         assert!(output.contains("商务拓展"));
         assert!(output.contains("商务流程"));
     }
 
     #[test]
     fn test_format_status_contains_orders() {
-        let store = MockStore { status: default_orders() };
-        let output = format_status(&store);
+        let status = default_orders();
+        let output = format_status(&status);
         assert!(output.contains("客户群消息总结流程"));
         assert!(output.contains("Vibe Coding 入门培训"));
         assert!(output.contains("招聘系统"));
@@ -99,18 +111,16 @@ mod tests {
 
     #[test]
     fn test_format_status_stage_bar() {
-        let store = MockStore { status: default_orders() };
-        let output = format_status(&store);
+        let status = default_orders();
+        let output = format_status(&status);
         // 报价 is 2nd stage: ● ◉ ○ ○
         assert!(output.contains("● ◉ ○ ○"));
     }
 
     #[test]
     fn test_format_status_empty() {
-        let store = MockStore {
-            status: BusinessStatus { orders: vec![] },
-        };
-        let output = format_status(&store);
+        let status = BusinessStatus { orders: vec![] };
+        let output = format_status(&status);
         assert!(output.contains("商务拓展"));
     }
 }
