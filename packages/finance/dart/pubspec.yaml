@@ -1,0 +1,20 @@
+name: quanttide_finance
+description: 量潮金融领域模型 — 核心实体（Journal、JournalEntry）
+version: 0.2.0
+homepage: https://github.com/quanttide/quanttide-finance-toolkit
+repository: https://github.com/quanttide/quanttide-finance-toolkit
+issue_tracker: https://github.com/quanttide/quanttide-finance-toolkit/issues
+
+environment:
+  sdk: ^3.11.5
+
+dependencies:
+  freezed_annotation: ^3.1.0
+  json_annotation: ^4.9.0
+
+dev_dependencies:
+  freezed: ^3.2.5
+  json_serializable: ^6.9.0
+  build_runner: ^2.4.6
+  lints: ^6.0.0
+  test: ^1.25.6
