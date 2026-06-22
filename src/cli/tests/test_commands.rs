@@ -25,7 +25,9 @@ fn test_qtconsult_help() {
 #[test]
 fn test_qtconsult_status_help() {
     let mut cmd = assert_cmd::Command::cargo_bin("qtadmin").unwrap();
-    cmd.args(["qtconsult", "status", "--help"]).assert().success();
+    cmd.args(["qtconsult", "status", "--help"])
+        .assert()
+        .success();
 }
 
 #[test]
@@ -80,18 +82,6 @@ fn test_human_status_help() {
 fn test_asset_help() {
     let mut cmd = assert_cmd::Command::cargo_bin("qtadmin").unwrap();
     cmd.args(["asset", "--help"]).assert().success();
-}
-
-#[test]
-fn test_auth_help() {
-    let mut cmd = assert_cmd::Command::cargo_bin("qtadmin").unwrap();
-    cmd.args(["auth", "--help"]).assert().success();
-}
-
-#[test]
-fn test_auth_user_help() {
-    let mut cmd = assert_cmd::Command::cargo_bin("qtadmin").unwrap();
-    cmd.args(["auth", "user", "--help"]).assert().success();
 }
 
 #[test]

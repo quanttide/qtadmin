@@ -92,7 +92,9 @@ fn load_metrics() -> Vec<MetricDef> {
     static CACHE: std::sync::OnceLock<Vec<MetricDef>> = std::sync::OnceLock::new();
     CACHE
         .get_or_init(|| {
-            let profile_path = crate::cli_config::profile_quality_path();
+            let profile_path = crate::cli_config::profile_root()
+                .join("asset")
+                .join("quality.json");
             if let Some(metrics) = load_from_profile(&profile_path) {
                 return metrics;
             }
@@ -108,6 +110,7 @@ struct QualityMetricsFile {
 
 #[derive(Debug, Deserialize)]
 struct DimensionDef {
+    #[allow(dead_code)]
     label: String,
     metrics: Vec<MetricEntry>,
 }

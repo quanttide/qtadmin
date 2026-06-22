@@ -1,5 +1,5 @@
-mod status;
 mod quote;
+mod status;
 
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
@@ -17,22 +17,14 @@ pub struct OrderItem {
     pub amount: String,
 }
 
-pub trait OrderStore {
-    fn load(&self) -> BusinessStatus;
-}
-
-pub struct FileOrderStore;
-
-impl OrderStore for FileOrderStore {
-    fn load(&self) -> BusinessStatus {
-        let path = order_path();
-        if let Ok(content) = std::fs::read_to_string(&path) {
-            if let Ok(status) = serde_json::from_str(&content) {
-                return status;
-            }
+fn load_orders() -> BusinessStatus {
+    let path = order_path();
+    if let Ok(content) = std::fs::read_to_string(&path) {
+        if let Ok(status) = serde_json::from_str(&content) {
+            return status;
         }
-        status::default_orders()
     }
+    status::default_orders()
 }
 
 fn order_path() -> PathBuf {

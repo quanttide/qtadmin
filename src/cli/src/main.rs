@@ -1,5 +1,4 @@
 mod asset;
-mod auth;
 mod business;
 mod cli;
 mod cli_config;
