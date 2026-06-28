@@ -38,6 +38,7 @@ Thumbs.db
 
 # Rust
 src/cli/target/
+examples/*/target/
 
 # Terraform
 .terraform/
