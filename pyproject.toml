@@ -1,3 +1,9 @@
+[project]
+name = "qtadmin"
+version = "0.1.0"
+description = "量潮管理后台"
+requires-python = ">=3.12"
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 python_files = ["test_*.py"]
