@@ -4,6 +4,128 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/).
 
+## [0.1.1] - 2026-06-28
+
+### Added
+
+- feat(asset): add improvement directions section to quality report
+- feat(asset): rewrite quality in Rust (port from p40)
+- feat(asset): add evaluate command for handbook quality assessment
+- feat: add a.txt
+- feat: add feature
+- feat(scene-graph): add scene-graph experiment and extraction type
+- feat(knowl): add worldbuilding extraction type
+- feat: translate Python extract.py to Rust and integrate as knowl extract subcommand
+- feat: store classification rules in Provider, CLI loads via --provider
+- feat: add e2e test fixture with Provider lifecycle
+- ci: add CLI cargo build/test to pre-commit hook
+- feat: add --provider mode to CLI (HTTP client)
+- feat: implement v0.0.6 business domain API
+- feat: implement v0.0.5 auth domain API
+- feat: implement v0.0.4 connect domain API
+- feat: implement v0.0.3 human domain CRUD API
+- feat: add v0.0.2 infrastructure (config, logging, CI, error handling)
+- feat: integrate connect/notice, auth/user, human/position into CLI
+- feat: add connect examples (notice script and README)
+- feat: 新增 business quote 报价计算命令
+- feat: 增加法务实习生岗位识别规则
+- feat: 新增 business/knowl/auth/delib/prototype 等实验示例
+- feat: 新增 qtadmin-auth 和 qtadmin-org 示例
+- feat: 招聘计划数据共享 - Studio 读取 CLI 同源 JSON
+- feat: 实现 qtrecurit status 招聘数据统计命令
+- feat: add recruitment stats script
+- chore: 添加 Apache 2.0 协议
+- chore: keep views directory with .gitkeep
+
+### Changed
+
+- chore: add contract.yaml defining scope→dir mapping
+- chore: .gitignore 补充 examples/*/target/
+- refactor(quality): load metrics from profile instead of hardcoding
+- refactor(human): load classification rules from profile instead of hardcoding
+- refactor(asset): output quality report to stdout
+- chore: ignore generated p40 output files
+- refactor(asset): status=结构合规, quality=语义评估
+- refactor(asset): rename audit to quality
+- refactor(asset): separate status from audit
+- refactor(asset): merge evaluate into audit --quality
+- refactor(asset): rename backup to archive
+- refactor: move classification rules from human to connect domain
+- refactor: extract auth module to libs/qtcloud-auth
+- chore: update STORE_PATH to profile directory
+- refactor: align CLI provider models with API; rename tests/contract to tests/fixtures
+- chore: isolate qtadmin data to /home/iguo/data/qtadmin
+- refactor: prefix env vars with QTADMIN_, add backward compatibility
+- refactor: replace public register with pre-seeded admin user
+- refactor: strip business logic and external integrations from provider
+- refactor: replace db stub with file-based store layer
+- refactor: convert provider from Python (FastAPI) to Go
+- refactor: rename org to human, convert API to CLI
+- refactor: 吸收 knowl 到 CLI
+- refactor: 融合 quotation.rs 和 quote.rs
+- refactor: 吸收 examples/business 到 CLI
+- refactor: business 和 knowl 从 Python 转为 Rust
+- chore: knowl/data 加入版本控制
+- refactor: 将 data/ 不过滤规则移到本地 .gitignore 管理
+- chore: 添加 business/data/ 到版本控制
+- chore: 重命名命令为 qtadmin
+- refactor: 转换 qtadmin-org 为 Rust（axum+sqlx），Port 3001
+- refactor: 合并 qtadmin-auth 到 auth，Python FastAPI 改写为 Rust axum+sqlx
+- refactor(asset): 遵循 12-factor 改造，提取 format_report 返回 String
+- refactor(connect): 细分 lark 为 lark/mail 模块
+- refactor: connect 提升为顶层职能域模块
+- refactor: 提取 trait 接口提升可测试性，覆盖率 73%
+- refactor: 拆分 qtrecurit 为 connect/human/status 三层
+- refactor: rewrite Python CLI to Rust
+- refactor: extract qtadmin-navigation package, decouple from WorkspaceInfo
+- refactor: extract qtadmin-dashboard package
+- refactor: extract DashboardBloc from AppBloc
+- refactor: replace BundleSource with FileSource, remove data/ from pubspec assets
+- ci: replace fixture copy with asset stubs for build
+- ci: copy fixtures before test in studio workflow
+- refactor: extract data_sources infrastructure package
+- refactor: move domain constants and screens into packages
+- refactor: move ConsultBloc into qtadmin-qtconsult package
+- ci: change deploy trigger from push to release
+- refactor: extract remaining domain packages (qtclass, think, org)
+- refactor: extract qtadmin-qtconsult package from lib/models/
+- Revert "docs: add profile-as-source-of-truth to ROADMAP"
+
+### Fixed
+
+- fix: studio CHANGELOG 改用 Keep a Changelog 格式 [0.1.3]
+- fix(scene-graph): add excerpt fields for verbatim source text
+- fix(worldbuilding): update prompt for romance fiction analysis
+- fix: scope gitignore 'server' rule to root only
+- fix: 取消过滤 examples/business/data/
+- fix: 更新集成测试中二进制名称 qtadmin-cli → qtadmin
+- fix(asset): rewrite status as current state reporter
+
+### Removed
+
+- refactor: 移除 SQLite 依赖和死代码，精简依赖至 profile 模式
+- refactor: remove provider, move git_utils to asset, position reads from profile
+- chore: remove ROADMAP.md (items completed or superseded)
+- chore: remove src/provider/ROADMAP.md and TODO.md
+- chore: remove src/cli/ROADMAP.md and TODO.md (superseded by root ROADMAP)
+- chore: remove dead code (perm module, unused provider methods, load_rules)
+- chore: remove cli CI workflow (covered by pre-commit hook)
+- chore: remove redundant e2e_test.go (covered by integration_test.go)
+- chore: remove unused upload_oss.py
+- chore: 移除 tarpaulin 产物
+- chore: 移除 tarpaulin 产物 lcov.info
+- refactor: 移除 knowl ROADMAP.md 和 TODO.md
+- refactor: 移除 delib 示例
+- chore: remove default examples
+- chore: 移除 examples/.gitignore（已由各示例独立管理）
+- refactor: 移除旧的 Python qtadmin-org（已迁移到 Rust org）
+- chore: remove prototype examples
+- chore: 移除 Python CLI 遗留测试
+- chore: remove qtrecurit examples, superseded by qtadmin-cli v0.0.5
+- chore: 移除已废弃的产品文档技能（BRD/DRD/PRD）
+- clean: remove old navigation.dart tracked by git
+- clean: remove unused stat_item.dart from main project
+
 ## [0.1.0] - 2026-05-09
 
 ### Studio
