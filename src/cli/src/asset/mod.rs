@@ -1,5 +1,5 @@
 mod archive;
-mod git_utils;
+pub(crate) mod git_utils;
 mod quality;
 mod status;
 

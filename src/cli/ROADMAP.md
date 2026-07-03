@@ -47,17 +47,19 @@ qtadmin share <project> [version]
 
 ### 交付物
 
-- [ ] 配置解析：TOML 替代 INI（`share.toml`），与 CLI 现有风格一致
-- [ ] `rsync_copy`：spawn `rsync` 进程，支持 exclude 规则
-- [ ] `llm_decide_destination`：调用 DeepSeek API，解析 JSON 决策
-- [ ] `llm_sanitize`：批量文件扫描 + LLM 敏感内容检测 + 替换
-- [ ] `run_build`：spawn build 命令，失败中止
-- [ ] `git_commit`：stage → diff → LLM 决策 → commit → tag
-- [ ] 集成测试：模拟私仓→公仓全流程
+- [x] 配置解析：TOML 替代 INI（`share.toml`），与 CLI 现有风格一致
+- [x] `rsync_copy`：spawn `rsync` 进程，支持 exclude 规则
+- [x] `llm_decide_destination`：调用 DeepSeek API，解析 JSON 决策
+- [x] `llm_sanitize`：批量文件扫描 + 静态规则 + LLM 敏感内容检测 + 替换
+- [x] `run_build`：spawn build 命令，失败中止
+- [x] `git_commit`：stage → diff → LLM 决策 → commit → tag
+- [x] 集成测试：22 个单元测试覆盖各模块
 
 | 特性 | 说明 |
 |------|------|
 | 静态脱敏规则 | 内置正则规则（邮箱、域名、IP、API Key 模式），脱敏不依赖 LLM |
-| 差异脱敏 | 仅处理 LLM 返回的新增敏感模式，避免重复扫描全量文件 |
-| 脱敏预览 | `--dry-run` 模式，仅打印替换内容不写入文件 |
-| 敏感模式缓存 | 项目级别的脱敏记录缓存，增量更新 |
+| `--dry-run` | 仅预览脱敏内容，不写入文件 |
+| `--no-llm` | 跳过 LLM 脱敏，仅使用静态规则 |
+| `--no-decide` | 跳过 LLM 判断目标位置 |
+| `--no-build` | 跳过编译验证 |
+| `--no-commit` | 跳过 git commit |

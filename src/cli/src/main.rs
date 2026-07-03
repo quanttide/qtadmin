@@ -11,6 +11,7 @@ mod qtcloud;
 mod qtconsult;
 mod qtdata;
 mod qtrecurit;
+mod share;
 
 fn main() {
     cli::run();

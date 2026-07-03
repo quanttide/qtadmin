@@ -9,6 +9,7 @@ use crate::qtcloud;
 use crate::qtconsult;
 use crate::qtdata;
 use crate::qtrecurit;
+use crate::share;
 
 use clap::{Parser, Subcommand};
 
@@ -47,6 +48,8 @@ pub enum Commands {
     Qtrecurit(qtrecurit::QtrecuritArgs),
     /// 知识工程
     Knowl(knowl::KnowlArgs),
+    /// 代码脱敏发布
+    Share(share::ShareArgs),
 }
 
 pub fn run() {
@@ -65,6 +68,12 @@ pub fn run() {
         Some(Commands::Qtdata(args)) => qtdata::dispatch(args),
         Some(Commands::Qtrecurit(args)) => qtrecurit::dispatch(args),
         Some(Commands::Knowl(args)) => knowl::dispatch(args),
+        Some(Commands::Share(args)) => {
+            if let Err(e) = share::run(args) {
+                eprintln!("错误: {}", e);
+                std::process::exit(1);
+            }
+        }
         None => {}
     }
 }
