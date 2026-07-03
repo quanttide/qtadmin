@@ -1,0 +1,19 @@
+# opensource.conf — 项目配置模板
+#
+# 每个项目一个配置节:
+#   private_src — 内部仓库路径
+#   public_dst  — 公开仓库路径
+#   sync_src    — 要同步的源路径（可选，默认: 整个仓库）
+#   sync_dst    — 同步到目标的子路径（可选，默认: 仓库根目录）
+#   build_cmd   — 编译验证命令（可选，可空）
+#   exclude     — 额外排除模式（可选，空格分隔）
+#
+# 路径支持 ~ 缩写和绝对路径。
+
+[my-project]
+private_src=~/path/to/private-repo
+public_dst=~/path/to/public-repo
+sync_src=src/ docs/ README.md
+# sync_dst=examples/my-module  # 留空则 LLM 自动判断位置
+# build_cmd=cargo build --release
+# exclude=data/ target/
