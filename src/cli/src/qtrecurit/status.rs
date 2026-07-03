@@ -70,8 +70,8 @@ mod tests {
         ];
         let args = StatusArgs {
             days: None,
-            start: None,
-            end: None,
+            start: Some("2026-06-01".into()),
+            end: Some("2026-06-30".into()),
         };
         let output = format_status(&items, &args).unwrap();
         assert!(output.contains("2 封投递。"));

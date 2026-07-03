@@ -1,5 +1,30 @@
 # CHANGELOG
 
+## [0.0.17] - 2026-07-03
+
+### Added
+
+- `share` 命令：将内部私仓代码脱敏后发布到公仓（Rust 翻译自 `examples/share/opensource.py`）
+  - `share/config.rs`：TOML 配置解析，`~` 展开，自动查找
+  - `share/copy.rs`：rsync 复制，支持 exclude 规则和路径过滤
+  - `share/sanitize.rs`：静态正则脱敏（邮箱/API Key/内网 IP/手机号）+ LLM 增强检测
+  - `share/decide.rs`：LLM 判断公仓目标目录
+  - `share/commit.rs`：git stage → LLM 决策 → commit → tag
+  - `share/mod.rs`：工作流编排，`init_llm()`，`run_build()`
+- `tests/test_share.rs`：11 个集成测试覆盖完整 pipeline
+- 枚举命令增加 `share` 子命令
+- 依赖：重新引入 `toml = "0.8"`
+
+### Changed
+
+- `asset/git_utils` 模块从 `mod` 改为 `pub(crate) mod`，供 share 模块复用
+
+### Tests
+
+- 新增 46 个 share 模块单元测试（覆盖率 64.6%，含 LLM 达 84.8%）
+- 修复 `qtrecurit::status::test_format_status_with_data`：显式日期参数避免月份变化
+- 3 个 LLM 测试标记 `#[ignore]`（需 `DEEPSEEK_API_KEY` + `--ignored --test-threads=1`）
+
 ## [0.0.16] - 2026-06-22
 
 ### Removed
