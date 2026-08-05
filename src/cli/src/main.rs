@@ -6,11 +6,6 @@ mod connect;
 mod human;
 mod knowl;
 mod project;
-mod qtclass;
-mod qtcloud;
-mod qtconsult;
-mod qtdata;
-mod qtrecurit;
 mod share;
 
 fn main() {

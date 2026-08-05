@@ -4,11 +4,6 @@ use crate::connect;
 use crate::human;
 use crate::knowl;
 use crate::project;
-use crate::qtclass;
-use crate::qtcloud;
-use crate::qtconsult;
-use crate::qtdata;
-use crate::qtrecurit;
 use crate::share;
 
 use clap::{Parser, Subcommand};
@@ -36,16 +31,6 @@ pub enum Commands {
     Human(human::HumanArgs),
     /// 项目管理职能
     Project(project::ProjectArgs),
-    /// 量潮咨询
-    Qtconsult(qtconsult::QtconsultArgs),
-    /// 量潮课堂
-    Qtclass(qtclass::QtclassArgs),
-    /// 量潮云
-    Qtcloud(qtcloud::QtcloudArgs),
-    /// 量潮数据
-    Qtdata(qtdata::QtdataArgs),
-    /// 量潮招聘
-    Qtrecurit(qtrecurit::QtrecuritArgs),
     /// 知识工程
     Knowl(knowl::KnowlArgs),
     /// 代码脱敏发布
@@ -62,11 +47,6 @@ pub fn run() {
         Some(Commands::Connect(args)) => connect::dispatch(args),
         Some(Commands::Human(args)) => human::dispatch(args, provider),
         Some(Commands::Project(args)) => project::dispatch(args),
-        Some(Commands::Qtconsult(args)) => qtconsult::dispatch(args),
-        Some(Commands::Qtclass(args)) => qtclass::dispatch(args),
-        Some(Commands::Qtcloud(args)) => qtcloud::dispatch(args),
-        Some(Commands::Qtdata(args)) => qtdata::dispatch(args),
-        Some(Commands::Qtrecurit(args)) => qtrecurit::dispatch(args),
         Some(Commands::Knowl(args)) => knowl::dispatch(args),
         Some(Commands::Share(args)) => {
             if let Err(e) = share::run(args) {
