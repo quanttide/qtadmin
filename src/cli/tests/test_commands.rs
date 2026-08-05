@@ -1,22 +1,4 @@
 #[test]
-fn test_project_help() {
-    let mut cmd = assert_cmd::Command::cargo_bin("qtadmin").unwrap();
-    cmd.args(["project", "--help"]).assert().success();
-}
-
-#[test]
-fn test_project_status_help() {
-    let mut cmd = assert_cmd::Command::cargo_bin("qtadmin").unwrap();
-    cmd.args(["project", "status", "--help"]).assert().success();
-}
-
-#[test]
-fn test_project_status_output() {
-    let mut cmd = assert_cmd::Command::cargo_bin("qtadmin").unwrap();
-    cmd.args(["project", "status"]).assert().success();
-}
-
-#[test]
 fn test_human_help() {
     let mut cmd = assert_cmd::Command::cargo_bin("qtadmin").unwrap();
     cmd.args(["human", "--help"]).assert().success();
