@@ -1,10 +1,4 @@
-mod asset;
-mod business;
-mod cli;
-mod cli_config;
-mod connect;
-mod human;
-mod knowl;
+use qtadmin_cli::cli;
 
 fn main() {
     cli::run();

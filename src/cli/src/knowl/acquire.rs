@@ -47,6 +47,26 @@ fn read_text(path: &PathBuf) -> String {
     fs::read_to_string(path).unwrap_or_default()
 }
 
+/// 调用 LLM 从文本中提取知识（JSON），供 CLI 与示例复用。
+pub fn extract_from_text(text: &str, system_prompt: &str) -> Result<serde_json::Value> {
+    let api_key = env::var("DEEPSEEK_API_KEY")?;
+    let llm = LLM::new("deepseek-chat", "https://api.deepseek.com", &api_key);
+
+    let messages = vec![
+        Message::new("system", system_prompt),
+        Message::new("user", &format!("从以下原始文档中提取知识：\n\n{}", text)),
+    ];
+
+    let options = CompleteOptions {
+        response_format: Some(serde_json::json!({"type": "json_object"})),
+        ..Default::default()
+    };
+
+    let resp = llm.complete(&messages, options)?;
+    quanttide_agent::llm::parse_structured_output(&resp.content)
+        .map_err(|e| anyhow::anyhow!("解析失败: {}", e))
+}
+
 pub fn run(args: &AcquireArgs) -> Result<()> {
     let combined = if args.input.is_empty() {
         let mut text = String::new();
@@ -60,22 +80,7 @@ pub fn run(args: &AcquireArgs) -> Result<()> {
 
     println!("共 {} 字符", combined.len());
 
-    let api_key = env::var("DEEPSEEK_API_KEY")?;
-    let llm = LLM::new("deepseek-chat", "https://api.deepseek.com", &api_key);
-
-    let messages = vec![
-        Message::new("system", SYSTEM_PROMPT),
-        Message::new("user", &format!("从以下原始文档中提取知识：\n\n{}", combined)),
-    ];
-
-    let options = CompleteOptions {
-        response_format: Some(serde_json::json!({"type": "json_object"})),
-        ..Default::default()
-    };
-
-    let resp = llm.complete(&messages, options)?;
-    let content = quanttide_agent::llm::parse_structured_output(&resp.content)
-        .map_err(|e| anyhow::anyhow!("解析失败: {}", e))?;
+    let content = extract_from_text(&combined, SYSTEM_PROMPT)?;
 
     let output_dir = PathBuf::from(&args.output);
     fs::create_dir_all(&output_dir)?;

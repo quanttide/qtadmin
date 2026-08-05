@@ -1,4 +1,4 @@
-mod acquire;
+pub mod acquire;
 mod extract;
 
 use clap::Subcommand;
