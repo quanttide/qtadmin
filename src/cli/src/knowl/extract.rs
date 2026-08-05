@@ -288,7 +288,7 @@ pub struct ExtractArgs {
     #[arg(long, short = 'i', required = true)]
     pub input: String,
 
-    /// 抽取类型 (cognition, todo, motif, annotate, worldbuilding, scene-graph)
+    /// 抽取类型 (cognition, todo, motif, annotate, worldbuilding, scene-graph, policy)
     #[arg(long = "type", short = 't', required = true)]
     pub extract_type: String,
 
@@ -1040,9 +1040,71 @@ fn extract_scene_graph(
     Ok(())
 }
 
+// ── policy: 政策本体 → policy.yaml ──
+
+const POLICY_PROMPT: &str = r#"你是一个政策本体抽取工具。从招聘政策描述中抽取结构化政策本体。
+
+输出 JSON：
+{
+  "policy": {
+    "name": "政策名",
+    "domain": "所属领域",
+    "clauses": [{"rule": "条款规则", "level": "must/should/may"}],
+    "execution": ["执行步骤或要点"],
+    "codeability": 1-5
+  },
+  "status": "settled|evolving|draft",
+  "status_reason": "状态判断依据"
+}
+评分标准：5=直接可编码，4=微调后可编码，3=需补充信息，2=模糊需重写，1=无法编码
+
+状态判断标准：
+- settled：政策已明确表述、无歧义、可直接执行
+- evolving：讨论中、表述模糊、尚未收敛（模糊是政策演进中的合法状态）
+- draft：初步想法、不成形、仅提及"#;
+
+/// 从政策描述中抽取结构化政策本体。
+///
+/// 输入 `entries`（text 为政策描述，source 为来源消息），输出 `policy.yaml`。
+fn extract_policy(
+    data: &Value,
+    output: &Path,
+    _model_schema: Option<&Value>,
+    limit: Option<usize>,
+) -> Result<()> {
+    let entries = data["entries"]
+        .as_array()
+        .context("输入数据缺少 'entries' 字段")?;
+
+    let llm = get_llm()?;
+    let mut segments = Vec::new();
+    let iter: Vec<&Value> = match limit {
+        Some(n) => entries.iter().take(n).collect(),
+        None => entries.iter().collect(),
+    };
+
+    for (idx, entry) in iter.iter().enumerate() {
+        eprint!("\r  处理中: {}/{}", idx + 1, entries.len());
+        let _ = std::io::stderr().flush();
+
+        let text = entry["text"].as_str().unwrap_or("");
+        let source = entry.get("source").and_then(|v| v.as_str()).unwrap_or("");
+
+        let mut result = call_llm(POLICY_PROMPT, text, &llm, 1024)?;
+        if let Some(obj) = result.as_object_mut() {
+            obj.insert("_source".into(), Value::String(source.into()));
+        }
+        segments.push(result);
+    }
+    eprintln!();
+
+    write_yaml(&serde_json::json!({ "segments": segments }), &output.join("policy.yaml"))?;
+    Ok(())
+}
+
 // ── 分发 ──
 
-fn extract_by_type(
+pub fn extract_by_type(
     data: &Value,
     output: &Path,
     extract_type: &str,
@@ -1056,8 +1118,9 @@ fn extract_by_type(
         "annotate" => extract_annotate(data, output, model_schema, limit),
         "worldbuilding" => extract_worldbuilding(data, output, model_schema, limit),
         "scene-graph" => extract_scene_graph(data, output, model_schema, limit),
+        "policy" => extract_policy(data, output, model_schema, limit),
         _ => anyhow::bail!(
-            "错误: 未知抽取类型 '{}'，可用: cognition, todo, motif, annotate, worldbuilding, scene-graph",
+            "错误: 未知抽取类型 '{}'，可用: cognition, todo, motif, annotate, worldbuilding, scene-graph, policy",
             extract_type
         ),
     }
@@ -1116,5 +1179,3 @@ pub fn run(args: &ExtractArgs) -> Result<()> {
 
     extract_by_type(&data, &output, &args.extract_type, model_schema.as_ref(), args.limit)
 }
-
-
