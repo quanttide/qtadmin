@@ -1,5 +1,6 @@
 pub mod acquire;
-mod extract;
+pub mod extract;
+pub mod summary;
 
 use clap::Subcommand;
 
@@ -9,6 +10,8 @@ pub enum KnowlCommands {
     Acquire(acquire::AcquireArgs),
     /// 知识抽取（本体 YAML → 结构化产物）
     Extract(extract::ExtractArgs),
+    /// 知识总结（忠实总结现有知识，不生成新产物）
+    Summary(summary::SummaryArgs),
 }
 
 #[derive(clap::Args)]
@@ -26,6 +29,11 @@ pub fn dispatch(args: &KnowlArgs) {
         }
         KnowlCommands::Extract(extract_args) => {
             if let Err(e) = extract::run(extract_args) {
+                eprintln!("错误: {}", e);
+            }
+        }
+        KnowlCommands::Summary(summary_args) => {
+            if let Err(e) = summary::run(summary_args) {
                 eprintln!("错误: {}", e);
             }
         }
