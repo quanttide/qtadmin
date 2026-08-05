@@ -45,19 +45,6 @@ qtadmin 是企业治理思想和制度的平台化载体，不是管理系统的
 
 ## 各 scope 路线
 
-### cli
-
-- 现状：十二个领域命令，asset 三子命令（archive、status、quality）已成型
-- 分化后仅保留跨领域交叉编排点与执行入口
-- 版本：0.0.17 → 0.1.0，探索期结束
-
-### studio
-
-- 现状：领域分包完成（qtadmin-org、qtadmin-qtconsult 等），`lib/screens/` 页面目录为空
-- 下一步：从 asset 治理可视化起步，再扩展 delib、strategy
-- 版本：0.1.3 独立演进，首个 tag 与现状对齐
-
-### provider
-
-- 现状：维护态，Go 重构后无新功能规划
-- 仅做版本对齐（0.0.1 → 0.1.0），不做功能扩展
+- cli：版本目标与分化路线见 [src/cli/ROADMAP.md](./src/cli/ROADMAP.md)
+- studio：版本目标与可视化路线见 [src/studio/ROADMAP.md](./src/studio/ROADMAP.md)
+- provider：维护态，版本目标见 [src/provider/ROADMAP.md](./src/provider/ROADMAP.md)

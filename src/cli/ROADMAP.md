@@ -1,65 +1,28 @@
-# ROADMAP — Share (opensource)
+# ROADMAP — qtadmin CLI
 
-> 将内部私有仓库代码脱敏后发布到公开仓库的工具链。
+qtadmin CLI 是数字资产管理工具与职能域执行入口。定位、三支柱与阶段划分见仓库根目录 `ROADMAP.md`。
 
-## 现状 (Current)
+## 版本目标
 
-`examples/share/opensource.py` — Python 脚本，功能完整但未集成到 CLI：
+| 版本载体 | 当前版本 | 目标版本 | 就绪条件 |
+|:--------:|:--------:|:--------:|----------|
+| `Cargo.toml`、`CHANGELOG.md` | 0.0.17 | cli/v0.1.0 | Cargo.toml 升 0.1.0，CHANGELOG 补 [0.1.0] 条目 |
 
-| 步骤 | 说明 |
-|------|------|
-| LLM 判断目标位置 | 扫描源码结构，LLM 决定放入 public repo 的哪个 examples/ 子目录 |
-| rsync 复制 | 按 exclude 规则复制源码到目标路径 |
-| LLM 脱敏 | 批量检测邮箱、域名、API Key、内网地址等敏感信息并替换 |
-| 编译验证 | 执行 build 命令确保代码公开后可编译 |
-| Git commit & tag | 自动 stage → LLM 决定是否 commit → 打版本 tag |
+版本发布规范见 `CONTRIBUTING.md`：单一数据源 `Cargo.toml`，标签 `cli/v<version>`。
 
-## 阶段一：Rust 翻译 (v0.0.17)
+## 路线
 
-将 Python 脚本翻译为 Rust，集成到 CLI 作为新命令。
+### 版本收敛（0.1.0）
 
-### 命令设计
+- `Cargo.toml` 升 0.1.0，`CHANGELOG.md` 补 [0.1.0] 条目
+- 发布 `cli/v0.1.0`，标志探索期结束、进入上线推进阶段
 
-```text
-qtadmin share <project> [version]
-```
+### 分化（0.2.x）
 
-参数从 `share.conf` 的 `[project]` 段读取：
+- 业务域移回各平台：qtclass、qtcloud、qtconsult、qtdata、qtrecurit 状态能力归各自仓库
+- 职能域下沉领域层：human、asset、connect 的规则与数据定义沉淀到领域档案与规格
+- CLI 只保留执行入口与跨领域交叉编排点
 
-| 配置字段 | 用途 |
-|----------|------|
-| `private_src` | 私仓源码路径 |
-| `public_dst` | 公仓目标路径 |
-| `sync_src` | 指定同步的子目录/文件 |
-| `sync_dst` | 指定同步到公仓的子路径 |
-| `build_cmd` | 编译验证命令 |
-| `exclude` | 额外排除模式 |
+## 历史
 
-### 模块拆分
-
-| 模块 | 职责 | 复用已有设施 |
-|------|------|-------------|
-| `share/copy.rs` | rsync 复制逻辑 | `asset/git_utils.rs` |
-| `share/sanitize.rs` | LLM 脱敏 | `cli_config::deepseek_api_key()` |
-| `share/decide.rs` | LLM 判断目标位置 | `quanttide-agent` crate |
-| `share/commit.rs` | Git commit & tag | `asset/git_utils.rs` |
-| `share/config.rs` | 配置文件解析 | — |
-
-### 交付物
-
-- [x] 配置解析：TOML 替代 INI（`share.toml`），与 CLI 现有风格一致
-- [x] `rsync_copy`：spawn `rsync` 进程，支持 exclude 规则
-- [x] `llm_decide_destination`：调用 DeepSeek API，解析 JSON 决策
-- [x] `llm_sanitize`：批量文件扫描 + 静态规则 + LLM 敏感内容检测 + 替换
-- [x] `run_build`：spawn build 命令，失败中止
-- [x] `git_commit`：stage → diff → LLM 决策 → commit → tag
-- [x] 集成测试：22 个单元测试覆盖各模块
-
-| 特性 | 说明 |
-|------|------|
-| 静态脱敏规则 | 内置正则规则（邮箱、域名、IP、API Key 模式），脱敏不依赖 LLM |
-| `--dry-run` | 仅预览脱敏内容，不写入文件 |
-| `--no-llm` | 跳过 LLM 脱敏，仅使用静态规则 |
-| `--no-decide` | 跳过 LLM 判断目标位置 |
-| `--no-build` | 跳过编译验证 |
-| `--no-commit` | 跳过 git commit |
+- share 模块（v0.0.17 已完成）：私仓代码脱敏发布公仓的工具链，规划见 git 提交 `244aa09`
