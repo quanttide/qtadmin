@@ -6,6 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0
 
 ## [Unreleased]
 
+### Feat
+
+- 评审闭环 MVP：任务分配（角色槽位绑定评审人）、评审工作台（通过/打回留痕）、摩擦登记（复盘四问）、角色槽位配置四个治理页面
+- 移除写作占位页，导航按执行/制度分组
+
+### Test
+
+- AppStore 评审闭环测试：提交/通过/打回/重开状态流转、角色槽位覆盖
+
 ### Refactor
 
 - provider 拆壳：领域 handler 与模型拆分迁移至各产品线仓库 `examples/`（human→qtcloud-human、connect→qtcloud-connect、course→qtcloud-course、asset→qtcloud-asset、data→qtdata、consult→qtconsult），保留服务骨架（config/store/health/日志/优雅关闭）

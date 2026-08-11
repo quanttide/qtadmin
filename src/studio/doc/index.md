@@ -1,42 +1,34 @@
 # Studio 开发者文档
 
-## 数据接入
+qtadmin Studio 是治理思想的展示与执行载体。旧业务域已清空，当前为导航壳，从零承载「限制创始人」目标（见仓库根 `ROADMAP.md`）。
 
-`lib/app_state.dart` 的 `loadAppData()` 通过 `DataLoader` 并行加载数据，状态由 `ValueNotifier<AppState>` 承载：
+## 目录结构
 
 ```
-FileSource (data/ 相对路径) → DataLoader.load() → AppState (Loaded/Error) → Screen
+lib/
+├── main.dart       # 入口 + GoRouter + 侧边栏外壳
+├── router.dart     # RouteConfig 路由表
+├── navigation.dart # 导航组件（NavSidebar / NavSection / NavItem）
+└── theme.dart      # 主题
 ```
-
-`AppStateScope`（InheritedNotifier）供路由层读取已加载的 `AppData`。
-
-| 数据 | 路径 | 模型 |
-|------|------|------|
-| 招聘计划 | `data/recruitment.json` | `RecruitmentPlan` |
 
 ## 应用入口
 
-`lib/main.dart` 启动后创建 `ValueNotifier<AppState>`，`initState` 中调用 `loadAppData()`，GoRouter 通过 `refreshListenable` 响应状态变化。
+`lib/main.dart` 创建 `MaterialApp.router`，`GoRouter` 路径格式 `/:page`（如 `/writing`），`ShellRoute` 承载 `_SidebarShell` 侧边栏外壳。
 
 ## 页面路由
 
-`RouteConfig.find` 按路由 id 分发，路由表见 `lib/router.dart`（静态配置，导航栏直接取 `RouteConfig.all` 渲染）：
+`RouteConfig.all` 静态路由表（`lib/router.dart`），按导航分组注册，导航栏直接取表渲染，`RouteConfig.find` 按 id 分发，未注册 id 抛 `StateError`：
 
-| id | Screen | 数据模型 |
-|----|--------|----------|
-| `writing` | 占位 | — |
-| `recruitment` | `HumanScreen` | `RecruitmentPlan` |
+| id | Screen | 分组 |
+|----|--------|------|
+| `tasks` | `TasksScreen`（任务分配） | 执行 |
+| `reviews` | `ReviewsScreen`（评审工作台） | 执行 |
+| `frictions` | `FrictionsScreen`（摩擦登记） | 制度 |
+| `role-slots` | `RoleSlotsScreen`（角色槽位） | 制度 |
 
-路径格式 `/:page`（如 `/org`），未注册 id 抛 `StateError`。
+新增页面只需注册 `RouteConfig` 条目并指定分组，侧边栏自动出现导航项。
 
-## 导航系统
+## 数据接入
 
-布局：`NavSidebar` → `NavSection` → `NavIcon`，flat index 跟踪选中项。导航项完全硬编码于 `RouteConfig.all`，无配置文件。
-
-## 数据模型
-
-各模型类的定义见 `lib/models/`（`human.dart`），均为手写数据类（无代码生成）。
-
-## 开发 fixture
-
-本地开发时需将数据文件放置到 `data/` 相对路径（`FileSource` 直接读文件系统），或通过 `DataLoader.inject()` 注入。组织管理示例已移至 [qtcloud-org/examples](../../../../qtcloud-org/examples/)。
+治理数据由 `AppStore`（ChangeNotifier）内存承载，通过 `StoreScope`（InheritedNotifier）分发，MVP 阶段无文件持久化。后续接入 `FileSource` 读取本地 JSON，业务规则走配置化不编入代码。
