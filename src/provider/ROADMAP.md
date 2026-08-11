@@ -1,6 +1,6 @@
 # ROADMAP — qtadmin Provider
 
-qtadmin Provider 处于维护态（Go）。定位、三支柱与阶段划分见仓库根目录 `ROADMAP.md`。
+qtadmin Provider 处于维护态（Go）。领域 handler 已拆分迁移至各产品线仓库 examples/，本仓保留服务骨架（config/store/health）。
 
 ## 版本目标
 

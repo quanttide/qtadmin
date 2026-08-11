@@ -1,6 +1,6 @@
 # ROADMAP — qtadmin CLI
 
-qtadmin CLI 是数字资产管理工具与职能域执行入口。定位、三支柱与阶段划分见仓库根目录 `ROADMAP.md`。
+qtadmin CLI 是数字资产管理工具与职能域执行入口。各职能域已迁移至产品线仓库（qtcloud-connect/human/business 的 src/cli、qtcloud-knowl 重构、qtcloud-asset examples），本 CLI 为空壳。
 
 ## 版本目标
 
