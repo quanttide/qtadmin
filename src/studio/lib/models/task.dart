@@ -51,4 +51,30 @@ class Task {
     this.reviewNote,
     this.reviewedAt,
   });
+
+  factory Task.fromJson(Map<String, dynamic> json) => Task(
+    id: json['id'] as String,
+    title: json['title'] as String,
+    type: RoleType.values.byName(json['type'] as String),
+    assignee: json['assignee'] as String,
+    deadline: json['deadline'] as String,
+    deliverable: json['deliverable'] as String,
+    status: TaskStatus.values.byName(json['status'] as String),
+    reviewer: json['reviewer'] as String?,
+    reviewNote: json['reviewNote'] as String?,
+    reviewedAt: json['reviewedAt'] as String?,
+  );
+
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'title': title,
+    'type': type.name,
+    'assignee': assignee,
+    'deadline': deadline,
+    'deliverable': deliverable,
+    'status': status.name,
+    'reviewer': reviewer,
+    'reviewNote': reviewNote,
+    'reviewedAt': reviewedAt,
+  };
 }

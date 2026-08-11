@@ -5,8 +5,10 @@ import 'package:qtadmin_studio/router.dart';
 import 'package:qtadmin_studio/store/app_store.dart';
 import 'package:qtadmin_studio/store/store_scope.dart';
 
-void main() {
-  runApp(QtAdminStudio(store: AppStore()));
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final store = await AppStore.load();
+  runApp(QtAdminStudio(store: store));
 }
 
 class QtAdminStudio extends StatelessWidget {

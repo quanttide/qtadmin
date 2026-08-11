@@ -30,6 +30,9 @@ class FrictionsScreen extends StatelessWidget {
         separatorBuilder: (_, _) => const SizedBox(height: 8),
         itemBuilder: (context, index) {
           final friction = frictions[index];
+          final standard = store.standards
+              .where((s) => s.sourceFrictionId == friction.id)
+              .firstOrNull;
           return Card(
             child: ListTile(
               title: Text(friction.scene),
@@ -39,6 +42,8 @@ class FrictionsScreen extends StatelessWidget {
                   Text('缺位：${friction.missingRole}'),
                   Text('标准草稿：${friction.standardDraft}'),
                   Text('册子：${friction.handbook}　${friction.date}'),
+                  if (standard != null)
+                    Text('标准草稿已入库（${standard.status.label}）'),
                 ],
               ),
               trailing: Chip(

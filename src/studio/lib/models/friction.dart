@@ -27,4 +27,24 @@ class Friction {
     required this.kind,
     required this.date,
   });
+
+  factory Friction.fromJson(Map<String, dynamic> json) => Friction(
+    id: json['id'] as String,
+    scene: json['scene'] as String,
+    missingRole: json['missingRole'] as String,
+    standardDraft: json['standardDraft'] as String,
+    handbook: json['handbook'] as String,
+    kind: FrictionKind.values.byName(json['kind'] as String),
+    date: json['date'] as String,
+  );
+
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'scene': scene,
+    'missingRole': missingRole,
+    'standardDraft': standardDraft,
+    'handbook': handbook,
+    'kind': kind.name,
+    'date': date,
+  };
 }

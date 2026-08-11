@@ -2,8 +2,12 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:qtadmin_studio/models/friction.dart';
 import 'package:qtadmin_studio/models/task.dart';
 import 'package:qtadmin_studio/store/app_store.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+  SharedPreferences.setMockInitialValues({});
+
   group('AppStore 任务', () {
     test('新建任务默认绑定角色槽位评审人', () {
       final store = AppStore();
@@ -91,6 +95,24 @@ void main() {
       expect(friction.date, isNotEmpty);
       expect(friction.kind, FrictionKind.structural);
     });
+
+    test('登记摩擦自动生成标准草稿（draft）', () {
+      final store = AppStore();
+      final before = store.standards.length;
+      store.addFriction(
+        scene: '测试场景',
+        missingRole: '测试角色',
+        standardDraft: '条件 + 动作 + 证据',
+        handbook: '测试册子',
+        kind: FrictionKind.occasional,
+      );
+      final friction = store.frictions.last;
+      final standard = store.standards.last;
+      expect(store.standards.length, before + 1);
+      expect(standard.sourceFrictionId, friction.id);
+      expect(standard.content, '条件 + 动作 + 证据');
+      expect(standard.status.name, 'draft');
+    });
   });
 
   group('AppStore 角色槽位', () {
@@ -105,6 +127,35 @@ void main() {
         deliverable: '交付物',
       );
       expect(store.tasks.last.reviewer, '董事会');
+    });
+  });
+
+  group('AppStore 持久化', () {
+    test('变更后数据可恢复', () async {
+      SharedPreferences.setMockInitialValues({});
+      final store = AppStore();
+      store.addTask(
+        title: '持久化任务',
+        type: RoleType.routine,
+        assignee: '孙八',
+        deadline: '2026-08-21',
+        deliverable: '交付物',
+      );
+      store.setReviewer(RoleType.policy, '办公室');
+      // 等待异步持久化完成
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+
+      final restored = await AppStore.load();
+      expect(restored.tasks.any((t) => t.title == '持久化任务'), true);
+      expect(restored.roleSlots[RoleType.policy], '办公室');
+    });
+
+    test('无历史数据时使用示例数据', () async {
+      SharedPreferences.setMockInitialValues({});
+      final store = await AppStore.load();
+      expect(store.tasks, isNotEmpty);
+      expect(store.frictions, isNotEmpty);
+      expect(store.standards, isNotEmpty);
     });
   });
 }
