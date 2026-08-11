@@ -14,6 +14,7 @@
 | 模块 | 技术栈 | 状态 |
 |------|--------|------|
 | `src/studio/` | Flutter | 🟡 壳（导航框架 + 写作占位，领域已移交产品线） |
+| `src/cli/` | Rust | 🟡 待决策（connect 已迁 qtcloud-connect，其余模块未定） |
 | `src/provider/` | Go | 🟡 壳（config/store/health，领域 handler 已拆分至各仓 examples/） |
 
 ## 领域去向
@@ -22,7 +23,7 @@
 |------|-----------|------|
 | asset | `qtcloud-asset` | 产品线已有 CLI（scanner/workflow/validate）；参考实现见 `examples/asset-api/` |
 | business | `qtcloud-business` | studio 承接 |
-| connect | `qtcloud-connect` | CLI 已迁移至 `src/cli`（生产验证的飞书邮件/聊天/通知） |
+| connect | `qtcloud-connect` | CLI 已迁移至 `src/cli`（生产验证的飞书邮件/聊天/通知），qtadmin 侧副本保留待决策 |
 | human | `qtcloud-human` | 参考实现见 `examples/human-api/`、`examples/recruitment-plan/` |
 | knowl | `qtcloud-knowl` | 产品线已有 CLI（qtcloud-knowl-cli） |
 | org | `qtcloud-org` | 参考实现见 `examples/org-implementation/` |
