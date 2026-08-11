@@ -9,7 +9,7 @@
 
 ## 现状
 
-- 主项目已瘦身：仅保留数据加载、路由与入口（`lib/` 下 blocs、models、screens、views、`main.dart`、`router.dart`、`theme.dart`）
+- 主项目已瘦身：仅保留数据加载、路由与入口（`lib/` 下 data_sources、models、screens、views、`app_state.dart`、`main.dart`、`router.dart`、`theme.dart`）
 - 单项目结构：全部代码内聚于 `lib/`（数据源、导航、模型、页面），无领域分包
 - 双端数据共享已落地（v0.1.3）：与 CLI 同源读取 `recruitment.json`
 - router 死引用已清理：dashboard、think、qtclass、qtconsult 页面已从主项目移除，`lib/` 不再引用对应包

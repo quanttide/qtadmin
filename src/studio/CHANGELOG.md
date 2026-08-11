@@ -12,15 +12,17 @@
 
 - 清理 router 死引用：移除 dashboard、think、qtclass 的页面、数据加载与导航配置，主项目只保留治理相关页面（写作占位、量潮咨询、组织管理、招聘计划）
 - 同步清理导航 fixture：founder 仅写作，company 仅咨询与组织管理
+- 移除 flutter_bloc 依赖：AppBloc 替换为 `lib/app_state.dart` 的 `ValueNotifier<AppState>` + `loadAppData()`，GoRouter 直接用 ValueNotifier 刷新，删除 stream→ChangeNotifier 桥接
+- 修复 redirect 落地页：`/workspace/founder/dashboard` → `/workspace/founder/writing`（dashboard 路由已移除，原代码会抛 StateError）
 
-## [0.1.3]
+## [0.1.3] - 2026-06-16
 
-### Feat
+### Added
 
 - 招聘计划模块：新增 RecruitmentPlan 模型、数据加载、显示屏幕
 - CLI + Studio 数据共享：读取同源 recruitment.json，两端格式对齐
 
-### Test
+### Tests
 
 - 模型测试：RecruitmentPlan / AppState / RouteConfig / 主题工具函数
 - UI 测试：招聘计划屏幕 5 个 widget 测试
@@ -31,7 +33,7 @@
 
 - 更新 AGENTS.md 维护原则
 
-## v0.1.2
+## [0.1.2] - 2026-05-09
 
 ### Refactor
 
@@ -53,7 +55,7 @@
 
 - 移除旧文件：`navigation.dart`（git 跟踪残留）、`stat_item.dart`（未使用）
 
-## v0.1.1
+## [0.1.1] - 2026-05-09
 
 ### Refactor
 
@@ -65,7 +67,7 @@
 
 - deploy.yml 触发条件从 push 改为 release published
 
-## v0.1.0
+## [0.1.0] - 2026-05-09
 
 ### Refactor
 
@@ -89,7 +91,7 @@
 
 - pre-commit 仅 `dart analyze`，`flutter test` 由 CI 覆盖
 
-## v0.0.7
+## [0.0.7] - 2026-05-09
 
 ### Docs
 
@@ -98,9 +100,10 @@
 - 文档重组：拆分为 decision.md / refactor.md，新增 dev/README.md
 - 删除 ROADMAP.md（P0-P2 全部达成）
 
-## v0.0.6
+## [0.0.6] - 2026-05-08
 
 ### Refactor
+
 - 重命名 租户(Tenant) → Workspace工作空间(Workspace)：中文文档、Dart 代码标识符、JSON fixture 键全量替换
   - `TenantType` → `WorkspaceType`，`TenantInfo` → `WorkspaceInfo`，`TenantSwitcher` → `WorkspaceSwitcher`
   - 所有相关字段/参数/变量同步更新
@@ -113,85 +116,99 @@
 - 组织管理代表改为多对多：`institutionId` → `institutionIds: List<String>`
 
 ### Added
+
 - 组织管理页面（`OrgScreen`）：机构看板、代表履职（可展开详情）、职级流动
 - 组织管理数据模型（`OrgDashboardData` / `OrgInstitutionData` / `OrgRepresentativeData` / `OrgRankData` / `OrgPromotionData`）
 - `OrgLoader` fixture 加载 + 缓存注入
 - 路由独立模块 `lib/router.dart`
 
 ### Fixed
+
 - 修复数据加载完成前侧边栏空 `workspaces` 列表导致的 `RangeError`（预存 bug）
 - 切换工作空间时 `_router` 重新赋值报错（`late final` → `late`）
 
 ### Tests
+
 - 新增 `org_test.dart`（13 个模型测试）
 - 新增 `org_screen_test.dart`（11 个 widget 测试）
 - 更新 `metadata_test.dart` 适应新的纯 name 格式
 
-## v0.0.5
+## [0.0.5] - 2026-05-08
 
-### 新增
+### Added
+
 - `QtClassScreen`：量潮课堂独立页面，展示四个组成部分（校企合作/实训基地/内部教学/一对一）
 - `QtClassData` 数据模型 + `qtclass.json` fixture + loader
 - `ThinkingData` 数据模型 + `thinking.json` fixture + loader，思考页面数据抽取为 fixture 驱动
 - 数据规范文档：`qtclass.md`、`thinking.md`、`dashboard.md`
 
-### 重命名
+### Changed
+
 - 全景图→仪表盘，全线英文 `panorama` → `dashboard`
   - `PanoramaScreen` → `DashboardScreen`，`PanoramaData` → `DashboardData`
   - `panorama_loader.dart` → `dashboard_loader.dart`，`panoramaPath` → `dashboardPath`
   - fixture 文件同步重命名，所有 import/变量名更新
 
-### 测试
+### Tests
+
 - 新增 `thinking_test.dart`、`thinking_screen_test.dart`（模型 + widget）
 - 新增 `qtclass_test.dart`、`qtclass_screen_test.dart`（模型 + widget）
 - 全部 94 个测试通过
 
-## v0.0.4
+## [0.0.4] - 2026-05-08
 
-### 新增
+### Added
+
 - 根 `metadata.json` 全局注册表：Workspace工作空间清单 + 段定义（dividerBefore 规则）
 - `NavSidebar` 独立组件，封装侧边栏全部布局逻辑
 - 数据规范文档目录（`docs/drd/`）：metadata schema + qtconsult schema
 
-### 优化
+### Changed
+
 - 导航组件从 `main.dart` 私有类提取为公开组件（NavIcon / WorkspaceSwitcher / NavSidebar）
 - `lib/widgets/` → `lib/views/`，widget test 直接 import 公开组件，不再重复定义
 - 新增Workspace工作空间只需写 fixture 文件，不再改 Dart 代码
 - 文档结构重组：主仓库 dev / ADD / DRD / 子模块 doc 分工明确
 
-## v0.0.3
+## [0.0.3] - 2026-05-06
 
-### 新增
+### Added
+
 - 量潮咨询详情页：双栏联动面板（信息看板 + 策略看板），支持发现记录、策略修正、决策链路管理
 - 咨询数据模型（DiscoveryData / StakeholderData / StrategyRevisionData）及 JSON 加载服务
 - 发现→策略强制联动：高风险/需关注发现自动追加策略审视记录
 - ADD 架构设计文档
 
-### 优化
+### Changed
+
 - 导航重构：`_workspaces` 改为实例字段，支持动态页面加载
 - 资源注册：`qtconsult.json` 注册为 Flutter asset
 
-## v0.0.2
+## [0.0.2] - 2026-05-06
 
-### 新增
+### Added
+
 - 多Workspace工作空间架构：量潮创始人（全景图/思考/写作）与量潮科技（全景图/数据/课堂/咨询/云）
 - 思考页面（ThinkingScreen）：认知建构与思维演进分析报告，包含阶段时间线、情绪统计、心智模型洞察
 - Workspace工作空间切换器（PopupMenuButton），支持一键切换Workspace工作空间及对应导航
 
-### 优化
+### Changed
+
 - 全景图页面支持动态Workspace工作空间名称
 - 侧边栏布局调优（减小间距，提升紧凑度）
 - Flutter 依赖升级至最新兼容版本
 
-## v0.0.1
+## [0.0.1] - 2026-05-06
 
-### 新增
+### Added
+
 - 全景图主页面（今日看板），包含业务线决策卡片和职能线指标卡片
 - 业务线详情页，支持按业务线查看决策事项
 - 决策卡片交互（批准/驳回/附条件）
 - 响应式布局（桌面多列 / 移动端单列+折叠）
 
-### 架构
+### Changed
+
 - 全平台应用名统一为 `qtadmin_studio` / 量潮管理后台
 - 全景图数据抽离至 `assets/panorama.json`，支持热更新
 - Model 层支持 JSON 反序列化

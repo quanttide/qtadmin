@@ -116,7 +116,7 @@ class OrgDashboardData {
 
 ## 3. Loader — `lib/services/org_loader.dart`
 
-模式同 `RecruitmentLoader`（`app_bloc.dart` 中的 `DataLoader`）：
+模式同 `RecruitmentLoader`（`app_state.dart` 中的 `DataLoader`）：
 
 - 从 `assets/fixtures/company/org.json` 加载
 - `OrgDashboardData.fromJson()` 解析

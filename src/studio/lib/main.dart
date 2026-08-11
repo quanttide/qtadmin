@@ -1,50 +1,31 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:qtadmin_studio/blocs/app_bloc.dart';
+import 'package:qtadmin_studio/app_state.dart';
 import 'package:qtadmin_studio/models/metadata.dart';
 import 'package:qtadmin_studio/router.dart';
 import 'package:qtadmin_studio/navigation.dart';
 
-class _AppStateNotifier extends ChangeNotifier {
-  StreamSubscription? _sub;
-
-  _AppStateNotifier(AppBloc bloc) {
-    _sub = bloc.stream.listen((_) => notifyListeners());
-  }
-
-  @override
-  void dispose() {
-    _sub?.cancel();
-    super.dispose();
-  }
-}
-
-void main() async {
-  final bloc = AppBloc()..add(AppLoad());
-  runApp(QtAdminStudio(bloc: bloc));
+void main() {
+  runApp(const QtAdminStudio());
 }
 
 class QtAdminStudio extends StatefulWidget {
-  final AppBloc bloc;
-  const QtAdminStudio({super.key, required this.bloc});
+  const QtAdminStudio({super.key});
 
   @override
   State<QtAdminStudio> createState() => _QtAdminStudioState();
 }
 
 class _QtAdminStudioState extends State<QtAdminStudio> {
+  late final ValueNotifier<AppState> _appState;
   late final GoRouter _router;
-  late final _AppStateNotifier _notifier;
 
   @override
   void initState() {
     super.initState();
-    _notifier = _AppStateNotifier(widget.bloc);
+    _appState = ValueNotifier(const AppInitial());
     _router = GoRouter(
-      refreshListenable: _notifier,
+      refreshListenable: _appState,
       initialLocation: '/loading',
       routes: [
         GoRoute(
@@ -59,13 +40,16 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
         ),
         ShellRoute(
           builder: (context, state, child) {
-            return _SidebarShell(child: child);
+            return AppStateScope(
+              notifier: _appState,
+              child: _SidebarShell(child: child),
+            );
           },
           routes: [
             GoRoute(
               path: '/workspace/:workspace/:page',
               builder: (context, state) {
-                final data = (context.read<AppBloc>().state as AppLoaded).data;
+                final data = AppStateScope.of(context);
                 final dir = state.pathParameters['workspace']!;
                 final page = state.pathParameters['page']!;
                 final wsIndex = data.workspaces.indexWhere((w) => w.dir == dir);
@@ -84,7 +68,7 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
         ),
       ],
       redirect: (context, state) {
-        final appState = widget.bloc.state;
+        final appState = _appState.value;
         final location = state.matchedLocation;
         return switch (appState) {
           AppInitial() || AppLoading() when location == '/loading' => null,
@@ -93,35 +77,33 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
           AppError(:final message) =>
             '/error?message=${Uri.encodeComponent(message)}',
           AppLoaded() when location == '/loading' || location == '/error' =>
-            '/workspace/founder/dashboard',
+            '/workspace/founder/writing',
           AppLoaded() => null,
         };
       },
     );
+    loadAppData(_appState);
   }
 
   @override
   void dispose() {
-    _notifier.dispose();
+    _appState.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider.value(
-      value: widget.bloc,
-      child: MaterialApp.router(
-        routerConfig: _router,
-        title: '量潮管理后台',
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: Colors.blueGrey,
-            surface: Colors.white,
-          ),
-          scaffoldBackgroundColor: Colors.white,
-          useMaterial3: true,
+    return MaterialApp.router(
+      routerConfig: _router,
+      title: '量潮管理后台',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.blueGrey,
+          surface: Colors.white,
         ),
+        scaffoldBackgroundColor: Colors.white,
+        useMaterial3: true,
       ),
     );
   }
@@ -184,9 +166,9 @@ class _SidebarShellState extends State<_SidebarShell> {
 
   @override
   Widget build(BuildContext context) {
-    final data = (context.read<AppBloc>().state as AppLoaded).data;
+    final data = AppStateScope.of(context);
     final currentPage =
-        GoRouterState.of(context).pathParameters['page'] ?? 'dashboard';
+        GoRouterState.of(context).pathParameters['page'] ?? 'writing';
     final currentDir =
         GoRouterState.of(context).pathParameters['workspace'] ??
         data.workspaces[0].dir;

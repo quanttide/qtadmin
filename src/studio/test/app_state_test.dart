@@ -1,5 +1,6 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:qtadmin_studio/blocs/app_bloc.dart';
+import 'package:qtadmin_studio/app_state.dart';
 
 void main() {
   group('AppState', () {
@@ -19,11 +20,11 @@ void main() {
     });
   });
 
-  group('AppBloc', () {
-    test('initial state is AppInitial', () {
-      final bloc = AppBloc();
-      expect(bloc.state, isA<AppInitial>());
-      bloc.close();
+  group('AppStateNotifier', () {
+    test('initial value is AppInitial', () {
+      final notifier = ValueNotifier<AppState>(const AppInitial());
+      expect(notifier.value, isA<AppInitial>());
+      notifier.dispose();
     });
   });
 }

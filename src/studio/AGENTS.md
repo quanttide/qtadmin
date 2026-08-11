@@ -18,7 +18,7 @@
 
 ## AI 上下文
 
-- 单项目结构：全部代码内聚于 `lib/`（`data_sources/`、`navigation.dart`、`models/`、`screens/`、`views/`、`blocs/`），无领域分包
+- 单项目结构：全部代码内聚于 `lib/`（`data_sources/`、`navigation.dart`、`models/`、`screens/`、`views/`、`app_state.dart`），无领域分包
 - 数据加载使用 `lib/data_sources/` 的 `DataLoader` + `FileSource`
 - 测试使用 `DataLoader.inject()` 注入数据，不依赖真实文件
 
@@ -26,7 +26,7 @@
 
 ### 已有领域
 
-直接改 `lib/` 下对应模块（models / screens / views / blocs），开发测试一体化。
+直接改 `lib/` 下对应模块（models / screens / views / data_sources），开发测试一体化。
 
 ### 新领域 / 跨领域
 
