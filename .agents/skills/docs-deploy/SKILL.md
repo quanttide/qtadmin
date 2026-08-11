@@ -121,7 +121,7 @@ gh run view <run-id> --log 2>&1 | grep "Reported success"
 
 ## 经验记录
 
-- qtcloud-hr：首个试点，建立了完整模板
+- qtcloud-human：首个试点，建立了完整模板
 - qtcloud-asset：验证模板可复用，BASE_URL 改为 `/qtcloud-asset/`
 - quanttide-platform：主仓库首次部署，踩坑 recursive submodules
 - qtcloud-product / qtcloud-write：本机 myst build 因模板下载超时失败，直接推至 GitHub Actions 验证通过。教训：本机网络不稳定时无需死磕本地构建，配置推上去让 Actions 跑，日志确认 `Reported success!` 即可。
