@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:qtadmin_studio/models/recruitment.dart';
+import 'package:qtadmin_studio/models/human.dart';
 
 class RecruitmentScreen extends StatefulWidget {
   final RecruitmentPlan data;
@@ -61,16 +61,32 @@ class _RecruitmentScreenState extends State<RecruitmentScreen> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(10),
         boxShadow: const [
-          BoxShadow(color: Color(0x08000000), blurRadius: 4, offset: Offset(0, 1)),
+          BoxShadow(
+            color: Color(0x08000000),
+            blurRadius: 4,
+            offset: Offset(0, 1),
+          ),
         ],
       ),
       child: Row(
         children: [
-          _statItem(const Color(0xFF1A7F37), '编制', plan.totalHeadcount.toString()),
+          _statItem(
+            const Color(0xFF1A7F37),
+            '编制',
+            plan.totalHeadcount.toString(),
+          ),
           const SizedBox(width: 24),
-          _statItem(const Color(0xFF1565C0), '已入职', plan.totalFilled.toString()),
+          _statItem(
+            const Color(0xFF1565C0),
+            '已入职',
+            plan.totalFilled.toString(),
+          ),
           const SizedBox(width: 24),
-          _statItem(const Color(0xFFC8690A), '进行中', plan.totalInProgress.toString()),
+          _statItem(
+            const Color(0xFFC8690A),
+            '进行中',
+            plan.totalInProgress.toString(),
+          ),
           const Spacer(),
           _statItem(const Color(0xFFB71C1C), '空缺', plan.vacancies.toString()),
         ],
@@ -90,13 +106,18 @@ class _RecruitmentScreenState extends State<RecruitmentScreen> {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(label,
-                style: const TextStyle(fontSize: 10, color: Color(0xFF888888))),
-            Text(value,
-                style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                    color: Color(0xFF222222))),
+            Text(
+              label,
+              style: const TextStyle(fontSize: 10, color: Color(0xFF888888)),
+            ),
+            Text(
+              value,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                color: Color(0xFF222222),
+              ),
+            ),
           ],
         ),
       ],
@@ -109,18 +130,25 @@ class _RecruitmentScreenState extends State<RecruitmentScreen> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(10),
         boxShadow: const [
-          BoxShadow(color: Color(0x08000000), blurRadius: 4, offset: Offset(0, 1)),
+          BoxShadow(
+            color: Color(0x08000000),
+            blurRadius: 4,
+            offset: Offset(0, 1),
+          ),
         ],
       ),
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('岗位明细',
-              style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
-                  color: Color(0xFF333333))),
+          const Text(
+            '岗位明细',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w700,
+              color: Color(0xFF333333),
+            ),
+          ),
           const SizedBox(height: 12),
           Table(
             columnWidths: const {
@@ -138,13 +166,15 @@ class _RecruitmentScreenState extends State<RecruitmentScreen> {
                 _th('进行中'),
                 _th('备注'),
               ], isHeader: true),
-              ...plan.positions.map((p) => _tableRow([
-                    _td(p.name),
-                    _td(p.headcount.toString()),
-                    _td(p.filled.toString()),
-                    _td(p.inProgress.toString()),
-                    _td(p.note.isEmpty ? '-' : p.note),
-                  ])),
+              ...plan.positions.map(
+                (p) => _tableRow([
+                  _td(p.name),
+                  _td(p.headcount.toString()),
+                  _td(p.filled.toString()),
+                  _td(p.inProgress.toString()),
+                  _td(p.note.isEmpty ? '-' : p.note),
+                ]),
+              ),
             ],
           ),
         ],
@@ -160,24 +190,31 @@ class _RecruitmentScreenState extends State<RecruitmentScreen> {
             )
           : null,
       children: cells
-          .map((c) => Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
-                child: c,
-              ))
+          .map(
+            (c) => Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+              child: c,
+            ),
+          )
           .toList(),
     );
   }
 
   Widget _th(String text) {
-    return Text(text,
-        style: const TextStyle(
-            fontSize: 11,
-            fontWeight: FontWeight.w600,
-            color: Color(0xFF888888)));
+    return Text(
+      text,
+      style: const TextStyle(
+        fontSize: 11,
+        fontWeight: FontWeight.w600,
+        color: Color(0xFF888888),
+      ),
+    );
   }
 
   Widget _td(String text) {
-    return Text(text,
-        style: const TextStyle(fontSize: 12, color: Color(0xFF333333)));
+    return Text(
+      text,
+      style: const TextStyle(fontSize: 12, color: Color(0xFF333333)),
+    );
   }
 }

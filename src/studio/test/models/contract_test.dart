@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:qtadmin_studio/models/recruitment.dart';
+import 'package:qtadmin_studio/models/human.dart';
 
 const _contractPath = '../../tests/contract/recruitment.json';
 

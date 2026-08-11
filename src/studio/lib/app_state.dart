@@ -2,7 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:qtadmin_studio/data_sources/data_sources.dart';
 import 'package:qtadmin_studio/models/metadata.dart';
 import 'package:qtadmin_studio/models/org.dart';
-import 'package:qtadmin_studio/models/recruitment.dart';
+import 'package:qtadmin_studio/models/human.dart';
 
 final _source = const FileSource();
 
