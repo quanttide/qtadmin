@@ -17,6 +17,7 @@
 - `metadata.dart` 拆除 freezed：5 个数据类手写（-1441 行生成代码），测试零改动
 - `recruitment.dart` 更名 `human.dart` 并补充模型：新增 `HumanPosition`、`PositionsFile`（岗位档案，对齐 CLI `human/positions.json` 契约）
 - `recruitment_screen.dart` 更名 `human_screen.dart`：`RecruitmentScreen` → `HumanScreen`（路由 id 与页面文案保持「招聘计划」）
+- 清理死资产：删除 `assets/videos/studio.mp4`（零引用）与 `assets/fixtures/.gitkeep`（占位无意义）
 
 ## [0.1.3] - 2026-06-16
 
