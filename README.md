@@ -21,7 +21,7 @@
 
 | 领域 | 产品线仓库 | 去向 |
 |------|-----------|------|
-| asset | `qtcloud-asset` | 产品线已有 CLI（scanner/workflow/validate）；参考实现见 `examples/asset-api/` |
+| asset | `qtcloud-asset` | 产品线已有 CLI（scanner/workflow/validate）；参考实现见 `examples/asset-api/`、`examples/asset-cli/` |
 | business | `qtcloud-business` | CLI 已迁移至 `src/cli`（报价计算/商务总览） |
 | connect | `qtcloud-connect` | CLI 已迁移至 `src/cli`（生产验证的飞书邮件/聊天/通知 + extract 增强），qtadmin 侧已移除 |
 | human | `qtcloud-human` | CLI 已迁移至 `src/cli`（招聘计划/岗位管理）；参考实现见 `examples/human-api/`、`examples/recruitment-plan/` |

@@ -9,7 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0
 ### Refactor
 
 - provider 拆壳：领域 handler 与模型拆分迁移至各产品线仓库 `examples/`（human→qtcloud-human、connect→qtcloud-connect、course→qtcloud-course、asset→qtcloud-asset、data→qtdata、consult→qtconsult），保留服务骨架（config/store/health/日志/优雅关闭）
-- CLI：connect 模块已迁移至 `qtcloud-connect/src/cli`；knowl 模块已合并至 `qtcloud-knowl/src/cli`（Rust 重构）；human 模块已迁移至 `qtcloud-human/src/cli`；business 模块已迁移至 `qtcloud-business/src/cli`（报价计算/商务总览）；connect 依赖的 report/config 随之移除；剩余模块（asset）处理待决策，qtadmin CLI 整体保留
+- CLI 模块全部迁出：connect→`qtcloud-connect/src/cli`、knowl→`qtcloud-knowl/src/cli`（Rust 重构合并）、human→`qtcloud-human/src/cli`、business→`qtcloud-business/src/cli`、asset→`qtcloud-asset/examples/asset-cli`（参考实现）；qtadmin CLI 现为空壳（无命令），整体去留待决策
 
 ## [0.1.1] - 2026-06-28
 
