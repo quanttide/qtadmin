@@ -5,25 +5,22 @@
 ## 版本
 
 - 最新发布：v0.1.3（pubspec.yaml 当前 0.1.3）
-- 待发布：v0.1.4（router 死引用清理已完成，asset 可视化起步未完成）
+- 待发布：v0.1.4（待定——领域全部下线后无明确内容，建议更新 ROADMAP 后重新定义）
 
 ## 现状
 
-- 主项目已瘦身：仅保留数据加载、路由与入口（`lib/` 下 data_sources、models、screens、views、`app_state.dart`、`main.dart`、`router.dart`、`theme.dart`）
-- 单项目结构：全部代码内聚于 `lib/`（数据源、导航、模型、页面），无领域分包
-- 双端数据共享已落地（v0.1.3）：与 CLI 同源读取 `recruitment.json`
-- router 死引用已清理：dashboard、think、qtclass、qtconsult、org 页面已从主项目移除，`lib/` 不再引用对应领域
-- 遗留领域实现已移除（dashboard、qtclass、think、qtconsult、org）：对应产品线由 qtcloud-asset / qtcloud-course / qtcloud-think / qtcloud-org 承接（org 示例数据已移至 `qtcloud-org/examples/`）
-- 剩余包（data-sources、qtadmin-navigation、qtadmin-org）已合并回 `lib/` 后随领域下线移除，`packages/` 目录不复存在
-- 当前路由表：写作占位、招聘计划（静态导航，无 metadata 配置）
-- 数据接入统一走 Loader 的 `inject()` / `load()` / `clearCache()`，不感知数据来源
+- 主项目为最小壳：`lib/` 仅保留入口、路由与导航（`main.dart`、`router.dart`、`navigation.dart`、`theme.dart`）
+- 无数据层：数据加载（app_state）、数据源（data_sources）已随领域下线移除
+- 无领域实现：dashboard、qtclass、think、qtconsult、org、recruitment 全部下线，对应产品线由 qtcloud-asset / qtcloud-course / qtcloud-think / qtcloud-org / qtcloud-human 承接（参考实现与示例位于各仓 `examples/`）
+- 当前路由表：写作占位（静态导航，硬编码于 `RouteConfig.all`）
+- 测试：路由、导航组件、主题工具（14 个）
 
 ## 覆盖缺口
 
-- 治理可视化空白：asset、knowl、delib、strategy、执行评审均无页面
+- 全部治理可视化页面已下线：asset、knowl、delib、strategy、执行评审均无页面
 - 执行环节：评审闭环无载体（角色槽位、评审节点、评审留痕、摩擦登记）
-- 双端共享仅覆盖 recruitment，asset 等 CLI 数据文件（`~/.local/share/qtadmin/`）尚未接入
+- 双端共享已无 studio 侧消费：recruitment 数据仅 CLI 产出
 
 ## 下一步
 
-按 [ROADMAP.md](./ROADMAP.md) 推进：asset 可视化起步（v0.1.4）→ 执行环节评审闭环 MVP（v0.2.0）→ 治理可视化扩展（v0.3.x）。
+领域实现已全部移交各 qtcloud-* 产品线。qtadmin Studio 自身方向待定：恢复任一领域展示（从对应产品线 examples/ 引入），或维持壳状态仅承载导航框架。
