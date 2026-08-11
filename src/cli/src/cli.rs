@@ -2,7 +2,6 @@ use crate::asset;
 use crate::business;
 use crate::connect;
 use crate::human;
-use crate::knowl;
 
 use clap::{Parser, Subcommand};
 
@@ -27,8 +26,6 @@ pub enum Commands {
     Connect(connect::ConnectArgs),
     /// 人力资源职能
     Human(human::HumanArgs),
-    /// 知识工程
-    Knowl(knowl::KnowlArgs),
 }
 
 pub fn run() {
@@ -40,7 +37,6 @@ pub fn run() {
         Some(Commands::Business(args)) => business::dispatch(args),
         Some(Commands::Connect(args)) => connect::dispatch(args),
         Some(Commands::Human(args)) => human::dispatch(args, provider),
-        Some(Commands::Knowl(args)) => knowl::dispatch(args),
         None => {}
     }
 }
