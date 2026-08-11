@@ -6,8 +6,9 @@
 
 - 单项目结构：全部代码在 `lib/` 下（数据源、导航、模型、页面内聚），无领域分包
 - 双端数据共享已落地（v0.1.3）：与 CLI 同源读取 `recruitment.json`（v0.1.3）
-- 已清理 router 死引用（v0.1.4）：移除 dashboard、think、qtclass、qtconsult、org 页面，主项目只保留写作占位与招聘计划
+- 已清理 router 死引用（v0.1.4）：移除 dashboard、think、qtclass、qtconsult、org、recruitment 页面，主项目仅保留写作占位
 - 组织管理已下线：实现与示例数据移至 qtcloud-org 仓库（`examples/`），待其产品线恢复
+- 招聘计划已下线：参考实现与契约移至 qtcloud-human 仓库（`examples/recruitment-plan/`），待其 plan 模块承接
 
 ## 目录
 
