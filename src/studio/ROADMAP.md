@@ -6,7 +6,7 @@ qtadmin Studio 是治理思想的展示与执行载体（Flutter 客户端）。
 
 | 版本载体 | 当前版本 | 目标版本 | 就绪条件 |
 |:--------:|:--------:|:--------:|----------|
-| `pubspec.yaml`、`CHANGELOG.md` | 0.1.3 | studio/v0.1.4 | 清理 router 死引用并确认可构建 |
+| `pubspec.yaml`、`CHANGELOG.md` | 0.1.3 | studio/v0.1.4 | 清理已完成，asset 可视化起步完成 |
 
 版本规则：有 tag 时候选版本为最新 tag 的 patch+1；发布命令 `qtcloud-devops release publish -v studio/v0.1.4`。
 
@@ -14,12 +14,17 @@ qtadmin Studio 是治理思想的展示与执行载体（Flutter 客户端）。
 
 ### 清理与起步（studio/v0.1.4）
 
-- 移除 router 死引用：dashboard、think、qtclass 的 import 与路由条目，主项目只保留治理相关页面
+已完成：
+
+- 移除 router 死引用：dashboard、think、qtclass 的 import 与路由条目，主项目只保留治理相关页面（写作占位、量潮咨询、组织管理、招聘计划）
 - 确认 `flutter analyze` 与构建通过
+
+待完成：
+
 - asset 可视化起步：读取 CLI 数据文件（`~/.local/share/qtadmin/`），落地双端数据共享
 - 业务规则走 `FileSource` 配置化，不编入 freezed
 
-完成标准：无死引用可构建；asset 页面能展示 CLI 数据文件内容。
+完成标准：asset 页面能展示 CLI 数据文件内容。
 
 ### 执行环节可视化（studio/v0.2.0）
 
