@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:qtadmin_studio/models/org.dart';
 import 'package:qtadmin_studio/screens/org_screen.dart';
 import 'package:qtadmin_studio/models/human.dart';
-import 'package:qtadmin_studio/screens/recruitment_screen.dart';
+import 'package:qtadmin_studio/screens/human_screen.dart';
 
 class ScreenContext {
   final String workspaceName;
@@ -48,7 +48,7 @@ class RouteConfig {
       id: 'recruitment',
       label: '招聘计划',
       icon: Icons.people_outline,
-      builder: (ctx) => RecruitmentScreen(data: ctx.recruitmentData!),
+      builder: (ctx) => HumanScreen(data: ctx.recruitmentData!),
     ),
   };
 

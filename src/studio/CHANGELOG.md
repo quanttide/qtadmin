@@ -16,6 +16,7 @@
 - 修复 redirect 落地页：`/workspace/founder/dashboard` → `/workspace/founder/writing`（dashboard 路由已移除，原代码会抛 StateError）
 - `metadata.dart` 拆除 freezed：5 个数据类手写（-1441 行生成代码），测试零改动
 - `recruitment.dart` 更名 `human.dart` 并补充模型：新增 `HumanPosition`、`PositionsFile`（岗位档案，对齐 CLI `human/positions.json` 契约）
+- `recruitment_screen.dart` 更名 `human_screen.dart`：`RecruitmentScreen` → `HumanScreen`（路由 id 与页面文案保持「招聘计划」）
 
 ## [0.1.3] - 2026-06-16
 

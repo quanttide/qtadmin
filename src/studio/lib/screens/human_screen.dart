@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:qtadmin_studio/models/human.dart';
 
-class RecruitmentScreen extends StatefulWidget {
+class HumanScreen extends StatefulWidget {
   final RecruitmentPlan data;
-  const RecruitmentScreen({super.key, required this.data});
+  const HumanScreen({super.key, required this.data});
 
   @override
-  State<RecruitmentScreen> createState() => _RecruitmentScreenState();
+  State<HumanScreen> createState() => _HumanScreenState();
 }
 
-class _RecruitmentScreenState extends State<RecruitmentScreen> {
+class _HumanScreenState extends State<HumanScreen> {
   @override
   Widget build(BuildContext context) {
     final plan = widget.data;

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:qtadmin_studio/models/human.dart';
-import 'package:qtadmin_studio/screens/recruitment_screen.dart';
+import 'package:qtadmin_studio/screens/human_screen.dart';
 
 RecruitmentPlan _createTestData() {
   return RecruitmentPlan(
@@ -26,10 +26,10 @@ RecruitmentPlan _createTestData() {
 }
 
 void main() {
-  group('RecruitmentScreen', () {
+  group('HumanScreen', () {
     testWidgets('displays month title', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(home: RecruitmentScreen(data: _createTestData())),
+        MaterialApp(home: HumanScreen(data: _createTestData())),
       );
 
       expect(find.text('2026-06 招聘计划'), findsOneWidget);
@@ -37,7 +37,7 @@ void main() {
 
     testWidgets('displays stats row', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(home: RecruitmentScreen(data: _createTestData())),
+        MaterialApp(home: HumanScreen(data: _createTestData())),
       );
 
       expect(find.text('编制'), findsWidgets);
@@ -50,7 +50,7 @@ void main() {
 
     testWidgets('displays position table', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(home: RecruitmentScreen(data: _createTestData())),
+        MaterialApp(home: HumanScreen(data: _createTestData())),
       );
 
       expect(find.text('岗位明细'), findsOneWidget);
@@ -61,7 +61,7 @@ void main() {
 
     testWidgets('displays empty note as dash', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(home: RecruitmentScreen(data: _createTestData())),
+        MaterialApp(home: HumanScreen(data: _createTestData())),
       );
 
       expect(find.text('-'), findsOneWidget);
@@ -69,7 +69,7 @@ void main() {
 
     testWidgets('displays table headers', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(home: RecruitmentScreen(data: _createTestData())),
+        MaterialApp(home: HumanScreen(data: _createTestData())),
       );
 
       expect(find.text('岗位'), findsOneWidget);
