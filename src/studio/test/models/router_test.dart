@@ -8,9 +8,9 @@ void main() {
     });
 
     test('find returns correct route', () {
-      final route = RouteConfig.find('org');
-      expect(route.id, 'org');
-      expect(route.label, '组织管理');
+      final route = RouteConfig.find('recruitment');
+      expect(route.id, 'recruitment');
+      expect(route.label, '招聘计划');
     });
 
     test('find throws for unknown route', () {

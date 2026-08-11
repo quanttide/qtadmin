@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:qtadmin_studio/models/org.dart';
-import 'package:qtadmin_studio/screens/org_screen.dart';
 import 'package:qtadmin_studio/models/human.dart';
 import 'package:qtadmin_studio/screens/human_screen.dart';
 
 class ScreenContext {
-  final OrgDashboard? orgData;
   final RecruitmentPlan? recruitmentData;
 
-  ScreenContext({this.orgData, this.recruitmentData});
+  ScreenContext({this.recruitmentData});
 }
 
 class RouteConfig {
@@ -30,12 +27,6 @@ class RouteConfig {
       label: '写作',
       icon: Icons.edit_outlined,
       builder: (ctx) => const Center(child: Text('即将上线')),
-    ),
-    'org': RouteConfig(
-      id: 'org',
-      label: '组织管理',
-      icon: Icons.account_tree_outlined,
-      builder: (ctx) => OrgScreen(data: ctx.orgData!),
     ),
     'recruitment': RouteConfig(
       id: 'recruitment',

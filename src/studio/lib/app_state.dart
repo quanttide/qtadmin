@@ -1,15 +1,9 @@
 import 'package:flutter/widgets.dart';
 import 'package:qtadmin_studio/data_sources/data_sources.dart';
-import 'package:qtadmin_studio/models/org.dart';
 import 'package:qtadmin_studio/models/human.dart';
 
 final _source = const FileSource();
 
-final _orgLoader = DataLoader<OrgDashboard>(
-  _source,
-  'data/company/org.json',
-  OrgDashboard.fromJson,
-);
 final _recruitmentLoader = DataLoader<RecruitmentPlan>(
   _source,
   'data/recruitment.json',
@@ -41,36 +35,19 @@ class AppError extends AppState {
 }
 
 class AppData {
-  final OrgDashboard orgData;
   final RecruitmentPlan? recruitmentData;
 
-  const AppData({required this.orgData, this.recruitmentData});
+  const AppData({this.recruitmentData});
 }
 
 Future<void> loadAppData(ValueNotifier<AppState> state) async {
   state.value = const AppLoading();
-  final results = await Future.wait([
-    _orgLoader.load(),
-    _recruitmentLoader.load(),
-  ]);
+  final recruitmentResult = await _recruitmentLoader.load();
 
-  for (final r in results) {
-    if (r case DataError(:final message)) {
-      state.value = AppError(message);
-      return;
-    }
-  }
-
-  final recruitmentResult = results[1] as DataResult<RecruitmentPlan>;
-  state.value = AppLoaded(
-    AppData(
-      orgData: (results[0] as DataSuccess<OrgDashboard>).data,
-      recruitmentData: switch (recruitmentResult) {
-        DataSuccess(:final data) => data,
-        DataError() => null,
-      },
-    ),
-  );
+  state.value = switch (recruitmentResult) {
+    DataSuccess(:final data) => AppLoaded(AppData(recruitmentData: data)),
+    DataError(:final message) => AppError(message),
+  };
 }
 
 /// 供路由层读取已加载数据，状态变化时重建依赖方。

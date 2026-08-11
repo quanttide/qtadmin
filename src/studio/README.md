@@ -6,7 +6,8 @@
 
 - 单项目结构：全部代码在 `lib/` 下（数据源、导航、模型、页面内聚），无领域分包
 - 双端数据共享已落地（v0.1.3）：与 CLI 同源读取 `recruitment.json`（v0.1.3）
-- 已清理 router 死引用（v0.1.4）：移除 dashboard、think、qtclass 页面，主项目只保留治理相关页面（写作占位、组织管理、招聘计划）
+- 已清理 router 死引用（v0.1.4）：移除 dashboard、think、qtclass、qtconsult、org 页面，主项目只保留写作占位与招聘计划
+- 组织管理已下线：实现与示例数据移至 qtcloud-org 仓库（`examples/`），待其产品线恢复
 
 ## 目录
 
@@ -14,7 +15,7 @@
 lib/
 ├── app_state.dart   # 应用状态（ValueNotifier + 数据加载）
 ├── data_sources/    # 数据源抽象（DataSource + FileSource）
-├── models/          # 数据模型（手写：org/human）
+├── models/          # 数据模型（手写：human）
 ├── screens/         # 页面
 ├── views/           # 组件
 ├── theme.dart       # 颜色工具

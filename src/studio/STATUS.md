@@ -12,17 +12,16 @@
 - 主项目已瘦身：仅保留数据加载、路由与入口（`lib/` 下 data_sources、models、screens、views、`app_state.dart`、`main.dart`、`router.dart`、`theme.dart`）
 - 单项目结构：全部代码内聚于 `lib/`（数据源、导航、模型、页面），无领域分包
 - 双端数据共享已落地（v0.1.3）：与 CLI 同源读取 `recruitment.json`
-- router 死引用已清理：dashboard、think、qtclass、qtconsult 页面已从主项目移除，`lib/` 不再引用对应包
-- 遗留领域包已移除（`qtadmin-dashboard`、`qtadmin-qtclass`、`qtadmin-think`、`qtadmin-qtconsult`）：前三者无引用、无数据活水源，后者为整域下线（量潮咨询页面与数据一并移除），对应产品线由 qtcloud-asset / qtcloud-course / qtcloud-think 承接
-- 剩余包（data-sources、qtadmin-navigation、qtadmin-org）已合并回 `lib/`，`packages/` 目录移除
-- 当前路由表：写作占位、组织管理、招聘计划（静态导航，无 metadata 配置）
+- router 死引用已清理：dashboard、think、qtclass、qtconsult、org 页面已从主项目移除，`lib/` 不再引用对应领域
+- 遗留领域实现已移除（dashboard、qtclass、think、qtconsult、org）：对应产品线由 qtcloud-asset / qtcloud-course / qtcloud-think / qtcloud-org 承接（org 示例数据已移至 `qtcloud-org/examples/`）
+- 剩余包（data-sources、qtadmin-navigation、qtadmin-org）已合并回 `lib/` 后随领域下线移除，`packages/` 目录不复存在
+- 当前路由表：写作占位、招聘计划（静态导航，无 metadata 配置）
 - 数据接入统一走 Loader 的 `inject()` / `load()` / `clearCache()`，不感知数据来源
 
 ## 覆盖缺口
 
 - 治理可视化空白：asset、knowl、delib、strategy、执行评审均无页面
 - 执行环节：评审闭环无载体（角色槽位、评审节点、评审留痕、摩擦登记）
-- workspace：无多用户、无每人一个 workspace 概念
 - 双端共享仅覆盖 recruitment，asset 等 CLI 数据文件（`~/.local/share/qtadmin/`）尚未接入
 
 ## 下一步

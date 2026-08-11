@@ -52,7 +52,6 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
                 final page = state.pathParameters['page']!;
                 final route = RouteConfig.find(page);
                 final ctx = ScreenContext(
-                  orgData: data.orgData,
                   recruitmentData: data.recruitmentData,
                 );
                 return route.builder(ctx);
