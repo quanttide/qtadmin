@@ -4,7 +4,7 @@
 
 ## 现状
 
-- 已完成领域分包：`packages/` 下 7 个包，主项目保留数据加载、路由与入口
+- 已完成领域分包：`packages/` 下 4 个包，主项目保留数据加载、路由与入口
 - 双端数据共享已落地：与 CLI 同源读取 `recruitment.json`（v0.1.3）
 - 已清理 router 死引用（v0.1.4）：移除 dashboard、think、qtclass 页面，主项目只保留治理相关页面（写作占位、量潮咨询、组织管理、招聘计划）
 
@@ -22,12 +22,9 @@ lib/
 
 packages/
 ├── data-sources/         # 数据源抽象（DataLoader + FileSource）
-├── qtadmin-dashboard/    # 仪表盘
 ├── qtadmin-navigation/   # 导航组件
 ├── qtadmin-org/          # 组织管理
-├── qtadmin-qtclass/      # 量潮课堂
-├── qtadmin-qtconsult/    # 量潮咨询
-└── qtadmin-think/        # 思考
+└── qtadmin-qtconsult/    # 量潮咨询
 ```
 
 开发原则：新领域与跨域逻辑先写在主项目，稳定后再由人类决定是否分包；业务规则走配置化，不编入 freezed。详见 [AGENTS.md](./AGENTS.md)。

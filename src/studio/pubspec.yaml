@@ -39,16 +39,10 @@ dependencies:
   go_router: ^14.0.0
   qtadmin_qtconsult:
     path: packages/qtadmin-qtconsult
-  qtadmin_qtclass:
-    path: packages/qtadmin-qtclass
-  qtadmin_think:
-    path: packages/qtadmin-think
   qtadmin_org:
     path: packages/qtadmin-org
   data_sources:
     path: packages/data-sources
-  qtadmin_dashboard:
-    path: packages/qtadmin-dashboard
   qtadmin_navigation:
     path: packages/qtadmin-navigation
 

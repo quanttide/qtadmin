@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Clean
+
+- 移除遗留领域包 `qtadmin-dashboard`、`qtadmin-qtclass`、`qtadmin-think`（无引用、无数据活水源），同步删除对应静态 fixture（founder/company 的 dashboard/thinking/qtclass json）
+
 ### Refactor
 
 - 清理 router 死引用：移除 dashboard、think、qtclass 的页面、数据加载与导航配置，主项目只保留治理相关页面（写作占位、量潮咨询、组织管理、招聘计划）

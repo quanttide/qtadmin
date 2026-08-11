@@ -12,8 +12,10 @@ void main() {
     setUp(() {
       final file = File(_contractPath);
       if (!file.existsSync()) {
-        throw Exception('契约文件不存在: ${file.absolute.path}\n'
-            '请从 CLI 目录运行: cargo test --test test_contract');
+        throw Exception(
+          '契约文件不存在: ${file.absolute.path}\n'
+          '请从 CLI 目录运行: cargo test --test test_contract',
+        );
       }
       final jsonStr = file.readAsStringSync();
       final json = jsonDecode(jsonStr) as Map<String, dynamic>;
@@ -42,9 +44,9 @@ void main() {
       }
     });
 
-    test('默认所有岗位空缺', () {
-      expect(_plan!.totalFilled, 0);
-      expect(_plan!.vacancies, 10);
+    test('岗位人数与契约一致', () {
+      expect(_plan!.totalFilled, 1);
+      expect(_plan!.vacancies, 9);
     });
   });
 }
