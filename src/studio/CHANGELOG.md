@@ -14,6 +14,7 @@
 - 同步清理导航 fixture：founder 仅写作，company 仅咨询与组织管理
 - 移除 flutter_bloc 依赖：AppBloc 替换为 `lib/app_state.dart` 的 `ValueNotifier<AppState>` + `loadAppData()`，GoRouter 直接用 ValueNotifier 刷新，删除 stream→ChangeNotifier 桥接
 - 修复 redirect 落地页：`/workspace/founder/dashboard` → `/workspace/founder/writing`（dashboard 路由已移除，原代码会抛 StateError）
+- `metadata.dart` 拆除 freezed：5 个数据类手写（-1441 行生成代码），测试零改动
 
 ## [0.1.3] - 2026-06-16
 

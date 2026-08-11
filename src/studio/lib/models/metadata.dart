@@ -1,8 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
-
-part 'metadata.freezed.dart';
-part 'metadata.g.dart';
 
 class NavEntry {
   final String name;
@@ -11,27 +7,34 @@ class NavEntry {
   String toJson() => name;
 }
 
-@freezed
-abstract class NavSectionDef with _$NavSectionDef {
-  const factory NavSectionDef({
-    required String id,
-    required List<NavEntry> items,
-  }) = _NavSectionDef;
+class NavSectionDef {
+  final String id;
+  final List<NavEntry> items;
+  const NavSectionDef({required this.id, required this.items});
 
-  factory NavSectionDef.fromJson(Map<String, dynamic> json) =>
-      _$NavSectionDefFromJson(json);
+  factory NavSectionDef.fromJson(Map<String, dynamic> json) => NavSectionDef(
+    id: json['id'] as String,
+    items: (json['items'] as List<dynamic>)
+        .map((e) => NavEntry.fromJson(e as String))
+        .toList(),
+  );
 }
 
-@freezed
-abstract class WorkspaceInfo with _$WorkspaceInfo {
-  const factory WorkspaceInfo({
-    required String name,
-    required String icon,
-    required String dir,
-  }) = _WorkspaceInfo;
+class WorkspaceInfo {
+  final String name;
+  final String icon;
+  final String dir;
+  const WorkspaceInfo({
+    required this.name,
+    required this.icon,
+    required this.dir,
+  });
 
-  factory WorkspaceInfo.fromJson(Map<String, dynamic> json) =>
-      _$WorkspaceInfoFromJson(json);
+  factory WorkspaceInfo.fromJson(Map<String, dynamic> json) => WorkspaceInfo(
+    name: json['name'] as String,
+    icon: json['icon'] as String,
+    dir: json['dir'] as String,
+  );
 }
 
 extension WorkspaceInfoX on WorkspaceInfo {
@@ -44,45 +47,49 @@ extension WorkspaceInfoX on WorkspaceInfo {
   }
 }
 
-@freezed
-abstract class NavMetadata with _$NavMetadata {
-  const factory NavMetadata({
-    required List<NavSectionDef> sections,
-  }) = _NavMetadata;
+class NavMetadata {
+  final List<NavSectionDef> sections;
+  const NavMetadata({required this.sections});
 
-  factory NavMetadata.fromJson(Map<String, dynamic> json) =>
-      _$NavMetadataFromJson(json);
+  factory NavMetadata.fromJson(Map<String, dynamic> json) => NavMetadata(
+    sections: (json['sections'] as List<dynamic>)
+        .map((e) => NavSectionDef.fromJson(e as Map<String, dynamic>))
+        .toList(),
+  );
 }
 
 extension NavMetadataX on NavMetadata {
   List<NavEntry> get allItems => sections.expand((s) => s.items).toList();
 }
 
-@freezed
-abstract class SectionDef with _$SectionDef {
-  const factory SectionDef({
-    required String id,
-    required bool dividerBefore,
-  }) = _SectionDef;
+class SectionDef {
+  final String id;
+  final bool dividerBefore;
+  const SectionDef({required this.id, required this.dividerBefore});
 
-  factory SectionDef.fromJson(Map<String, dynamic> json) =>
-      _$SectionDefFromJson(json);
+  factory SectionDef.fromJson(Map<String, dynamic> json) => SectionDef(
+    id: json['id'] as String,
+    dividerBefore: json['dividerBefore'] as bool,
+  );
 }
 
-@freezed
-abstract class RootMetadata with _$RootMetadata {
-  const factory RootMetadata({
-    required List<WorkspaceInfo> workspaces,
-    required List<SectionDef> sections,
-  }) = _RootMetadata;
+class RootMetadata {
+  final List<WorkspaceInfo> workspaces;
+  final List<SectionDef> sections;
+  const RootMetadata({required this.workspaces, required this.sections});
 
-  factory RootMetadata.fromJson(Map<String, dynamic> json) =>
-      _$RootMetadataFromJson(json);
+  factory RootMetadata.fromJson(Map<String, dynamic> json) => RootMetadata(
+    workspaces: (json['workspaces'] as List<dynamic>)
+        .map((e) => WorkspaceInfo.fromJson(e as Map<String, dynamic>))
+        .toList(),
+    sections: (json['sections'] as List<dynamic>)
+        .map((e) => SectionDef.fromJson(e as Map<String, dynamic>))
+        .toList(),
+  );
 }
 
 extension RootMetadataX on RootMetadata {
   WorkspaceInfo workspaceById(String id) =>
       workspaces.firstWhere((t) => t.dir == id);
-  SectionDef sectionById(String id) =>
-      sections.firstWhere((s) => s.id == id);
+  SectionDef sectionById(String id) => sections.firstWhere((s) => s.id == id);
 }
