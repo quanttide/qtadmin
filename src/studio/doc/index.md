@@ -25,7 +25,7 @@ lib/
 | `tasks` | `TasksScreen`（任务分配） | 执行 |
 | `reviews` | `ReviewsScreen`（评审工作台） | 执行 |
 | `frictions` | `FrictionsScreen`（摩擦登记） | 制度 |
-| `role-slots` | `RoleSlotsScreen`（角色槽位） | 制度 |
+| `roles` | `RolesScreen`（角色） | 制度 |
 
 新增页面只需注册 `RouteConfig` 条目并指定分组，侧边栏自动出现导航项。
 

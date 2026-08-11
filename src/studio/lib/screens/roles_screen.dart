@@ -2,17 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:qtadmin_studio/models/task.dart';
 import 'package:qtadmin_studio/store/store_scope.dart';
 
-/// 角色槽位：任务类型 → 默认评审人。
+/// 角色页：任务类型 → 默认评审人。
 /// 常规 = 直接指导者，政策类 = 秘书处，重大 = 创始人。
-class RoleSlotsScreen extends StatelessWidget {
-  const RoleSlotsScreen({super.key});
+class RolesScreen extends StatelessWidget {
+  const RolesScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     final store = StoreScope.of(context);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('角色槽位')),
+      appBar: AppBar(title: const Text('角色')),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [

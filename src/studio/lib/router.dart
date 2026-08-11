@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:qtadmin_studio/screens/frictions_screen.dart';
 import 'package:qtadmin_studio/screens/reviews_screen.dart';
-import 'package:qtadmin_studio/screens/role_slots_screen.dart';
+import 'package:qtadmin_studio/screens/roles_screen.dart';
 import 'package:qtadmin_studio/screens/tasks_screen.dart';
 
 /// 导航分组：执行（分配与评审闭环）、制度（摩擦与角色槽位）。
@@ -44,12 +44,12 @@ class RouteConfig {
       group: NavGroup.institution,
       builder: () => const FrictionsScreen(),
     ),
-    'role-slots': RouteConfig(
-      id: 'role-slots',
-      label: '角色槽位',
+    'roles': RouteConfig(
+      id: 'roles',
+      label: '角色',
       icon: Icons.people_outline,
       group: NavGroup.institution,
-      builder: () => const RoleSlotsScreen(),
+      builder: () => const RolesScreen(),
     ),
   };
 
