@@ -1,4 +1,18 @@
-# Provider 部署与使用
+# Provider 壳（qtadmin-provider）
+
+qtadmin provider 当前为**服务骨架**：config / store / health / 日志 / 优雅关闭。
+领域 handler 与模型已拆分迁移至各产品线仓库 `examples/`：
+
+| 领域 | 路由 | 去向 |
+|:-----|:-----|:-----|
+| human | `/api/v1/employees`、`/departments`、`/positions`、`/qtrecurit/*` | `qtcloud-human/examples/human-api/` |
+| connect | `/api/v1/connect/rules`、`/notifications` | `qtcloud-connect/examples/connect-api/` |
+| course | `/api/v1/qtclass/courses`、`/schedules`、`/enrollments` | `qtcloud-course/examples/course-api/` |
+| asset | `/api/v1/qtcloud/resources` | `qtcloud-asset/examples/asset-api/` |
+| data | `/api/v1/qtdata/datasets` | `qtdata/examples/dataset-api/` |
+| consult | `/api/v1/qtconsult/projects` | `qtconsult/examples/consult-api/` |
+
+恢复领域服务：从对应 `examples/` 引入 handler 与 model，在 `cmd/server/main.go` 的路由注册点挂载。
 
 ## 启动
 
@@ -7,7 +21,7 @@ cd src/provider
 go run ./cmd/server
 ```
 
-配置通过环境变量设定（见下方说明），代码自动读取。
+当前仅 `GET /health` 可用；配置通过环境变量设定（见下方说明），代码自动读取。
 
 ## 数据存储
 
@@ -102,22 +116,11 @@ curl -s -X POST http://localhost:8000/api/v1/auth/refresh \
 
 ## API
 
-所有端点见 `docs/openapi.yaml`，概览：
+领域端点已随拆分迁移（见顶部去向表），当前仅：
 
-| 域 | 端点 | 鉴权 | 说明 |
-|:---|:-----|:-----|:-----|
-| Health | `GET /health` | 否 | 健康检查 |
-| Human | `GET/POST /api/v1/employees` | 否 | 员工列表/创建 |
-| Human | `GET/PUT/DELETE /api/v1/employees/{id}` | 否 | 员工详情/更新/删除 |
-| Human | `GET/POST /api/v1/departments` | 否 | 部门 |
-| Human | `GET/POST /api/v1/positions` | 否 | 岗位 |
-| Auth | `POST /api/v1/auth/login` | 否 | 登录 |
-| Auth | `POST /api/v1/auth/refresh` | 是 | 刷新 token |
-| Auth | `GET /api/v1/auth/me` | 是 | 当前用户 |
-| Connect | `GET /api/v1/connect/notifications` | 否 | 通知历史 |
-| Business | `GET/POST/PUT/DELETE` / 各业务域 | 否 | CRUD |
-
-提示：生产环境建议对业务端点加鉴权，通过反向代理或 Provider 的 `AuthMiddleware` 实现。
+| 端点 | 鉴权 | 说明 |
+|:-----|:-----|:-----|
+| `GET /health` | 否 | 健康检查 |
 
 ## 架构说明
 
