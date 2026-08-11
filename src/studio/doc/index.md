@@ -2,46 +2,43 @@
 
 ## 数据接入
 
-Studio 不直接读取本地数据文件。数据通过 Loader 的 `inject()` 写入缓存，`load()` 供 Screen 读取。
+`lib/app_state.dart` 的 `loadAppData()` 通过 `DataLoader` 并行加载数据，状态由 `ValueNotifier<AppState>` 承载：
 
 ```
-后端 API / 开发 fixture → inject() → Loader._cache → Screen
+FileSource (data/ 相对路径) → DataLoader.load() → AppState (Loaded/Error) → Screen
 ```
 
-各 Loader 职责一致：不感知数据来源，只管理缓存生命周期。
+`AppStateScope`（InheritedNotifier）供路由层读取已加载的 `AppData`。
 
-| 方法 | 说明 |
-|------|------|
-| `inject(data)` | 写入缓存 |
-| `load()` | 读取缓存 |
-| `clearCache()` | 重置 |
+| 数据 | 路径 | 模型 |
+|------|------|------|
+| 组织管理 | `data/company/org.json` | `OrgDashboard` |
+| 招聘计划 | `data/recruitment.json` | `RecruitmentPlan` |
 
 ## 应用入口
 
-`lib/main.dart` 启动后在 `_loadData()` 中并行调用各 Loader 的 `load()`。
+`lib/main.dart` 启动后创建 `ValueNotifier<AppState>`，`initState` 中调用 `loadAppData()`，GoRouter 通过 `refreshListenable` 响应状态变化。
 
 ## 页面路由
 
-`RouteConfig.find` 按路由 id 分发，路由表见 `lib/router.dart`：
+`RouteConfig.find` 按路由 id 分发，路由表见 `lib/router.dart`（静态配置，导航栏直接取 `RouteConfig.all` 渲染）：
 
 | id | Screen | 数据模型 |
 |----|--------|----------|
 | `writing` | 占位 | — |
 | `org` | `OrgScreen` | `OrgDashboard` |
-| `recruitment` | `RecruitmentScreen` | `RecruitmentPlan` |
+| `recruitment` | `HumanScreen` | `RecruitmentPlan` |
 
-导航数据（`data/*/metadata.json`）中出现的 id 必须存在于路由表，否则运行时抛 `StateError`。
+路径格式 `/:page`（如 `/org`），未注册 id 抛 `StateError`。
 
 ## 导航系统
 
-布局：`NavSidebar` → `NavSection` → `NavIcon`，flat index 跟踪选中项。
-
-图标解析：`NavItemData.resolveIcon()` 通过字符串名映射 Flutter `IconData`，未识别降级为 `Icons.circle_outlined`。
+布局：`NavSidebar` → `NavSection` → `NavIcon`，flat index 跟踪选中项。导航项完全硬编码于 `RouteConfig.all`，无配置文件。
 
 ## 数据模型
 
-各模型类的定义见 `lib/models/`。
+各模型类的定义见 `lib/models/`（`org.dart`、`human.dart`），均为手写数据类（无代码生成）。
 
 ## 开发 fixture
 
-Fixture 文件位于主仓库根级 `assets/fixtures/`。开发时直接用 `inject()` 注入，无需后端。
+Fixture 文件位于仓库根级 `assets/fixtures/`（当前仅 `company/org.json`）。本地开发时需将其复制到 `data/` 相对路径（`FileSource` 直接读文件系统），或通过 `DataLoader.inject()` 注入。

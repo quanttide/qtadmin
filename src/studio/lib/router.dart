@@ -5,17 +5,10 @@ import 'package:qtadmin_studio/models/human.dart';
 import 'package:qtadmin_studio/screens/human_screen.dart';
 
 class ScreenContext {
-  final String workspaceName;
-  final int selectedWorkspace;
   final OrgDashboard? orgData;
   final RecruitmentPlan? recruitmentData;
 
-  ScreenContext({
-    required this.workspaceName,
-    required this.selectedWorkspace,
-    this.orgData,
-    this.recruitmentData,
-  });
+  ScreenContext({this.orgData, this.recruitmentData});
 }
 
 class RouteConfig {

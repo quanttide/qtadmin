@@ -14,7 +14,7 @@
 lib/
 ├── app_state.dart   # 应用状态（ValueNotifier + 数据加载）
 ├── data_sources/    # 数据源抽象（DataSource + FileSource）
-├── models/          # 数据模型（freezed：metadata/org/recruitment）
+├── models/          # 数据模型（手写：org/human）
 ├── screens/         # 页面
 ├── views/           # 组件
 ├── theme.dart       # 颜色工具

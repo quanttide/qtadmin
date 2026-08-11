@@ -15,6 +15,8 @@
 - 移除 flutter_bloc 依赖：AppBloc 替换为 `lib/app_state.dart` 的 `ValueNotifier<AppState>` + `loadAppData()`，GoRouter 直接用 ValueNotifier 刷新，删除 stream→ChangeNotifier 桥接
 - 修复 redirect 落地页：`/workspace/founder/dashboard` → `/workspace/founder/writing`（dashboard 路由已移除，原代码会抛 StateError）
 - `metadata.dart` 拆除 freezed：5 个数据类手写（-1441 行生成代码），测试零改动
+- 导航栏精简：移除 metadata 驱动的动态导航（RootMetadata/WorkspaceInfo/NavMetadata/SectionDef 模型与 fixture 删除），导航项硬编码于 `RouteConfig.all`，路径 `/:page`，workspace 切换器下线
+- 删除 `doc/views/navigation.md`（描述已不存在的实现）
 - `recruitment.dart` 更名 `human.dart` 并补充模型：新增 `HumanPosition`、`PositionsFile`（岗位档案，对齐 CLI `human/positions.json` 契约）
 - `recruitment_screen.dart` 更名 `human_screen.dart`：`RecruitmentScreen` → `HumanScreen`（路由 id 与页面文案保持「招聘计划」）
 - 清理死资产：删除 `assets/videos/studio.mp4`（零引用）与 `assets/fixtures/.gitkeep`（占位无意义）

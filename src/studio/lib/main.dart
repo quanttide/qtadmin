@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:qtadmin_studio/app_state.dart';
-import 'package:qtadmin_studio/models/metadata.dart';
 import 'package:qtadmin_studio/router.dart';
 import 'package:qtadmin_studio/navigation.dart';
 
@@ -47,17 +46,12 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
           },
           routes: [
             GoRoute(
-              path: '/workspace/:workspace/:page',
+              path: '/:page',
               builder: (context, state) {
                 final data = AppStateScope.of(context);
-                final dir = state.pathParameters['workspace']!;
                 final page = state.pathParameters['page']!;
-                final wsIndex = data.workspaces.indexWhere((w) => w.dir == dir);
                 final route = RouteConfig.find(page);
                 final ctx = ScreenContext(
-                  workspaceName:
-                      data.workspaces[wsIndex >= 0 ? wsIndex : 0].name,
-                  selectedWorkspace: wsIndex >= 0 ? wsIndex : 0,
                   orgData: data.orgData,
                   recruitmentData: data.recruitmentData,
                 );
@@ -77,7 +71,7 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
           AppError(:final message) =>
             '/error?message=${Uri.encodeComponent(message)}',
           AppLoaded() when location == '/loading' || location == '/error' =>
-            '/workspace/founder/writing',
+            '/writing',
           AppLoaded() => null,
         };
       },
@@ -128,79 +122,43 @@ class _ErrorScreen extends StatelessWidget {
   }
 }
 
-class _SidebarShell extends StatefulWidget {
+class _SidebarShell extends StatelessWidget {
   final Widget child;
 
   const _SidebarShell({required this.child});
 
   @override
-  State<_SidebarShell> createState() => _SidebarShellState();
-}
-
-class _SidebarShellState extends State<_SidebarShell> {
-  String _cachedDir = '';
-  List<NavSection> _sections = [];
-  List<String> _flatRouteIds = [];
-
-  void _rebuildSections(AppData data, String dir) {
-    if (dir == _cachedDir && _sections.isNotEmpty) return;
-    _cachedDir = dir;
-    final nav = data.navData[dir]!;
-
-    _flatRouteIds = [];
-    _sections = nav.sections.map((section) {
-      return NavSection(
-        dividerBefore: data.sectionDefs[section.id]?.dividerBefore ?? true,
-        items: section.items.map((item) {
-          _flatRouteIds.add(item.name);
-          final route = RouteConfig.find(item.name);
-          return NavItem(
-            routeId: item.name,
-            icon: route.icon,
-            label: route.label,
-          );
-        }).toList(),
-      );
-    }).toList();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final data = AppStateScope.of(context);
     final currentPage =
         GoRouterState.of(context).pathParameters['page'] ?? 'writing';
-    final currentDir =
-        GoRouterState.of(context).pathParameters['workspace'] ??
-        data.workspaces[0].dir;
 
-    _rebuildSections(data, currentDir);
-
-    final selectedIndex = _flatRouteIds.indexOf(currentPage);
-
-    final wsList = data.workspaces
-        .map((w) => (icon: w.resolveIcon(), name: w.name))
-        .toList();
+    final routeIds = RouteConfig.all.keys.toList();
+    final sections = [
+      NavSection(
+        items: [
+          for (final id in routeIds)
+            NavItem(
+              routeId: id,
+              icon: RouteConfig.find(id).icon,
+              label: RouteConfig.find(id).label,
+            ),
+        ],
+      ),
+    ];
+    final selectedIndex = routeIds.indexOf(currentPage);
 
     return Scaffold(
       body: Row(
         children: [
           NavSidebar(
-            workspaces: wsList,
-            selectedWorkspace: data.workspaces.indexWhere(
-              (w) => w.dir == currentDir,
-            ),
-            onWorkspaceChanged: (index) {
-              final newDir = data.workspaces[index].dir;
-              context.go('/workspace/$newDir/$currentPage');
-            },
-            sections: _sections,
+            sections: sections,
             selectedIndex: selectedIndex >= 0 ? selectedIndex : 0,
             onItemTap: (index) {
-              context.go('/workspace/$currentDir/${_flatRouteIds[index]}');
+              context.go('/${routeIds[index]}');
             },
           ),
           const VerticalDivider(thickness: 1, width: 1),
-          Expanded(child: widget.child),
+          Expanded(child: child),
         ],
       ),
     );
