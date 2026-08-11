@@ -10,10 +10,11 @@
 ## 现状
 
 - 主项目已瘦身：仅保留数据加载、路由与入口（`lib/` 下 blocs、models、screens、views、`main.dart`、`router.dart`、`theme.dart`）
-- 领域分包 3 个包：`data-sources`、`qtadmin-navigation`、`qtadmin-org`
+- 单项目结构：全部代码内聚于 `lib/`（数据源、导航、模型、页面），无领域分包
 - 双端数据共享已落地（v0.1.3）：与 CLI 同源读取 `recruitment.json`
 - router 死引用已清理：dashboard、think、qtclass、qtconsult 页面已从主项目移除，`lib/` 不再引用对应包
 - 遗留领域包已移除（`qtadmin-dashboard`、`qtadmin-qtclass`、`qtadmin-think`、`qtadmin-qtconsult`）：前三者无引用、无数据活水源，后者为整域下线（量潮咨询页面与数据一并移除），对应产品线由 qtcloud-asset / qtcloud-course / qtcloud-think 承接
+- 剩余包（data-sources、qtadmin-navigation、qtadmin-org）已合并回 `lib/`，`packages/` 目录移除
 - 当前路由表：写作占位、组织管理、招聘计划
 - 数据接入统一走 Loader 的 `inject()` / `load()` / `clearCache()`，不感知数据来源
 

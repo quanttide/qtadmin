@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:qtadmin_org/org_barrel.dart';
+import 'package:qtadmin_studio/models/org.dart';
+import 'package:qtadmin_studio/screens/org_screen.dart';
 import 'package:qtadmin_studio/models/recruitment.dart';
 import 'package:qtadmin_studio/screens/recruitment_screen.dart';
 

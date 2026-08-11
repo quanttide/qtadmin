@@ -161,13 +161,6 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "3.1.7"
-  data_sources:
-    dependency: "direct main"
-    description:
-      path: "packages/data-sources"
-      relative: true
-    source: path
-    version: "0.1.0"
   fake_async:
     dependency: transitive
     description:
@@ -462,20 +455,6 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.5.0"
-  qtadmin_navigation:
-    dependency: "direct main"
-    description:
-      path: "packages/qtadmin-navigation"
-      relative: true
-    source: path
-    version: "0.1.0"
-  qtadmin_org:
-    dependency: "direct main"
-    description:
-      path: "packages/qtadmin-org"
-      relative: true
-    source: path
-    version: "0.0.1"
   shelf:
     dependency: transitive
     description:

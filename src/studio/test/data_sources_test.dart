@@ -1,4 +1,4 @@
-import 'package:data_sources/data_sources.dart';
+import 'package:qtadmin_studio/data_sources/data_sources.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 class _MockSource extends DataSource {

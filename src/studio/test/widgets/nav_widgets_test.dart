@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:qtadmin_navigation/navigation.dart';
+import 'package:qtadmin_studio/navigation.dart';
 
 Widget _wrap(Widget w) => MaterialApp(home: Scaffold(body: w));
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:qtadmin_org/org_barrel.dart';
+import 'package:qtadmin_studio/models/org.dart';
+import 'package:qtadmin_studio/views/stat_item.dart';
 
 class OrgScreen extends StatefulWidget {
   final OrgDashboard data;
@@ -85,13 +86,29 @@ class _OrgScreenState extends State<OrgScreen> {
       ),
       child: Row(
         children: [
-          StatItem(dotColor: Color(0xFF5B8DEF), label: '机构', value: widget.data.institutions.length.toString()),
+          StatItem(
+            dotColor: Color(0xFF5B8DEF),
+            label: '机构',
+            value: widget.data.institutions.length.toString(),
+          ),
           const SizedBox(width: 16),
-          StatItem(dotColor: Color(0xFF1A7F37), label: '代表', value: widget.data.representatives.length.toString()),
+          StatItem(
+            dotColor: Color(0xFF1A7F37),
+            label: '代表',
+            value: widget.data.representatives.length.toString(),
+          ),
           const SizedBox(width: 16),
-          StatItem(dotColor: Color(0xFF7C4DFF), label: '职级', value: widget.data.ranks.length.toString()),
+          StatItem(
+            dotColor: Color(0xFF7C4DFF),
+            label: '职级',
+            value: widget.data.ranks.length.toString(),
+          ),
           const SizedBox(width: 16),
-          StatItem(dotColor: Color(0xFFC8690A), label: '待晋升', value: widget.data.promotions.length.toString()),
+          StatItem(
+            dotColor: Color(0xFFC8690A),
+            label: '待晋升',
+            value: widget.data.promotions.length.toString(),
+          ),
         ],
       ),
     );
@@ -123,10 +140,12 @@ class _OrgScreenState extends State<OrgScreen> {
               spacing: 12,
               runSpacing: 12,
               children: widget.data.institutions
-                  .map((inst) => SizedBox(
-                        width: 220,
-                        child: _buildInstitutionCard(inst),
-                      ))
+                  .map(
+                    (inst) => SizedBox(
+                      width: 220,
+                      child: _buildInstitutionCard(inst),
+                    ),
+                  )
                   .toList(),
             ),
         ],
@@ -136,9 +155,21 @@ class _OrgScreenState extends State<OrgScreen> {
 
   Widget _buildInstitutionCard(OrgInstitution inst) {
     final (statusLabel, statusColor, statusBg) = switch (inst.status) {
-      InstitutionStatus.normal => ('正常', const Color(0xFF1A7F37), const Color(0xFFE8F5E9)),
-      InstitutionStatus.warning => ('即将到期', const Color(0xFFC8690A), const Color(0xFFFFF3E0)),
-      InstitutionStatus.overdue => ('逾期', const Color(0xFFB71C1C), const Color(0xFFFFEBEE)),
+      InstitutionStatus.normal => (
+        '正常',
+        const Color(0xFF1A7F37),
+        const Color(0xFFE8F5E9),
+      ),
+      InstitutionStatus.warning => (
+        '即将到期',
+        const Color(0xFFC8690A),
+        const Color(0xFFFFF3E0),
+      ),
+      InstitutionStatus.overdue => (
+        '逾期',
+        const Color(0xFFB71C1C),
+        const Color(0xFFFFEBEE),
+      ),
     };
 
     return Container(
@@ -230,10 +261,7 @@ class _OrgScreenState extends State<OrgScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _panelHeader(
-            '代表履职',
-            '${widget.data.representatives.length} 位代表',
-          ),
+          _panelHeader('代表履职', '${widget.data.representatives.length} 位代表'),
           const SizedBox(height: 12),
           ...widget.data.representatives.map(_buildRepCard),
         ],
@@ -354,7 +382,9 @@ class _OrgScreenState extends State<OrgScreen> {
                       ),
                     ),
                     const SizedBox(height: 4),
-                    ...rep.recentVotes.take(5).map(
+                    ...rep.recentVotes
+                        .take(5)
+                        .map(
                           (v) => Padding(
                             padding: const EdgeInsets.symmetric(vertical: 2),
                             child: Text(
@@ -425,7 +455,10 @@ class _OrgScreenState extends State<OrgScreen> {
             runSpacing: 8,
             children: widget.data.ranks.map((r) {
               return Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
                   color: r.isManagement
                       ? const Color(0xFFF3E5F5)

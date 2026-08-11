@@ -6,7 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:qtadmin_studio/blocs/app_bloc.dart';
 import 'package:qtadmin_studio/models/metadata.dart';
 import 'package:qtadmin_studio/router.dart';
-import 'package:qtadmin_navigation/navigation.dart';
+import 'package:qtadmin_studio/navigation.dart';
 
 class _AppStateNotifier extends ChangeNotifier {
   StreamSubscription? _sub;

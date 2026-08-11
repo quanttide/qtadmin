@@ -18,16 +18,15 @@
 
 ## AI 上下文
 
-- 项目已完成领域分包：模型、BLoC、页面、视图已按领域提取为独立包
-- `packages/` 下 7 个包，主项目仅保留导航加载 + 路由 + 入口
-- 数据加载使用 `data_sources` 包的 `DataLoader` + `FileSource`
+- 单项目结构：全部代码内聚于 `lib/`（`data_sources/`、`navigation.dart`、`models/`、`screens/`、`views/`、`blocs/`），无领域分包
+- 数据加载使用 `lib/data_sources/` 的 `DataLoader` + `FileSource`
 - 测试使用 `DataLoader.inject()` 注入数据，不依赖真实文件
 
 ## 维护工作流
 
 ### 已有领域
 
-直接改对应包，包内独立开发测试。例如咨询加新功能：改 `packages/qtadmin-qtconsult/`，跑它的测试，主项目只需更新版本引用。
+直接改 `lib/` 下对应模块（models / screens / views / blocs），开发测试一体化。
 
 ### 新领域 / 跨领域
 
@@ -41,8 +40,8 @@
 
 ### 改基础设施
 
-改 `data_sources` 等底层包，所有依赖它的包重新 `pub get`。
+改 `lib/data_sources/` 等基础设施，涉及加载管线的改动需跑全量测试。
 
 ### 提交流程
 
-改代码 → `dart analyze` → 跑改动的包测试 → 跑主项目测试 → 提交
+改代码 → `dart analyze` → `flutter test` → 提交

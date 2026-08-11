@@ -1,8 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:qtadmin_studio/models/metadata.dart';
+import 'package:qtadmin_studio/models/org.dart';
 import 'package:qtadmin_studio/models/recruitment.dart';
-import 'package:qtadmin_org/org.dart';
-import 'package:data_sources/data_sources.dart';
+import 'package:qtadmin_studio/data_sources/data_sources.dart';
 
 final _source = const FileSource();
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:qtadmin_org/org_barrel.dart';
+import 'package:qtadmin_studio/models/org.dart';
+import 'package:qtadmin_studio/screens/org_screen.dart';
 
 OrgDashboard _createTestData() {
   return OrgDashboard(
@@ -134,7 +135,9 @@ void main() {
       expect(find.text('1'), findsWidgets);
     });
 
-    testWidgets('renders institution cards with names and statuses', (tester) async {
+    testWidgets('renders institution cards with names and statuses', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(body: OrgScreen(data: _createTestData())),
@@ -159,7 +162,9 @@ void main() {
       expect(find.text('3 条'), findsOneWidget);
     });
 
-    testWidgets('renders representative cards with names and ranks', (tester) async {
+    testWidgets('renders representative cards with names and ranks', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(body: OrgScreen(data: _createTestData())),
@@ -172,7 +177,9 @@ void main() {
       expect(find.textContaining('黄标'), findsOneWidget);
     });
 
-    testWidgets('expands representative to show details on tap', (tester) async {
+    testWidgets('expands representative to show details on tap', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(body: OrgScreen(data: _createTestData())),

@@ -1,19 +1,34 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:qtadmin_org/org.dart';
+import 'package:qtadmin_studio/models/org.dart';
 
 void main() {
   group('InstitutionStatus', () {
     test('byName resolves correctly', () {
-      expect(InstitutionStatus.values.byName('normal'), InstitutionStatus.normal);
-      expect(InstitutionStatus.values.byName('warning'), InstitutionStatus.warning);
-      expect(InstitutionStatus.values.byName('overdue'), InstitutionStatus.overdue);
+      expect(
+        InstitutionStatus.values.byName('normal'),
+        InstitutionStatus.normal,
+      );
+      expect(
+        InstitutionStatus.values.byName('warning'),
+        InstitutionStatus.warning,
+      );
+      expect(
+        InstitutionStatus.values.byName('overdue'),
+        InstitutionStatus.overdue,
+      );
     });
   });
 
   group('RepPerformanceTier', () {
     test('byName resolves correctly', () {
-      expect(RepPerformanceTier.values.byName('green'), RepPerformanceTier.green);
-      expect(RepPerformanceTier.values.byName('yellow'), RepPerformanceTier.yellow);
+      expect(
+        RepPerformanceTier.values.byName('green'),
+        RepPerformanceTier.green,
+      );
+      expect(
+        RepPerformanceTier.values.byName('yellow'),
+        RepPerformanceTier.yellow,
+      );
       expect(RepPerformanceTier.values.byName('red'), RepPerformanceTier.red);
     });
   });
