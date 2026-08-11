@@ -2,6 +2,13 @@
 
 qtadmin Studio 是治理思想的展示与执行载体。旧业务域已清空，当前为导航壳，从零承载「限制创始人」目标（见仓库根 `ROADMAP.md`）。
 
+## 页面设计
+
+- [任务页](./screens/tasks.md)：分配工作，任务绑定角色槽位
+- [评审页](./screens/reviews.md)：接受评审结果，通过/打回留痕
+- [摩擦页](./screens/frictions.md)：复盘四问，一次摩擦一条标准
+- [角色页](./screens/roles.md)：任务类型 → 默认评审人
+
 ## 目录结构
 
 ```
