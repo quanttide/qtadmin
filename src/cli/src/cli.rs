@@ -1,6 +1,5 @@
 use crate::asset;
 use crate::business;
-use crate::connect;
 use crate::human;
 
 use clap::{Parser, Subcommand};
@@ -22,8 +21,6 @@ pub enum Commands {
     Asset(asset::AssetArgs),
     /// 商务拓展职能
     Business(business::BusinessArgs),
-    /// 连接基础设施
-    Connect(connect::ConnectArgs),
     /// 人力资源职能
     Human(human::HumanArgs),
 }
@@ -35,7 +32,6 @@ pub fn run() {
     match &cli.command {
         Some(Commands::Asset(args)) => asset::dispatch(args),
         Some(Commands::Business(args)) => business::dispatch(args),
-        Some(Commands::Connect(args)) => connect::dispatch(args),
         Some(Commands::Human(args)) => human::dispatch(args, provider),
         None => {}
     }

@@ -23,7 +23,7 @@
 |------|-----------|------|
 | asset | `qtcloud-asset` | 产品线已有 CLI（scanner/workflow/validate）；参考实现见 `examples/asset-api/` |
 | business | `qtcloud-business` | studio 承接 |
-| connect | `qtcloud-connect` | CLI 已迁移至 `src/cli`（生产验证的飞书邮件/聊天/通知），qtadmin 侧副本保留待决策 |
+| connect | `qtcloud-connect` | CLI 已迁移至 `src/cli`（生产验证的飞书邮件/聊天/通知 + extract 增强），qtadmin 侧已移除 |
 | human | `qtcloud-human` | 参考实现见 `examples/human-api/`、`examples/recruitment-plan/` |
 | knowl | `qtcloud-knowl` | 已合并至 `qtcloud-knowl/src/cli`（Rust 重构，含 acquire/extract-by-type/summary） |
 | org | `qtcloud-org` | 参考实现见 `examples/org-implementation/` |
