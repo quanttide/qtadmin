@@ -1,7 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:qtadmin_studio/models/metadata.dart';
 import 'package:qtadmin_studio/models/recruitment.dart';
-import 'package:qtadmin_qtconsult/qtconsult.dart';
 import 'package:qtadmin_org/org.dart';
 import 'package:data_sources/data_sources.dart';
 
@@ -21,11 +20,6 @@ final _companyMetaLoader = DataLoader<NavMetadata>(
   _source,
   'data/company/metadata.json',
   NavMetadata.fromJson,
-);
-final _consultLoader = DataLoader<QtConsult>(
-  _source,
-  'data/company/qtconsult.json',
-  QtConsult.fromJson,
 );
 final _orgLoader = DataLoader<OrgDashboard>(
   _source,
@@ -72,7 +66,6 @@ class AppData {
   final List<WorkspaceInfo> workspaces;
   final Map<String, SectionDef> sectionDefs;
   final Map<String, NavMetadata> navData;
-  final QtConsult consultData;
   final OrgDashboard orgData;
   final RecruitmentPlan? recruitmentData;
 
@@ -80,7 +73,6 @@ class AppData {
     required this.workspaces,
     required this.sectionDefs,
     required this.navData,
-    required this.consultData,
     required this.orgData,
     this.recruitmentData,
   });
@@ -97,7 +89,6 @@ class AppBloc extends Bloc<AppEvent, AppState> {
       _rootMetaLoader.load(),
       _founderMetaLoader.load(),
       _companyMetaLoader.load(),
-      _consultLoader.load(),
       _orgLoader.load(),
       _recruitmentLoader.load(),
     ]);
@@ -110,7 +101,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     }
 
     final root = (results[0] as DataSuccess<RootMetadata>).data;
-    final recruitmentResult = results[5] as DataResult<RecruitmentPlan>;
+    final recruitmentResult = results[4] as DataResult<RecruitmentPlan>;
     emit(
       AppLoaded(
         AppData(
@@ -120,8 +111,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
             'founder': (results[1] as DataSuccess<NavMetadata>).data,
             'company': (results[2] as DataSuccess<NavMetadata>).data,
           },
-          consultData: (results[3] as DataSuccess<QtConsult>).data,
-          orgData: (results[4] as DataSuccess<OrgDashboard>).data,
+          orgData: (results[3] as DataSuccess<OrgDashboard>).data,
           recruitmentData: switch (recruitmentResult) {
             DataSuccess(:final data) => data,
             DataError() => null,

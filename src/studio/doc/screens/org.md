@@ -6,7 +6,7 @@
 fixture JSON → Loader → Model → Screen (内聚 Widgets)
 ```
 
-遵循现有模式：`QtConsultScreen` 级别的独立详情屏，三层 UI 内聚在一个 Screen 中。
+遵循现有模式：独立详情屏（如 `RecruitmentScreen`），三层 UI 内聚在一个 Screen 中。
 
 ## 文件清单
 
@@ -116,7 +116,7 @@ class OrgDashboardData {
 
 ## 3. Loader — `lib/services/org_loader.dart`
 
-模式同 `QtConsultLoader`：
+模式同 `RecruitmentLoader`（`app_bloc.dart` 中的 `DataLoader`）：
 
 - 从 `assets/fixtures/company/org.json` 加载
 - `OrgDashboardData.fromJson()` 解析
@@ -124,7 +124,7 @@ class OrgDashboardData {
 
 ## 4. Screen — `lib/screens/org_screen.dart`
 
-三层布局，同 `QtConsultScreen` 的模式：
+三层布局，同现有 Screen 的模式：
 
 ```
 ┌─ TopBar ──────────────────────────────┐

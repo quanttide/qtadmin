@@ -5,7 +5,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:qtadmin_studio/blocs/app_bloc.dart';
 import 'package:qtadmin_studio/models/metadata.dart';
-import 'package:qtadmin_qtconsult/consult.dart';
 import 'package:qtadmin_studio/router.dart';
 import 'package:qtadmin_navigation/navigation.dart';
 
@@ -60,16 +59,7 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
         ),
         ShellRoute(
           builder: (context, state, child) {
-            final data = (context.read<AppBloc>().state as AppLoaded).data;
-            return MultiBlocProvider(
-              providers: [
-                BlocProvider(
-                  create: (_) =>
-                      ConsultBloc(ConsultState(data: data.consultData)),
-                ),
-              ],
-              child: _SidebarShell(child: child),
-            );
+            return _SidebarShell(child: child);
           },
           routes: [
             GoRoute(
@@ -84,7 +74,6 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
                   workspaceName:
                       data.workspaces[wsIndex >= 0 ? wsIndex : 0].name,
                   selectedWorkspace: wsIndex >= 0 ? wsIndex : 0,
-                  consultData: data.consultData,
                   orgData: data.orgData,
                   recruitmentData: data.recruitmentData,
                 );

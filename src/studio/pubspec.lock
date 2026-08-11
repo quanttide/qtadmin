@@ -476,13 +476,6 @@ packages:
       relative: true
     source: path
     version: "0.0.1"
-  qtadmin_qtconsult:
-    dependency: "direct main"
-    description:
-      path: "packages/qtadmin-qtconsult"
-      relative: true
-    source: path
-    version: "0.0.1"
   shelf:
     dependency: transitive
     description:

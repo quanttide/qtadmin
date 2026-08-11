@@ -5,6 +5,7 @@
 ### Clean
 
 - 移除遗留领域包 `qtadmin-dashboard`、`qtadmin-qtclass`、`qtadmin-think`（无引用、无数据活水源），同步删除对应静态 fixture（founder/company 的 dashboard/thinking/qtclass json）
+- 移除量潮咨询领域包 `qtadmin-qtconsult`：路由、数据加载、导航条目、fixture 与测试一并下线
 
 ### Refactor
 

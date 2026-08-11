@@ -27,8 +27,7 @@ Studio 不直接读取本地数据文件。数据通过 Loader 的 `inject()` �
 | id | Screen | 数据模型 |
 |----|--------|----------|
 | `writing` | 占位 | — |
-| `consulting` | `QtConsultScreen` | `QtConsultData` |
-| `org` | `OrgScreen` | `OrgDashboardData` |
+| `org` | `OrgScreen` | `OrgDashboard` |
 | `recruitment` | `RecruitmentScreen` | `RecruitmentPlan` |
 
 导航数据（`data/*/metadata.json`）中出现的 id 必须存在于路由表，否则运行时抛 `StateError`。

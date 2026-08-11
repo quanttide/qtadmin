@@ -106,7 +106,7 @@ JSON 没有枚举类型。字符串 + 集中 map 解析，fixture 可读且无 D
 
 1. 根 `metadata.json` 的 `workspaces[]` 加一条
 2. `assets/fixtures/` 下按 `dir` 值新建目录
-3. 写 `metadata.json` + `panorama.json`（以及可选 `qtconsult.json`）
+3. 写 `metadata.json`（以及该工作空间需要的领域数据文件）
 
 不需要改任何 Dart 文件。
 
@@ -119,5 +119,4 @@ JSON 没有枚举类型。字符串 + 集中 map 解析，fixture 可读且无 D
 
 | 陷阱 | 优先级 | 说明 |
 |---|---|---|
-| 咨询数据硬编码为 customer | 中 | `QtConsultLoader.load(workspace: WorkspaceType.customer)`，founder 若有 consulting 页会展示 company 数据 |
 | per-workspace metadata.json 引用的 section id 必须在根存在 | 低 | 运行时 `_buildSections()` 查找不到会抛 StateError |

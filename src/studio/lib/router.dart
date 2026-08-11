@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:qtadmin_qtconsult/consult.dart';
 import 'package:qtadmin_org/org_barrel.dart';
 import 'package:qtadmin_studio/models/recruitment.dart';
 import 'package:qtadmin_studio/screens/recruitment_screen.dart';
@@ -7,14 +6,12 @@ import 'package:qtadmin_studio/screens/recruitment_screen.dart';
 class ScreenContext {
   final String workspaceName;
   final int selectedWorkspace;
-  final QtConsult? consultData;
   final OrgDashboard? orgData;
   final RecruitmentPlan? recruitmentData;
 
   ScreenContext({
     required this.workspaceName,
     required this.selectedWorkspace,
-    this.consultData,
     this.orgData,
     this.recruitmentData,
   });
@@ -39,12 +36,6 @@ class RouteConfig {
       label: '写作',
       icon: Icons.edit_outlined,
       builder: (ctx) => const Center(child: Text('即将上线')),
-    ),
-    'consulting': RouteConfig(
-      id: 'consulting',
-      label: '量潮咨询',
-      icon: Icons.support_agent_outlined,
-      builder: (ctx) => const QtConsultScreen(),
     ),
     'org': RouteConfig(
       id: 'org',

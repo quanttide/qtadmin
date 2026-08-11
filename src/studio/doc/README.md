@@ -6,7 +6,7 @@
 |---|---|
 | `index.md` | 应用架构总览：加载管线、数据模型、组件、路由 |
 | `views/navigation.md` | 导航实现：数据流、公开组件、设计决策、操作指南 |
-| `screens/qtconsult.md` | 咨询详情页实现：联动规则、状态流转、与量潮云关系 |
+| `screens/org.md` | 组织管理页面实现 |
 
 数据 schema 定义在主仓库 `docs/drd/`，不在此目录。
 
