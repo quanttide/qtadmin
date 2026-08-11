@@ -1,5 +1,4 @@
 use crate::asset;
-use crate::business;
 
 use clap::{Parser, Subcommand};
 
@@ -14,8 +13,6 @@ pub struct Cli {
 pub enum Commands {
     /// 数字资产职能
     Asset(asset::AssetArgs),
-    /// 商务拓展职能
-    Business(business::BusinessArgs),
 }
 
 pub fn run() {
@@ -23,7 +20,6 @@ pub fn run() {
 
     match &cli.command {
         Some(Commands::Asset(args)) => asset::dispatch(args),
-        Some(Commands::Business(args)) => business::dispatch(args),
         None => {}
     }
 }
