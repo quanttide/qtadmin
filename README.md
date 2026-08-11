@@ -13,34 +13,17 @@
 
 | 模块 | 技术栈 | 状态 |
 |------|--------|------|
-| `src/studio/` | Flutter | 🟢 **当前重心** |
-| `src/cli/` | Rust | 🟢 持续迭代 |
-| `src/provider/` | Go | 🟡 维护态 |
+| `src/studio/` | Flutter | 🟡 壳（导航框架 + 写作占位，领域已移交产品线） |
+| `src/provider/` | Go | 🟡 壳（config/store/health，领域 handler 已拆分至各仓 examples/） |
 
-## CLI 命令
+## 领域去向
 
-```
-qtadmin
-├── asset           # 职能域：数字资产
-│   ├── archive     #   日志归档
-│   ├── status      #   结构合规检查（文件/格式/提交规范）
-│   └── quality     #   语义质量评估（叙事/知识/认知三维度）
-├── human           # 职能域：人力资源
-│   └── status      #   招聘计划与进度
-├── connect         # 职能域：沟通连接
-│   └── email/      #   邮件通道（lark-cli）
-└── qtrecurit       # 业务域：量潮招聘
-    └── status      #   招聘数据统计
-```
-
-## 迭代方向
-
-`v0.0.x` 阶段逐步补齐各领域的最小可用能力：
-
-- **human** → 人事档案、考勤、绩效
-- **asset** → 资源管理、许可证追踪
-- **connect** → IM 通知、审批流
-- **业务域** → 财务、项目、客户
-
-直到覆盖足够支撑日常管理后发 `v0.1.0`。
+| 领域 | 产品线仓库 | 去向 |
+|------|-----------|------|
+| asset | `qtcloud-asset` | 产品线已有 CLI（scanner/workflow/validate）；参考实现见 `examples/asset-api/` |
+| business | `qtcloud-business` | studio 承接 |
+| connect | `qtcloud-connect` | CLI 已迁移至 `src/cli`（生产验证的飞书邮件/聊天/通知） |
+| human | `qtcloud-human` | 参考实现见 `examples/human-api/`、`examples/recruitment-plan/` |
+| knowl | `qtcloud-knowl` | 产品线已有 CLI（qtcloud-knowl-cli） |
+| org | `qtcloud-org` | 参考实现见 `examples/org-implementation/` |
 
