@@ -22,20 +22,16 @@ Studio 不直接读取本地数据文件。数据通过 Loader 的 `inject()` �
 
 ## 页面路由
 
-`_buildScreenForItem` 按 `pageType` 分发：
+`RouteConfig.find` 按路由 id 分发，路由表见 `lib/router.dart`：
 
-| pageType | Screen | 数据模型 |
-|----------|--------|----------|
-| `dashboard` | `DashboardScreen` | `DashboardData` |
-| `thinking` | `ThinkingScreen` | `ThinkingData` |
+| id | Screen | 数据模型 |
+|----|--------|----------|
 | `writing` | 占位 | — |
 | `consulting` | `QtConsultScreen` | `QtConsultData` |
-| `classroom` | `QtClassScreen` | `QtClassData` |
 | `org` | `OrgScreen` | `OrgDashboardData` |
-| `business_detail` | `BusinessDetailScreen` | `DashboardData.businessUnits` |
-| `function_detail` | `FuncDetailScreen` | `DashboardData.functionCards` |
+| `recruitment` | `RecruitmentScreen` | `RecruitmentPlan` |
 
-`business_detail` 和 `function_detail` 通过 `item.label` 匹配 dashboard 数据中的名称。
+导航数据（`data/*/metadata.json`）中出现的 id 必须存在于路由表，否则运行时抛 `StateError`。
 
 ## 导航系统
 

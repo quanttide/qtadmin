@@ -8,16 +8,13 @@ void main() {
     });
 
     test('find returns correct route', () {
-      final route = RouteConfig.find('dashboard');
-      expect(route.id, 'dashboard');
-      expect(route.label, '仪表盘');
+      final route = RouteConfig.find('consulting');
+      expect(route.id, 'consulting');
+      expect(route.label, '量潮咨询');
     });
 
     test('find throws for unknown route', () {
-      expect(
-        () => RouteConfig.find('nonexistent'),
-        throwsA(isA<StateError>()),
-      );
+      expect(() => RouteConfig.find('nonexistent'), throwsA(isA<StateError>()));
     });
 
     test('all routes have unique ids', () {

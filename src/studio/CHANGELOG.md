@@ -1,5 +1,12 @@
 # Changelog
 
+## [Unreleased]
+
+### Refactor
+
+- 清理 router 死引用：移除 dashboard、think、qtclass 的页面、数据加载与导航配置，主项目只保留治理相关页面（写作占位、量潮咨询、组织管理、招聘计划）
+- 同步清理导航 fixture：founder 仅写作，company 仅咨询与组织管理
+
 ## [0.1.3]
 
 ### Feat

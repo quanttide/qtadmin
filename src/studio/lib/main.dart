@@ -5,7 +5,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:qtadmin_studio/blocs/app_bloc.dart';
 import 'package:qtadmin_studio/models/metadata.dart';
-import 'package:qtadmin_dashboard/dashboard_barrel.dart';
 import 'package:qtadmin_qtconsult/consult.dart';
 import 'package:qtadmin_studio/router.dart';
 import 'package:qtadmin_navigation/navigation.dart';
@@ -49,7 +48,10 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
       refreshListenable: _notifier,
       initialLocation: '/loading',
       routes: [
-        GoRoute(path: '/loading', builder: (context, state) => const _LoadingScreen()),
+        GoRoute(
+          path: '/loading',
+          builder: (context, state) => const _LoadingScreen(),
+        ),
         GoRoute(
           path: '/error',
           builder: (_, state) => _ErrorScreen(
@@ -61,8 +63,10 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
             final data = (context.read<AppBloc>().state as AppLoaded).data;
             return MultiBlocProvider(
               providers: [
-                BlocProvider(create: (_) => ConsultBloc(ConsultState(data: data.consultData))),
-                BlocProvider(create: (_) => DashboardBloc()..add(DashboardLoad())),
+                BlocProvider(
+                  create: (_) =>
+                      ConsultBloc(ConsultState(data: data.consultData)),
+                ),
               ],
               child: _SidebarShell(child: child),
             );
@@ -72,19 +76,15 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
               path: '/workspace/:workspace/:page',
               builder: (context, state) {
                 final data = (context.read<AppBloc>().state as AppLoaded).data;
-                final dashState = context.read<DashboardBloc>().state;
                 final dir = state.pathParameters['workspace']!;
                 final page = state.pathParameters['page']!;
                 final wsIndex = data.workspaces.indexWhere((w) => w.dir == dir);
                 final route = RouteConfig.find(page);
-                if (dashState is! DashboardLoaded) return const SizedBox();
                 final ctx = ScreenContext(
-                  dashboard: dashState.dashboard(dir),
-                  workspaceName: data.workspaces[wsIndex >= 0 ? wsIndex : 0].name,
+                  workspaceName:
+                      data.workspaces[wsIndex >= 0 ? wsIndex : 0].name,
                   selectedWorkspace: wsIndex >= 0 ? wsIndex : 0,
-                  thinkingData: data.thinkingData,
                   consultData: data.consultData,
-                  classData: data.classData,
                   orgData: data.orgData,
                   recruitmentData: data.recruitmentData,
                 );
@@ -101,8 +101,10 @@ class _QtAdminStudioState extends State<QtAdminStudio> {
           AppInitial() || AppLoading() when location == '/loading' => null,
           AppInitial() || AppLoading() => '/loading',
           AppError() when location.startsWith('/error') => null,
-          AppError(:final message) => '/error?message=${Uri.encodeComponent(message)}',
-          AppLoaded() when location == '/loading' || location == '/error' => '/workspace/founder/dashboard',
+          AppError(:final message) =>
+            '/error?message=${Uri.encodeComponent(message)}',
+          AppLoaded() when location == '/loading' || location == '/error' =>
+            '/workspace/founder/dashboard',
           AppLoaded() => null,
         };
       },
@@ -181,7 +183,11 @@ class _SidebarShellState extends State<_SidebarShell> {
         items: section.items.map((item) {
           _flatRouteIds.add(item.name);
           final route = RouteConfig.find(item.name);
-          return NavItem(routeId: item.name, icon: route.icon, label: route.label);
+          return NavItem(
+            routeId: item.name,
+            icon: route.icon,
+            label: route.label,
+          );
         }).toList(),
       );
     }).toList();
@@ -190,21 +196,28 @@ class _SidebarShellState extends State<_SidebarShell> {
   @override
   Widget build(BuildContext context) {
     final data = (context.read<AppBloc>().state as AppLoaded).data;
-    final currentPage = GoRouterState.of(context).pathParameters['page'] ?? 'dashboard';
-    final currentDir = GoRouterState.of(context).pathParameters['workspace'] ?? data.workspaces[0].dir;
+    final currentPage =
+        GoRouterState.of(context).pathParameters['page'] ?? 'dashboard';
+    final currentDir =
+        GoRouterState.of(context).pathParameters['workspace'] ??
+        data.workspaces[0].dir;
 
     _rebuildSections(data, currentDir);
 
     final selectedIndex = _flatRouteIds.indexOf(currentPage);
 
-    final wsList = data.workspaces.map((w) => (icon: w.resolveIcon(), name: w.name)).toList();
+    final wsList = data.workspaces
+        .map((w) => (icon: w.resolveIcon(), name: w.name))
+        .toList();
 
     return Scaffold(
       body: Row(
         children: [
           NavSidebar(
             workspaces: wsList,
-            selectedWorkspace: data.workspaces.indexWhere((w) => w.dir == currentDir),
+            selectedWorkspace: data.workspaces.indexWhere(
+              (w) => w.dir == currentDir,
+            ),
             onWorkspaceChanged: (index) {
               final newDir = data.workspaces[index].dir;
               context.go('/workspace/$newDir/$currentPage');

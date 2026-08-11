@@ -2,29 +2,41 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:qtadmin_studio/models/metadata.dart';
 import 'package:qtadmin_studio/models/recruitment.dart';
 import 'package:qtadmin_qtconsult/qtconsult.dart';
-import 'package:qtadmin_qtclass/qtclass.dart';
-import 'package:qtadmin_think/thinking.dart';
 import 'package:qtadmin_org/org.dart';
 import 'package:data_sources/data_sources.dart';
 
 final _source = const FileSource();
 
-final _rootMetaLoader =
-    DataLoader<RootMetadata>(_source, 'data/metadata.json', RootMetadata.fromJson);
-final _founderMetaLoader =
-    DataLoader<NavMetadata>(_source, 'data/founder/metadata.json', NavMetadata.fromJson);
-final _companyMetaLoader =
-    DataLoader<NavMetadata>(_source, 'data/company/metadata.json', NavMetadata.fromJson);
-final _consultLoader =
-    DataLoader<QtConsult>(_source, 'data/company/qtconsult.json', QtConsult.fromJson);
-final _classLoader =
-    DataLoader<QtClass>(_source, 'data/company/qtclass.json', QtClass.fromJson);
-final _thinkingLoader =
-    DataLoader<Thinking>(_source, 'data/founder/thinking.json', Thinking.fromJson);
-final _orgLoader =
-    DataLoader<OrgDashboard>(_source, 'data/company/org.json', OrgDashboard.fromJson);
-final _recruitmentLoader =
-    DataLoader<RecruitmentPlan>(_source, 'data/recruitment.json', RecruitmentPlan.fromJson);
+final _rootMetaLoader = DataLoader<RootMetadata>(
+  _source,
+  'data/metadata.json',
+  RootMetadata.fromJson,
+);
+final _founderMetaLoader = DataLoader<NavMetadata>(
+  _source,
+  'data/founder/metadata.json',
+  NavMetadata.fromJson,
+);
+final _companyMetaLoader = DataLoader<NavMetadata>(
+  _source,
+  'data/company/metadata.json',
+  NavMetadata.fromJson,
+);
+final _consultLoader = DataLoader<QtConsult>(
+  _source,
+  'data/company/qtconsult.json',
+  QtConsult.fromJson,
+);
+final _orgLoader = DataLoader<OrgDashboard>(
+  _source,
+  'data/company/org.json',
+  OrgDashboard.fromJson,
+);
+final _recruitmentLoader = DataLoader<RecruitmentPlan>(
+  _source,
+  'data/recruitment.json',
+  RecruitmentPlan.fromJson,
+);
 
 // Events
 
@@ -61,8 +73,6 @@ class AppData {
   final Map<String, SectionDef> sectionDefs;
   final Map<String, NavMetadata> navData;
   final QtConsult consultData;
-  final QtClass classData;
-  final Thinking thinkingData;
   final OrgDashboard orgData;
   final RecruitmentPlan? recruitmentData;
 
@@ -71,8 +81,6 @@ class AppData {
     required this.sectionDefs,
     required this.navData,
     required this.consultData,
-    required this.classData,
-    required this.thinkingData,
     required this.orgData,
     this.recruitmentData,
   });
@@ -90,8 +98,6 @@ class AppBloc extends Bloc<AppEvent, AppState> {
       _founderMetaLoader.load(),
       _companyMetaLoader.load(),
       _consultLoader.load(),
-      _classLoader.load(),
-      _thinkingLoader.load(),
       _orgLoader.load(),
       _recruitmentLoader.load(),
     ]);
@@ -104,22 +110,24 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     }
 
     final root = (results[0] as DataSuccess<RootMetadata>).data;
-    final recruitmentResult = results[7] as DataResult<RecruitmentPlan>;
-    emit(AppLoaded(AppData(
-      workspaces: root.workspaces,
-      sectionDefs: {for (final s in root.sections) s.id: s},
-      navData: {
-        'founder': (results[1] as DataSuccess<NavMetadata>).data,
-        'company': (results[2] as DataSuccess<NavMetadata>).data,
-      },
-      consultData: (results[3] as DataSuccess<QtConsult>).data,
-      classData: (results[4] as DataSuccess<QtClass>).data,
-      thinkingData: (results[5] as DataSuccess<Thinking>).data,
-      orgData: (results[6] as DataSuccess<OrgDashboard>).data,
-      recruitmentData: switch (recruitmentResult) {
-        DataSuccess(:final data) => data,
-        DataError() => null,
-      },
-    )));
+    final recruitmentResult = results[5] as DataResult<RecruitmentPlan>;
+    emit(
+      AppLoaded(
+        AppData(
+          workspaces: root.workspaces,
+          sectionDefs: {for (final s in root.sections) s.id: s},
+          navData: {
+            'founder': (results[1] as DataSuccess<NavMetadata>).data,
+            'company': (results[2] as DataSuccess<NavMetadata>).data,
+          },
+          consultData: (results[3] as DataSuccess<QtConsult>).data,
+          orgData: (results[4] as DataSuccess<OrgDashboard>).data,
+          recruitmentData: switch (recruitmentResult) {
+            DataSuccess(:final data) => data,
+            DataError() => null,
+          },
+        ),
+      ),
+    );
   }
 }

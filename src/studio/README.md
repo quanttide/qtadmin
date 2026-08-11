@@ -6,7 +6,7 @@
 
 - 已完成领域分包：`packages/` 下 7 个包，主项目保留数据加载、路由与入口
 - 双端数据共享已落地：与 CLI 同源读取 `recruitment.json`（v0.1.3）
-- 待清理：`router.dart` 仍引用已剥离的业务域包（dashboard、think、qtclass）
+- 已清理 router 死引用（v0.1.4）：移除 dashboard、think、qtclass 页面，主项目只保留治理相关页面（写作占位、量潮咨询、组织管理、招聘计划）
 
 ## 目录
 
