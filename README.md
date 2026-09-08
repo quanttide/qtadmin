@@ -16,6 +16,7 @@
 | `src/studio/` | Flutter | 🟡 壳（导航框架 + 写作占位，领域已移交产品线） |
 | `src/cli/` | Rust | 🟡 待决策（connect 已迁 qtcloud-connect，其余模块未定） |
 | `src/provider/` | Go | 🟡 壳（config/store/health，领域 handler 已拆分至各仓 examples/） |
+| `src/site/` | React + TypeScript | 🟢 展示站（定位与架构分层） |
 
 ## 领域去向
 

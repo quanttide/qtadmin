@@ -1,0 +1,72 @@
+.app {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 4rem 1.5rem;
+}
+
+.hero h1 {
+  font-size: 2.5rem;
+  margin: 0 0 0.5rem;
+}
+
+.tagline {
+  font-size: 1.25rem;
+  color: #555;
+  margin: 0 0 0.75rem;
+}
+
+.intro {
+  color: #777;
+  margin: 0;
+}
+
+.clouds {
+  margin-top: 3rem;
+}
+
+.clouds h2 {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.cloud-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+}
+
+.cloud-card {
+  display: block;
+  padding: 1.25rem;
+  border: 1px solid #e5e5ee;
+  border-radius: 12px;
+  background: #fff;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.cloud-card:hover {
+  border-color: #4152c4;
+  box-shadow: 0 4px 16px rgba(65, 82, 196, 0.12);
+}
+
+.cloud-card h3 {
+  margin: 0 0 0.25rem;
+}
+
+.cloud-card .domain {
+  font-size: 0.85rem;
+  color: #4152c4;
+  margin: 0 0 0.5rem;
+}
+
+.cloud-card .description {
+  font-size: 0.9rem;
+  color: #666;
+  margin: 0 0 0.5rem;
+}
+
+.cloud-card .examples {
+  font-size: 0.85rem;
+  color: #999;
+  margin: 0;
+}
