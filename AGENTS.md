@@ -1,6 +1,6 @@
 # Agent Guidelines for qtadmin
 
-> **必读：** 先读 `CONTRIBUTING.md`、`README.md`、`ROADMAP.md`。README 与 `src/site/` 的自述仍是旧定位（管理后台/治理思想平台化），**以本文件定位节为准**，自述待随定位修正。
+> **必读：** 先读 `CONTRIBUTING.md`、`README.md`、`ROADMAP.md`。README 定位段与本文件一致；`src/site/` 自述仍是旧定位，**以本文件定位节为准**。
 
 ## 定位：监控面板
 
@@ -16,6 +16,7 @@ qtadmin 是量潮体系的**对内监控面板**——以各种数据指标和�
 | **数据指标与验收状态** | **qtadmin** |
 
 - **判断口径**：面板上的每个数都可追溯到指标来源或验收结论——数据指标与验收方式作数，叙事不作数
+- **围绕的资产**：journal / profile 等记录与状态——住 quanttide-tech `data/` 数据层，**禁止移入本仓**；本仓是它们的只读展示窗
 - **历史教训**：仪表盘曾因"无数据活水源"被整体移除（见 `src/studio/CHANGELOG.md`）——**数据活水源先于界面**，没有稳定指标来源不立面板
 
 ## 现状
