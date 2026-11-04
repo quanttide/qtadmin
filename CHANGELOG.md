@@ -6,6 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0
 
 ## [Unreleased]
 
+### Changed
+- AGENTS.md 按新定位重写：qtadmin = 对内监控面板，以数据指标与验收方式为准——四分边界（对外→qttech、制度身份→主体仓、领域运营→产品线、指标与验收→本仓）；数据活水源先于界面（仪表盘前车之鉴）；清理失效引用（cli asset 模块、docs/handbook、实验→工程化管线、不存在的 ROADMAP 必读）
+
 ### Feat
 
 - 评审闭环 MVP：任务分配（角色槽位绑定评审人）、评审工作台（通过/打回留痕）、摩擦登记（复盘四问）、角色槽位配置四个治理页面
