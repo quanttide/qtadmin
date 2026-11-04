@@ -7,7 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0
 ## [Unreleased]
 
 ### Added
-- 指标清单立节，首个指标选定：**线上端点可用性**（GET 靶单 5 站、200 为过、HTTP 探测为水源、验收方式=线上复核）；基线 5 过 2 挂（www 连接失败、qtclass/healthz 404 两条遗留现形）
+- 指标清单立节，首个指标选定：**线上端点可用性**（GET 靶单六站、200 为过、HTTP 探测为水源、验收方式=线上复核）；首跑抓出 www 死链（S3 无 TLS）——当日建 CDN 实例 + 改 CNAME 修复，基线二跑 **6 过 0 挂**；qtclass/healthz 404 单列为遗留
 
 ### Removed
 - 过时信息全仓清理（以 AGENTS 监控面板定位为准）：根 README 旧定位句与领域去向死引用、ROADMAP 重写（限制创始人与评审闭环/质量飞轮/系统权威路线移除）、site 标语与简介、studio README 与 doc/index 旧定位及已失效的 recruitment.json 陈述、CONTRIBUTING 的 asset 死命令、examples 幽灵清单、docs/user-guide 五个已迁领域指南与旧架构文、api-reference/provider.yaml 旧 API 契约（1639 行，代码仅 /health）、provider README 幽灵认证节与个人路径

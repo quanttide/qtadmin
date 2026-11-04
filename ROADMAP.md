@@ -20,9 +20,10 @@ qtadmin 是量潮体系的**对内监控面板**——以各种数据指标和�
    - **判定**：靶单内 GET 端点返回 200 即过；非 200 或连接失败即挂
    - **数据活水源**：HTTP 探测，零新基建——按"水源先于面板"的顺序，第一个指标必须今天就有稳定水源
    - **验收方式**：线上复核（site 验收流程的最后一步）
-   - **靶单 v1**（GET）：`class`、`lite.class`、`quanttide.com`、`data`、`studio.data` 五站
-   - **基线（2026-11-02）**：5 过 2 挂——
-     - ✗ `www.quanttide.com` 连接失败（apex 正常；www 是否入靶待裁）
-     - ✗ `api.quanttide.com/qtclass/healthz` 404（网关映射待核，auth-pay 评审遗留）
+   - **靶单 v1**（GET，六站）：`class`、`lite.class`、`quanttide.com`、`www`、`data`、`studio.data`
+   - **基线（2026-11-02 二跑）**：**6 过 0 挂**
+     - `www.quanttide.com` 首跑挂（指向 AWS S3 website，无 TLS，HTTP 亦 404），当日修复：新建 CDN 实例（源站 qtweb-site OSS、复用 `*.quanttide.com` 通配证书至 2027-01-31、闽 ICP 同案）+ DNS CNAME 改指 `www.quanttide.com.w.kunlunaq.com`，复跑 200
+     - 遗留：`api.quanttide.com/qtclass/healthz` 404（网关映射待核，auth-pay 评审遗留；不入靶单，单列）
      - 注：`POST` 端点（如 oauth/token）按方法返回 404 属正常路由行为，不入 v1 GET 靶单
+     - 待办：www 的 HTTP→HTTPS 强跳未配（当前 CLI 无该 API），HTTP 现直出 200
 - [ ] 四屏去留：待裁
