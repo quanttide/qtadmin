@@ -20,9 +20,9 @@ export default function App() {
     <main className="app">
       <section className="hero">
         <h1>量潮管理后台</h1>
-        <p className="tagline">治理思想的平台化载体</p>
+        <p className="tagline">对内监控面板</p>
         <p className="intro">
-          公司内部全面管理工具，覆盖各业务线与职能领域，按业务域与职能域分层组织。
+          以各种数据指标和验收方式为准，回答"我们跑得怎么样"。
         </p>
       </section>
       <section className="clouds">

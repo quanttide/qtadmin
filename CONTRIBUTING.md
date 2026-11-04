@@ -11,7 +11,6 @@
 ```bash
 cd src/cli
 cargo build                    # 编译
-cargo run -- asset quality     # 运行子命令
 cargo test                     # 运行测试
 ```
 

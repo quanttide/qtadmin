@@ -1,6 +1,6 @@
 # 量潮管理后台
 
-公司内部全面管理工具，覆盖各业务线与职能领域。
+对内监控面板——以各种数据指标和验收方式为准，回答"我们跑得怎么样"。四分边界见 [AGENTS.md](AGENTS.md)。
 
 ## 架构：业务域与职能域
 
@@ -13,7 +13,7 @@
 
 | 模块 | 技术栈 | 状态 |
 |------|--------|------|
-| `src/studio/` | Flutter | 🟡 壳（导航框架 + 写作占位，领域已移交产品线） |
+| `src/studio/` | Flutter | 🟡 四屏（任务/评审/摩擦/角色，旧实体与定位不同物，去留未定） |
 | `src/cli/` | Rust | 🟡 待决策（connect 已迁 qtcloud-connect，其余模块未定） |
 | `src/provider/` | Go | 🟡 壳（config/store/health，领域 handler 已拆分至各仓 examples/） |
 | `src/site/` | React + TypeScript | 🟢 展示站（定位与架构分层） |
@@ -22,10 +22,10 @@
 
 | 领域 | 产品线仓库 | 去向 |
 |------|-----------|------|
-| asset | `qtcloud-asset` | 产品线已有 CLI（scanner/workflow/validate）；参考实现见 `examples/asset-api/`、`examples/asset-cli/` |
-| business | `qtcloud-business` | CLI 已迁移至 `src/cli`（报价计算/商务总览） |
-| connect | `qtcloud-connect` | CLI 已迁移至 `src/cli`（生产验证的飞书邮件/聊天/通知 + extract 增强），qtadmin 侧已移除 |
-| human | `qtcloud-human` | CLI 已迁移至 `src/cli`（招聘计划/岗位管理）；参考实现见 `examples/human-api/`、`examples/recruitment-plan/` |
+| asset | `qtcloud-asset` | 产品线已有 CLI（scanner/workflow/validate） |
+| business | `qtcloud-business` | 已迁（报价计算/商务总览） |
+| connect | `qtcloud-connect` | 已迁（飞书邮件/聊天/通知 + extract 增强），本仓已移除 |
+| human | `qtcloud-human` | 已迁（招聘计划/岗位管理） |
 | knowl | `qtcloud-knowl` | 已合并至 `qtcloud-knowl/src/cli`（Rust 重构，含 acquire/extract-by-type/summary） |
-| org | `qtcloud-org` | 参考实现见 `examples/org-implementation/` |
+| org | `qtcloud-org` | 已迁 |
 

@@ -2,7 +2,7 @@
 version: 1
 project:
   title: qtadmin
-  description: 量潮科技内部第二大脑
+  description: 量潮体系对内监控面板（qtadmin）
   keywords:
     - 量潮科技
     - qtadmin
@@ -12,7 +12,7 @@ project:
   github: https://github.com/quanttide/qtadmin
   license: Proprietary
   toc:
-    - file: user-guide/asset.md
+    - file: user-guide/index.md
 site:
   template: book-theme
   options:

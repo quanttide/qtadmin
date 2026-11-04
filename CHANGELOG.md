@@ -6,6 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0
 
 ## [Unreleased]
 
+### Removed
+- 过时信息全仓清理（以 AGENTS 监控面板定位为准）：根 README 旧定位句与领域去向死引用、ROADMAP 重写（限制创始人与评审闭环/质量飞轮/系统权威路线移除）、site 标语与简介、studio README 与 doc/index 旧定位及已失效的 recruitment.json 陈述、CONTRIBUTING 的 asset 死命令、examples 幽灵清单、docs/user-guide 五个已迁领域指南与旧架构文、api-reference/provider.yaml 旧 API 契约（1639 行，代码仅 /health）、provider README 幽灵认证节与个人路径
+
 ### Changed
 - AGENTS.md 按新定位重写：qtadmin = 对内监控面板，以数据指标与验收方式为准——四分边界（对外→qttech、制度身份→主体仓、领域运营→产品线、指标与验收→本仓）；数据活水源先于界面（仪表盘前车之鉴）；清理失效引用（cli asset 模块、docs/handbook、实验→工程化管线、不存在的 ROADMAP 必读）
 
