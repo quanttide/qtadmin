@@ -25,5 +25,5 @@ qtadmin 是量潮体系的**对内监控面板**——以各种数据指标和�
      - `www.quanttide.com` 首跑挂（指向 AWS S3 website，无 TLS，HTTP 亦 404），当日修复：新建 CDN 实例（源站 qtweb-site OSS、复用 `*.quanttide.com` 通配证书至 2027-01-31、闽 ICP 同案）+ DNS CNAME 改指 `www.quanttide.com.w.kunlunaq.com`，复跑 200
      - 遗留：`api.quanttide.com/qtclass/healthz` 404（网关映射待核，auth-pay 评审遗留；不入靶单，单列）
      - 注：`POST` 端点（如 oauth/token）按方法返回 404 属正常路由行为，不入 v1 GET 靶单
-     - 待办：www 的 HTTP→HTTPS 强跳未配（当前 CLI 无该 API），HTTP 现直出 200
+     - 待办：www 的 HTTP→HTTPS 强跳未配——CLI/SDK 无该 API，裸调动作名与配置函数名均被服务端白名单拒（force_redirect/https_config 等候选全数 Invalid）；两条路：控制台手动开（CDN→www→强制跳转→301），或维持与 apex 同规（apex HTTP 亦不跳，实测 200 直出）；HTTPS 本身 200 不受影响
 - [ ] 四屏去留：待裁
