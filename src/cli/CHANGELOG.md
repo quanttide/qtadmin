@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## [0.1.0-alpha.1] - 2026-11-06
+
+### Added
+
+- 四命令骨架（新结构定线，设计正本 `../../docs/dev-guide/cli.md`）：
+  - `entity` → founder / company / alliance / academy
+  - `domain` → data
+  - `adapter` → feishu
+  - `category`（范畴结构待定）
+  - 叶子输出诚实标注「结构已挂，数据源未接」，不演戏
+- ROADMAP 围绕第二大脑结构重写（替换旧「版本收敛/分化」路线），版本起点 0.1.0-alpha.1
+
 ## [0.0.17] - 2026-07-03
 
 ### Added

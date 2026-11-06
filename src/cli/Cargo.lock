@@ -240,7 +240,7 @@ dependencies = [
 
 [[package]]
 name = "qtadmin-cli"
-version = "0.0.17"
+version = "0.1.0-alpha.1"
 dependencies = [
  "assert_cmd",
  "clap",
