@@ -24,7 +24,7 @@ qtadmin 是量潮体系的**对内监控面板**——以各种数据指标和�
 - `src/studio/`：现存摩擦 / 任务 / 角色 / 评审四屏是旧治理操作台实体，与监控面板定位不同物，**去留未定**——未获指令前不动。开发原则与架构约定见 `src/studio/AGENTS.md`，在 studio 下工作必须先读
 - `src/site/`：React 展示站（🟢，自述待修正）
 - `src/provider/`：Go 壳（config / store / health）
-- `src/cli/`：Rust 壳，待决策（connect 已迁 qtcloud-connect，其余模块未定）
+- `src/cli/`：Rust 空壳（64 行、零子命令），新结构已定——entity / domain / adapter / category 四命令、以名词为主（设计正本 `docs/dev-guide/cli.md`），从 0.1.0-alpha.1 起步；路线见 `src/cli/ROADMAP.md`
 - 领域已全部迁出，本仓**不回收**——领域去向表见 README
 
 ## 子模块操作注意事项

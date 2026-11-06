@@ -16,7 +16,7 @@
 | 模块 | 技术栈 | 状态 |
 |------|--------|------|
 | `src/studio/` | Flutter | 🟡 四屏（任务/评审/摩擦/角色，旧实体与定位不同物，去留未定） |
-| `src/cli/` | Rust | 🟡 待决策（connect 已迁 qtcloud-connect，其余模块未定） |
+| `src/cli/` | Rust | 🟡 空壳，新结构已定：entity / domain / adapter / category 四命令（`docs/dev-guide/cli.md`），从 0.1.0-alpha.1 起步 |
 | `src/provider/` | Go | 🟡 壳（config/store/health，领域 handler 已拆分至各仓 examples/） |
 | `src/site/` | React + TypeScript | 🟢 展示站（定位与架构分层） |
 
