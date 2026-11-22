@@ -6,7 +6,7 @@
 
 - `activity` 二级命令：`qtadmin activity qtclass`（招生等活动入口——enroll 属活动不属主体，不挂 entity；设计正本 `../../docs/dev-guide/cli.md`）
 - 招生业务文档随结构移位：`docs/intro/qtclass/enroll.md` → `docs/intro/activity/qtclass.md`
-- API 参考 `docs/api-references/`：索引页 + `activity/qtclass.md`——量潮课堂管理单元业务需求（意图/痛点/愿景/边界）翻译为命令面（sync/order/delivery/status）、数据对象、状态映射与 API 承诺（只读不写、原样搬运、容错优先）
+- API 参考 `docs/api-references/`：索引页 + `activity/qtclass.md`——量潮课堂管理单元业务需求（意图/痛点/愿景/边界）翻译为命令面（sync/order/delivery/status）、数据对象、状态映射与 API 承诺（只读不写、原样搬运、容错优先）；数据源定为飞书多维表格（经 `adapter feishu` 接入），API 文档与业务正本同步替换
 
 ### Changed
 
