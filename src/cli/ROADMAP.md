@@ -1,10 +1,10 @@
 # ROADMAP — qtadmin CLI
 
-qtadmin CLI 围绕**第二大脑结构**组织：四个二级子命令 `entity` / `domain` / `adapter` / `category`，每个下面按第二大脑现有结构再挂下一级——以社区第二大脑结构为基准做 API、以它为数据源、**以名词为主**。
+qtadmin CLI 围绕**第二大脑结构**组织：五个二级子命令 `entity` / `domain` / `adapter` / `category` / `activity`，每个下面按第二大脑现有结构再挂下一级——以社区第二大脑结构为基准做 API、以它为数据源、**以名词为主**。
 
 - 设计正本：[`../../docs/dev-guide/cli.md`](../../docs/dev-guide/cli.md)
 - 动机实录：`data/journal/default/2026-11-06.md`（前中后台分工、先显性化、用实践冲刷结构）
-- 当前状态：0.0.17 空壳——64 行、零子命令；职能模块（human / business / asset / connect / knowl / share）已全部迁出至产品线仓
+- 当前状态：0.1.0-alpha.1 已发（四命令骨架，tag `cli/v0.1.0-alpha.1`）；职能模块（human / business / asset / connect / knowl / share）已全部迁出至产品线仓
 
 ## 命令结构
 
@@ -14,12 +14,13 @@ qtadmin CLI 围绕**第二大脑结构**组织：四个二级子命令 `entity` 
 | `domain` | `data/` 等 | 领域 |
 | `adapter` | `feishu/` 等 | 适配 |
 | `category` | 按范畴结构挂，示例待定 | 范畴 |
+| `activity` | qtclass 等 | 活动——招生等活动，enroll 属活动不属主体，不挂 entity |
 
 ## 版本目标
 
 | 版本载体 | 当前版本 | 下一版本 | 就绪条件 |
 |:--------:|:--------:|:--------:|----------|
-| `Cargo.toml`、`CHANGELOG.md` | 0.0.17 | **0.1.0-alpha.1** | 四命令骨架落地；Cargo.toml 升 `0.1.0-alpha.1`，CHANGELOG 补条目，tag `cli/v0.1.0-alpha.1` |
+| `Cargo.toml`、`CHANGELOG.md` | 0.1.0-alpha.1 | **0.1.0-alpha.2** | activity 命令落地；Cargo.toml 升 `0.1.0-alpha.2`，CHANGELOG 补条目，tag `cli/v0.1.0-alpha.2` |
 
 版本发布规范见 `CONTRIBUTING.md`：单一数据源 `Cargo.toml`，标签 `cli/v<version>`；预发布从 alpha 起步。
 
@@ -31,6 +32,12 @@ qtadmin CLI 围绕**第二大脑结构**组织：四个二级子命令 `entity` 
 - 每级下按第二大脑结构挂下一级（示例见上表；category 以范畴轴结构为准）
 - 先显性化：结构不求一步正确，临时的东西也先挂上来——沿创始人探索出来的道路先上线
 - 升版本、补 CHANGELOG、发 `cli/v0.1.0-alpha.1`
+
+### 0.1.0-alpha.2 —— activity 命令
+
+- 新增 `activity` 二级命令：qtclass 等——招生等活动，enroll 属活动不属主体，不挂 entity
+- 招生业务文档随结构移位：`docs/intro/qtclass/enroll.md` → `docs/intro/activity/qtclass.md`
+- 升版本、补 CHANGELOG、发 `cli/v0.1.0-alpha.2`
 
 ### alpha 迭代 —— 用实践冲刷结构
 

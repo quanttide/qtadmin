@@ -2,7 +2,7 @@ use clap::{Parser, Subcommand};
 
 /// qtadmin CLI——第二大脑结构的名词 API。
 ///
-/// 四个二级子命令按第二大脑结构组织（设计正本 `docs/dev-guide/cli.md`），
+/// 五个二级子命令按第二大脑结构组织（设计正本 `docs/dev-guide/cli.md`），
 /// 每级下按现有结构再挂下一级；以名词为主，叶子先显性化、数据源后接。
 #[derive(Parser)]
 #[command(
@@ -34,6 +34,17 @@ enum Command {
     },
     /// 范畴（结构待定）
     Category,
+    /// 活动（招生等活动，enroll 属活动不属主体）
+    Activity {
+        #[command(subcommand)]
+        subject: ActivityCommand,
+    },
+}
+
+#[derive(Subcommand)]
+enum ActivityCommand {
+    /// 量潮课堂招生活动（docs/intro/activity/qtclass.md）
+    Qtclass,
 }
 
 #[derive(Subcommand)]
@@ -85,10 +96,22 @@ pub fn run() {
             format!("adapter/{name}")
         }
         Command::Category => {
-            println!("category：范畴结构待定（0.1.0-alpha.1 骨架）");
+            println!(
+                "category：范畴结构待定（{} 骨架）",
+                env!("CARGO_PKG_VERSION")
+            );
             return;
+        }
+        Command::Activity { subject } => {
+            let name = match subject {
+                ActivityCommand::Qtclass => "qtclass",
+            };
+            format!("activity/{name}")
         }
     };
     // 诚实标注：骨架已挂、数据源未接，不演戏
-    println!("{path}：结构已挂，数据源未接（0.1.0-alpha.1 骨架）");
+    println!(
+        "{path}：结构已挂，数据源未接（{} 骨架）",
+        env!("CARGO_PKG_VERSION")
+    );
 }

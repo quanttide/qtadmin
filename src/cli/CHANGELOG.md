@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## [0.1.0-alpha.2] - 2026-11-22
+
+### Added
+
+- `activity` 二级命令：`qtadmin activity qtclass`（招生等活动入口——enroll 属活动不属主体，不挂 entity；设计正本 `../../docs/dev-guide/cli.md`）
+- 招生业务文档随结构移位：`docs/intro/qtclass/enroll.md` → `docs/intro/activity/qtclass.md`
+
+### Changed
+
+- 骨架输出的版本标注改读 `Cargo.toml`（`CARGO_PKG_VERSION`），不再硬编码
+- ROADMAP 当前状态与版本目标同步（alpha.1 已发，下一版本 0.1.0-alpha.2）；README/AGENTS 状态句四命令 → 五命令
+
 ## [0.1.0-alpha.1] - 2026-11-06
 
 ### Added
