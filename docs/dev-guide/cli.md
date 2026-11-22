@@ -12,4 +12,6 @@ qtadmin activity qtclass 等——招生等活动，enroll 属活动不属主体
 
 以社区第二大脑的结构为基准做 API，以它为数据源。以名词为主。
 
+API 参考按命令面展开：`src/cli/docs/api-references/`（逐命令的命令面、数据对象、边界与状态）。
+
 

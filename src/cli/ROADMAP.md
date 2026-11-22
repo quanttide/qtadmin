@@ -3,6 +3,7 @@
 qtadmin CLI 围绕**第二大脑结构**组织：五个二级子命令 `entity` / `domain` / `adapter` / `category` / `activity`，每个下面按第二大脑现有结构再挂下一级——以社区第二大脑结构为基准做 API、以它为数据源、**以名词为主**。
 
 - 设计正本：[`../../docs/dev-guide/cli.md`](../../docs/dev-guide/cli.md)
+- API 参考：[`docs/api-references/`](docs/api-references/)（逐命令展开：命令面、数据对象、边界与状态）
 - 动机实录：`data/journal/default/2026-11-06.md`（前中后台分工、先显性化、用实践冲刷结构）
 - 当前状态：0.1.0-alpha.1 已发（四命令骨架，tag `cli/v0.1.0-alpha.1`）；职能模块（human / business / asset / connect / knowl / share）已全部迁出至产品线仓
 
@@ -20,7 +21,7 @@ qtadmin CLI 围绕**第二大脑结构**组织：五个二级子命令 `entity` 
 
 | 版本载体 | 当前版本 | 下一版本 | 就绪条件 |
 |:--------:|:--------:|:--------:|----------|
-| `Cargo.toml`、`CHANGELOG.md` | 0.1.0-alpha.1 | **0.1.0-alpha.2** | activity 命令落地；Cargo.toml 升 `0.1.0-alpha.2`，CHANGELOG 补条目，tag `cli/v0.1.0-alpha.2` |
+| `Cargo.toml`、`CHANGELOG.md` | 0.1.0-alpha.2（代码与 CHANGELOG 已就位） | 0.1.0-alpha.3 | 发 `cli/v0.1.0-alpha.2`（tag + GitHub Release）；下一版随数据源接入或下一轴页面 |
 
 版本发布规范见 `CONTRIBUTING.md`：单一数据源 `Cargo.toml`，标签 `cli/v<version>`；预发布从 alpha 起步。
 
@@ -37,6 +38,7 @@ qtadmin CLI 围绕**第二大脑结构**组织：五个二级子命令 `entity` 
 
 - 新增 `activity` 二级命令：qtclass 等——招生等活动，enroll 属活动不属主体，不挂 entity
 - 招生业务文档随结构移位：`docs/intro/qtclass/enroll.md` → `docs/intro/activity/qtclass.md`
+- API 参考开张：`docs/api-references/activity/qtclass.md`——业务需求四节（意图/痛点/愿景/边界）翻译为命令面、数据对象、状态映射与 API 承诺
 - 升版本、补 CHANGELOG、发 `cli/v0.1.0-alpha.2`
 
 ### alpha 迭代 —— 用实践冲刷结构
@@ -46,7 +48,7 @@ qtadmin CLI 围绕**第二大脑结构**组织：五个二级子命令 `entity` 
 
 ### 0.1.0 —— 结构定型
 
-- 四命令与层级经冲刷后稳定，版本收敛发 `cli/v0.1.0`，标志探索期结束、进入上线推进
+- 五命令与层级经冲刷后稳定，版本收敛发 `cli/v0.1.0`，标志探索期结束、进入上线推进
 
 ### 结构之后 —— 分解到职能
 
